@@ -29,8 +29,8 @@ fun LoginScreen(navHostController: NavHostController) {
     
     val authViewModel = koinViewModel<AuthViewModel>()
     
-    val whatsAppNumberState =
-        authViewModel.whatsAppNumberState.collectAsStateWithLifecycle()
+    val phoneNumberState =
+        authViewModel.phoneNumberState.collectAsStateWithLifecycle()
     
     Scaffold { paddingValues ->
         Column(
@@ -45,9 +45,9 @@ fun LoginScreen(navHostController: NavHostController) {
             )
             Spacer(modifier = Modifier.height(10.dp))
             OutlinedTextField(
-                value = whatsAppNumberState.value,
+                value = phoneNumberState.value,
                 onValueChange = { text ->
-                    authViewModel.onUpdateWhatsAppNumber(text)
+                    authViewModel.onUpdatePhoneNumber(text)
                 },
                 label = {
                     Text(

@@ -23,9 +23,9 @@ class AuthViewModel(
         MutableStateFlow(OTPUiState())
     val otpUiState = _otpUiState.asStateFlow()
     
-    private val _whatsAppNumberState: MutableStateFlow<String> =
+    private val _phoneNumberState: MutableStateFlow<String> =
         MutableStateFlow("")
-    val whatsAppNumberState = _whatsAppNumberState.asStateFlow()
+    val phoneNumberState = _phoneNumberState.asStateFlow()
     
     fun updateOtpValue(index: Int, value: String) {
         val newOtpValues = _otpUiState.value.otpValues.toMutableList()
@@ -38,15 +38,15 @@ class AuthViewModel(
         }
     }
     
-    fun onUpdateWhatsAppNumber(whatsAppNumber: String) {
-        _whatsAppNumberState.update {
-            whatsAppNumber
+    fun onUpdatePhoneNumber(phoneNumber: String) {
+        _phoneNumberState.update {
+            phoneNumber
         }
     }
     
     fun signIn() {
         viewModelScope.launch {
-            val result = signInUseCase.execute(_whatsAppNumberState.value)
+            val result = signInUseCase.execute(_phoneNumberState.value)
             when (result) {
                 is Result.Success -> {
                     println("Success: ${result.data}")
