@@ -66,7 +66,7 @@ fun LoginScreen(navHostController: NavHostController) {
             )
             Spacer(modifier = Modifier.height(10.dp))
             ElevatedButton(onClick = {
-                navHostController.navigate(OTP)
+                authViewModel.signIn()
             }) {
                 Text("Send OTP", style = MaterialTheme.typography.labelMedium)
             }
