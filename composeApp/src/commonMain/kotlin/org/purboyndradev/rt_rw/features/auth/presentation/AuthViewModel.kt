@@ -27,6 +27,10 @@ class AuthViewModel(
         MutableStateFlow("")
     val phoneNumberState = _phoneNumberState.asStateFlow()
     
+    private val _isLoadingState: MutableStateFlow<Boolean> =
+        MutableStateFlow(false)
+    val isLoadingState = _isLoadingState.asStateFlow()
+    
     fun updateOtpValue(index: Int, value: String) {
         val newOtpValues = _otpUiState.value.otpValues.toMutableList()
         newOtpValues[index] = value
@@ -45,16 +49,23 @@ class AuthViewModel(
     }
     
     fun signIn() {
+        _isLoadingState.update {
+            true
+        }
         viewModelScope.launch {
             val result = signInUseCase.execute(_phoneNumberState.value)
             when (result) {
                 is Result.Success -> {
                     println("Success: ${result.data}")
                 }
+                
                 is Result.Error -> {
                     println("Error: ${result.error.name}")
                 }
             }
+        }
+        _isLoadingState.update {
+            false
         }
     }
     
