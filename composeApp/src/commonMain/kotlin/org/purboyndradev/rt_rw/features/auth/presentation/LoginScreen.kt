@@ -15,6 +15,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -22,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import org.koin.compose.viewmodel.koinViewModel
-import org.purboyndradev.rt_rw.features.navigation.OTP
 
 @Composable
 fun LoginScreen(navHostController: NavHostController) {
@@ -33,6 +33,8 @@ fun LoginScreen(navHostController: NavHostController) {
         authViewModel.phoneNumberState.collectAsStateWithLifecycle()
     val isLoadingState =
         authViewModel.isLoadingState.collectAsStateWithLifecycle()
+    val authState = authViewModel.authState.collectAsStateWithLifecycle()
+ 
     
     Scaffold { paddingValues ->
         Column(

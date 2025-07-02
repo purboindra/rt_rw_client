@@ -19,6 +19,10 @@ class AuthViewModel(
     private val signInUseCase: SignInUseCase
 ) : ViewModel() {
     
+    private val _authState: MutableStateFlow<AuthState> =
+        MutableStateFlow(AuthState())
+    val authState = _authState.asStateFlow()
+    
     private val _otpUiState: MutableStateFlow<OTPUiState> =
         MutableStateFlow(OTPUiState())
     val otpUiState = _otpUiState.asStateFlow()
@@ -57,10 +61,20 @@ class AuthViewModel(
             when (result) {
                 is Result.Success -> {
                     println("Success: ${result.data}")
+                    _authState.update {
+                        it.copy(
+                            success = true
+                        )
+                    }
                 }
                 
                 is Result.Error -> {
                     println("Error: ${result.error.name}")
+                    _authState.update {
+                        it.copy(
+                            error = result.error.name
+                        )
+                    }
                 }
             }
         }
