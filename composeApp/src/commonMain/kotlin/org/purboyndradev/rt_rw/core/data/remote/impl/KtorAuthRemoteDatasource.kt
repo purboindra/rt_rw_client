@@ -3,6 +3,8 @@ package org.purboyndradev.rt_rw.core.data.remote.impl
 import io.ktor.client.HttpClient
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import org.purboyndradev.rt_rw.core.data.dto.AuthDto
+import org.purboyndradev.rt_rw.core.data.dto.ResponseDto
 import org.purboyndradev.rt_rw.core.data.remote.api.AuthApi
 import org.purboyndradev.rt_rw.core.domain.DataError
 import org.purboyndradev.rt_rw.core.domain.Result
@@ -11,7 +13,7 @@ import org.purboyndradev.rt_rw.helper.BASE_URL
 
 class KtorAuthRemoteDatasource(private val httpClient: HttpClient) :
     AuthApi {
-    override suspend fun signIn(phoneNumber: String): Result<Boolean, DataError.Remote> {
+    override suspend fun signIn(phoneNumber: String): Result<ResponseDto<AuthDto>, DataError.Remote> {
         return safeCall {
             httpClient.post("$BASE_URL/auth/sign-in") {
                 setBody(mapOf("phone" to phoneNumber))

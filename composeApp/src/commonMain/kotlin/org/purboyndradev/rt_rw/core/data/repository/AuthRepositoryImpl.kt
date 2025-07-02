@@ -1,5 +1,7 @@
 package org.purboyndradev.rt_rw.core.data.repository
 
+import org.purboyndradev.rt_rw.core.data.dto.AuthDto
+import org.purboyndradev.rt_rw.core.data.dto.ResponseDto
 import org.purboyndradev.rt_rw.core.data.remote.api.AuthApi
 import org.purboyndradev.rt_rw.core.domain.DataError
 import org.purboyndradev.rt_rw.core.domain.Result
@@ -8,7 +10,7 @@ import org.purboyndradev.rt_rw.domain.repository.AuthRepository
 class AuthRepositoryImpl(
     private val api: AuthApi
 ) : AuthRepository {
-    override suspend fun signIn(phoneNumber: String): Result<Boolean, DataError.Remote> {
+    override suspend fun signIn(phoneNumber: String): Result<ResponseDto<AuthDto>, DataError.Remote> {
         val response = api.signIn(phoneNumber)
         return response
     }
