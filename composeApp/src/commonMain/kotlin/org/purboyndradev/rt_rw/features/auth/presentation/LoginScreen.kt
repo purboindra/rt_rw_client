@@ -31,6 +31,8 @@ fun LoginScreen(navHostController: NavHostController) {
     
     val phoneNumberState =
         authViewModel.phoneNumberState.collectAsStateWithLifecycle()
+    val isLoadingState =
+        authViewModel.isLoadingState.collectAsStateWithLifecycle()
     
     Scaffold { paddingValues ->
         Column(
@@ -65,10 +67,16 @@ fun LoginScreen(navHostController: NavHostController) {
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(modifier = Modifier.height(10.dp))
-            ElevatedButton(onClick = {
-                authViewModel.signIn()
-            }) {
-                Text("Send OTP", style = MaterialTheme.typography.labelMedium)
+            ElevatedButton(
+                onClick = {
+                    authViewModel.signIn()
+                },
+                enabled = !isLoadingState.value
+            ) {
+                Text(
+                    if (isLoadingState.value) "Loading..." else "Send OTP",
+                    style = MaterialTheme.typography.labelMedium
+                )
             }
         }
     }
