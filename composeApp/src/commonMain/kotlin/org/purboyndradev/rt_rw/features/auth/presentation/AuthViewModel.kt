@@ -35,6 +35,16 @@ class AuthViewModel(
         MutableStateFlow(false)
     val isLoadingState = _isLoadingState.asStateFlow()
     
+    private val _openAlertDialog: MutableStateFlow<Boolean> =
+        MutableStateFlow(false)
+    val openAlertDialog = _openAlertDialog.asStateFlow()
+    
+    fun onOpenAlertDialogChange(open: Boolean) {
+        _openAlertDialog.update {
+            open
+        }
+    }
+    
     fun updateOtpValue(index: Int, value: String) {
         val newOtpValues = _otpUiState.value.otpValues.toMutableList()
         newOtpValues[index] = value
@@ -61,11 +71,22 @@ class AuthViewModel(
             when (result) {
                 is Result.Success -> {
                     println("Success: ${result.data}")
-                    _signInState.update {
-                        it.copy(
-                            success = true
-                        )
+                    
+                    
+                    val data = result.data
+                    val redirectUrl = data.data?.redirectUrl
+                    
+                    redirectUrl?.let {
+                        _signInState.update {
+                            it.copy(
+                                redirectUrl = redirectUrl,
+                                success = true
+                            )
+                        }
                     }
+                    
+                    onOpenAlertDialogChange(!_openAlertDialog.value)
+                    
                 }
                 
                 is Result.Error -> {
