@@ -3,6 +3,7 @@ package org.purboyndradev.rt_rw.core.data.remote.impl
 import io.ktor.client.HttpClient
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import kotlinx.serialization.Serializable
 import org.purboyndradev.rt_rw.core.data.dto.SignInDto
 import org.purboyndradev.rt_rw.core.data.dto.ResponseDto
 import org.purboyndradev.rt_rw.core.data.remote.api.AuthApi
@@ -11,6 +12,7 @@ import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.core.network.safeCall
 import org.purboyndradev.rt_rw.helper.BASE_URL
 
+@Serializable
 data class SignInBody(
     val phone: String
 )
