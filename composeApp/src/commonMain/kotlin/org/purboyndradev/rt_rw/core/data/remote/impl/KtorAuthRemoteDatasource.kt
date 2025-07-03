@@ -6,23 +6,33 @@ import io.ktor.client.request.setBody
 import kotlinx.serialization.Serializable
 import org.purboyndradev.rt_rw.core.data.dto.SignInDto
 import org.purboyndradev.rt_rw.core.data.dto.ResponseDto
+import org.purboyndradev.rt_rw.core.data.dto.VerifyOtpDto
 import org.purboyndradev.rt_rw.core.data.remote.api.AuthApi
+import org.purboyndradev.rt_rw.core.data.remote.params.SignInParams
+import org.purboyndradev.rt_rw.core.data.remote.params.VerifyOtpParams
 import org.purboyndradev.rt_rw.core.domain.DataError
 import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.core.network.safeCall
 import org.purboyndradev.rt_rw.helper.BASE_URL
 
-@Serializable
-data class SignInBody(
-    val phone: String
-)
 
 class KtorAuthRemoteDatasource(private val httpClient: HttpClient) :
     AuthApi {
     override suspend fun signIn(phoneNumber: String): Result<ResponseDto<SignInDto>, DataError.Remote> {
         return safeCall {
             httpClient.post("$BASE_URL/auth/sign-in") {
-                setBody(SignInBody(phoneNumber))
+                setBody(SignInParams(phoneNumber))
+            }
+        }
+    }
+    
+    override suspend fun verifyOtp(
+        phoneNumber: String,
+        otp: String
+    ): Result<ResponseDto<VerifyOtpDto>, DataError.Remote> {
+        return safeCall {
+            httpClient.post("${BASE_URL}/auth/verify-otp") {
+                setBody(VerifyOtpParams(phone = phoneNumber, otp))
             }
         }
     }
