@@ -13,6 +13,7 @@ import org.purboyndradev.rt_rw.core.data.repository.AuthRepositoryImpl
 import org.purboyndradev.rt_rw.core.network.HttpClientFactory
 import org.purboyndradev.rt_rw.domain.repository.AuthRepository
 import org.purboyndradev.rt_rw.domain.usecases.SignInUseCase
+import org.purboyndradev.rt_rw.domain.usecases.VerifyOtpUseCase
 import org.purboyndradev.rt_rw.features.auth.presentation.AuthViewModel
 import org.purboyndradev.rt_rw.helper.BASE_URL
 
@@ -49,6 +50,10 @@ val sharedModule: Module = module {
         SignInUseCase(get())
     }
     
+    single {
+        VerifyOtpUseCase(get())
+    }
+    
     /// PROVIDE VIEW MODEL
-    viewModel { AuthViewModel(get()) }
+    viewModel { AuthViewModel(get(), get()) }
 }
