@@ -9,3 +9,7 @@ expect fun getPlatform(): Platform
 expect object TelegramLauncher {
     fun open(url: String)
 }
+
+expect object ClipboardReader {
+    fun getText(): String?
+}

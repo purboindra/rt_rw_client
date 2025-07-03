@@ -3,6 +3,7 @@ package org.purboyndradev.rt_rw
 import platform.UIKit.UIDevice
 import platform.Foundation.NSURL
 import platform.UIKit.UIApplication
+import platform.UIKit.UIPasteboard
 
 class IOSPlatform : Platform {
     override val name: String =
@@ -20,5 +21,12 @@ actual object TelegramLauncher {
         } else {
             println("Error: Could not open URL: $url. It might be invalid or the required app (e.g., Telegram) is not installed.")
         }
+    }
+}
+
+actual object ClipboardReader {
+    actual fun getText(): String? {
+        val pasteBoard = UIPasteboard.generalPasteboard
+        return pasteBoard.string
     }
 }

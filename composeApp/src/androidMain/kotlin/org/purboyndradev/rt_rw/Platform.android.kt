@@ -2,6 +2,8 @@ package org.purboyndradev.rt_rw
 
 import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -18,12 +20,6 @@ class AndroidPlatform : Platform {
 actual fun getPlatform(): Platform = AndroidPlatform()
 
 actual object TelegramLauncher {
-    private var applicationContext: Context? = null
-    
-    fun init(ctx: Context) {
-        applicationContext = ctx.applicationContext
-    }
-    
     /// Function return Boolean
     /// If Telegram App is installed return true
     private fun isTelegramInstalled(context: Context): Boolean {
@@ -48,9 +44,10 @@ actual object TelegramLauncher {
     
     @SuppressLint("QueryPermissionsNeeded")
     actual fun open(url: String) {
-        val currentContext = applicationContext
         
-        val isInstalled = isTelegramInstalled(currentContext!!)
+        val currentContext = AndroidContextProvider.getContext()
+        
+        val isInstalled = isTelegramInstalled(currentContext)
         
         if (!isInstalled) {
             Log.w(
@@ -100,5 +97,32 @@ actual object TelegramLauncher {
             Log.e("TelegramLauncher", "Error opening URL: $url", e)
         }
         
+    }
+}
+
+object AndroidContextProvider {
+    private var appContext: Context? = null
+    
+    fun initialize(context: Context) {
+        appContext = context.applicationContext
+    }
+    
+    fun getContext(): Context {
+        return appContext
+            ?: throw IllegalStateException("AndroidContextProvider not initialized")
+    }
+}
+
+actual object ClipboardReader {
+    actual fun getText(): String? {
+        val context = AndroidContextProvider.getContext()
+        val clipboard =
+            context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip: ClipData? = clipboard.primaryClip
+        return if (clip != null && clip.itemCount > 0) {
+            clip.getItemAt(0)?.text?.toString()
+        } else {
+            null
+        }
     }
 }
