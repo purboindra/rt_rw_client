@@ -15,7 +15,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -23,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import org.koin.compose.viewmodel.koinViewModel
+import org.purboyndradev.rt_rw.TelegramLauncher
+import org.purboyndradev.rt_rw.features.components.OpenTelegramDialog
 
 @Composable
 fun LoginScreen(navHostController: NavHostController) {
@@ -34,7 +35,25 @@ fun LoginScreen(navHostController: NavHostController) {
     val isLoadingState =
         authViewModel.isLoadingState.collectAsStateWithLifecycle()
     val authState = authViewModel.signInState.collectAsStateWithLifecycle()
- 
+    val openAlertDialog =
+        authViewModel.openAlertDialog.collectAsStateWithLifecycle()
+    
+    when {
+        openAlertDialog.value -> {
+            OpenTelegramDialog(
+                onDismissRequest = { authViewModel.onOpenAlertDialogChange(!openAlertDialog.value) },
+                onConfirmation = {
+                    val redirectUrl = authState.value.redirectUrl
+                    redirectUrl?.let {
+                        TelegramLauncher.open(it)
+                    }
+                    authViewModel.onOpenAlertDialogChange(!openAlertDialog.value)
+                },
+                dialogTitle = "Verify akun kamu!",
+                dialogText = "Akun kamu belum terverifikasi di system. Silahkan klik tombol di bawah ini untuk membuka aplikasi Telegram",
+            )
+        }
+    }
     
     Scaffold { paddingValues ->
         Column(
