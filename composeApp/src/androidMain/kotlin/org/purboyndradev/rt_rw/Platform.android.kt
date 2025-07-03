@@ -26,40 +26,62 @@ actual object TelegramLauncher {
     
     /// Function return Boolean
     /// If Telegram App is installed return true
-    @SuppressLint("QueryPermissionsNeeded")
     private fun isTelegramInstalled(context: Context): Boolean {
-        val packageManager = context.packageManager
-        val intent = Intent(
-            Intent.ACTION_VIEW,
-            "tg://resolve?domain=telegram".toUri()
-        )
-        val resolveInfo = packageManager.queryIntentActivities(
-            intent,
-            PackageManager.MATCH_DEFAULT_ONLY
-        )
-        return resolveInfo.isNotEmpty()
+        val installed =
+            listOf("org.telegram.messenger", "org.thunderdog.challegram")
+        return installed.any {
+            try {
+                context.packageManager.getPackageInfo(
+                    it,
+                    PackageManager.GET_ACTIVITIES
+                )
+                true
+            } catch (e: PackageManager.NameNotFoundException) {
+                Log.e(
+                    "TelegramLauncher",
+                    "Error package manager not found: $e"
+                )
+                false
+            }
+        }
     }
     
     @SuppressLint("QueryPermissionsNeeded")
     actual fun open(url: String) {
         val currentContext = applicationContext
         
-        if(!isTelegramInstalled(currentContext!!)){
-            Log.w("TelegramLauncher", "Telegram app not found or no app to handle tg:// scheme.")
+        val isInstalled = isTelegramInstalled(currentContext!!)
+        
+        if (!isInstalled) {
+            Log.w(
+                "TelegramLauncher",
+                "Telegram app not found or no app to handle tg:// scheme."
+            )
             try {
-                val playStoreIntent = Intent(Intent.ACTION_VIEW,
-                    "market://details?id=org.telegram.messenger".toUri())
+                val playStoreIntent = Intent(
+                    Intent.ACTION_VIEW,
+                    "market://details?id=org.telegram.messenger".toUri()
+                )
                 playStoreIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 currentContext.startActivity(playStoreIntent)
             } catch (e: ActivityNotFoundException) {
-                Log.e("TelegramLauncher", "Play Store not found to install Telegram.", e)
-                val browserIntent = Intent(Intent.ACTION_VIEW,
-                    "https://play.google.com/store/apps/details?id=org.telegram.messenger".toUri())
+                Log.e(
+                    "TelegramLauncher",
+                    "Play Store not found to install Telegram.",
+                    e
+                )
+                val browserIntent = Intent(
+                    Intent.ACTION_VIEW,
+                    "https://play.google.com/store/apps/details?id=org.telegram.messenger".toUri()
+                )
                 browserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 if (browserIntent.resolveActivity(currentContext.packageManager) != null) {
                     currentContext.startActivity(browserIntent)
                 } else {
-                    Log.e("TelegramLauncher", "No browser found to open Play Store link.")
+                    Log.e(
+                        "TelegramLauncher",
+                        "No browser found to open Play Store link."
+                    )
                 }
             }
             return
