@@ -12,8 +12,6 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         
-        TelegramLauncher.init(this)
-        
         setContent {
             App()
         }
