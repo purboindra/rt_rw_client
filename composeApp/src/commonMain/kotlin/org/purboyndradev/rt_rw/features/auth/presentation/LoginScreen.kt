@@ -24,6 +24,7 @@ import androidx.navigation.NavHostController
 import org.koin.compose.viewmodel.koinViewModel
 import org.purboyndradev.rt_rw.TelegramLauncher
 import org.purboyndradev.rt_rw.features.components.OpenTelegramDialog
+import org.purboyndradev.rt_rw.features.navigation.OTP
 
 @Composable
 fun LoginScreen(navHostController: NavHostController) {
@@ -48,6 +49,7 @@ fun LoginScreen(navHostController: NavHostController) {
                         TelegramLauncher.open(it)
                     }
                     authViewModel.onOpenAlertDialogChange(!openAlertDialog.value)
+                    navHostController.navigate(OTP)
                 },
                 dialogTitle = "Verify akun kamu!",
                 dialogText = "Akun kamu belum terverifikasi di system. Silahkan klik tombol di bawah ini untuk membuka aplikasi Telegram",

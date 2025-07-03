@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.domain.usecases.SignInUseCase
+import org.purboyndradev.rt_rw.domain.usecases.VerifyOtpUseCase
 
 data class OTPUiState(
     val otpLength: Int = 6,
@@ -16,12 +17,17 @@ data class OTPUiState(
 )
 
 class AuthViewModel(
-    private val signInUseCase: SignInUseCase
+    private val signInUseCase: SignInUseCase,
+    private val verifyOtpUseCase: VerifyOtpUseCase
 ) : ViewModel() {
     
     private val _signInState: MutableStateFlow<AuthState> =
         MutableStateFlow(AuthState())
     val signInState = _signInState.asStateFlow()
+    
+    private val _verifyOtpState: MutableStateFlow<AuthState> =
+        MutableStateFlow(AuthState())
+    val verifyOtpState = _verifyOtpState.asStateFlow()
     
     private val _otpUiState: MutableStateFlow<OTPUiState> =
         MutableStateFlow(OTPUiState())
@@ -72,7 +78,6 @@ class AuthViewModel(
                 is Result.Success -> {
                     println("Success: ${result.data}")
                     
-                    
                     val data = result.data
                     val redirectUrl = data.data?.redirectUrl
                     
@@ -102,6 +107,27 @@ class AuthViewModel(
         _isLoadingState.update {
             false
         }
+    }
+    
+    fun verifyOtp() {
+        _isLoadingState.update {
+            true
+        }
+        
+        val otp = _otpUiState.value.otpValues
+        
+        
+        viewModelScope.launch {
+            val result = verifyOtpUseCase.execute(
+                phoneNumber = _phoneNumberState.value,
+                otp = otp.joinToString("")
+            )
+        }
+        
+        _isLoadingState.update {
+            false
+        }
+        
     }
     
 }
