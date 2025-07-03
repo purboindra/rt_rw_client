@@ -33,7 +33,7 @@ fun LoginScreen(navHostController: NavHostController) {
         authViewModel.phoneNumberState.collectAsStateWithLifecycle()
     val isLoadingState =
         authViewModel.isLoadingState.collectAsStateWithLifecycle()
-    val authState = authViewModel.authState.collectAsStateWithLifecycle()
+    val authState = authViewModel.signInState.collectAsStateWithLifecycle()
  
     
     Scaffold { paddingValues ->
