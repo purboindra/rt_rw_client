@@ -6,4 +6,4 @@ import kotlinx.serialization.Serializable
 object Login
 
 @Serializable
-object OTP
+data class OTP(val phoneNumber: String)
