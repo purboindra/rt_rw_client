@@ -31,7 +31,7 @@ class KtorAuthRemoteDatasource(private val httpClient: HttpClient) :
         otp: String
     ): Result<ResponseDto<VerifyOtpDto>, DataError.Remote> {
         return safeCall {
-            httpClient.post("${BASE_URL}/auth/verify-otp") {
+            httpClient.post("${BASE_URL}/auth/otp/verify") {
                 setBody(VerifyOtpParams(phone = phoneNumber, otp))
             }
         }
