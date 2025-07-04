@@ -7,6 +7,8 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinxSerialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
 }
 
 kotlin {
@@ -45,6 +47,9 @@ kotlin {
             
             /// KTOR
             implementation(libs.ktor.client.android)
+            
+            /// ROOM
+            implementation(libs.androidx.room.paging)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -81,6 +86,9 @@ kotlin {
             /// DATASTORE
             implementation(libs.datastore.preferences)
             implementation(libs.datastore)
+            
+            /// ROOM
+            implementation(libs.androidx.room.runtime)
         }
         
         iosMain.dependencies {
@@ -121,6 +129,15 @@ android {
 }
 
 dependencies {
+    add("kspAndroid", libs.androidx.room.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+    add("kspIosX64", libs.androidx.room.compiler)
+    add("kspIosArm64", libs.androidx.room.compiler)
     debugImplementation(compose.uiTooling)
+    
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
