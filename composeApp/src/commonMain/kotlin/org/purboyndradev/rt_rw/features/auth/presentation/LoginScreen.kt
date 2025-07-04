@@ -49,7 +49,7 @@ fun LoginScreen(navHostController: NavHostController) {
                         TelegramLauncher.open(it)
                     }
                     authViewModel.onOpenAlertDialogChange(!openAlertDialog.value)
-                    navHostController.navigate(OTP)
+                    navHostController.navigate(OTP(phoneNumber = authViewModel.phoneNumberState.value))
                 },
                 dialogTitle = "Verify akun kamu!",
                 dialogText = "Akun kamu belum terverifikasi di system. Silahkan klik tombol di bawah ini untuk membuka aplikasi Telegram",
