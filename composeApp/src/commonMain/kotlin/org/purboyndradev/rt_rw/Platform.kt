@@ -1,5 +1,10 @@
 package org.purboyndradev.rt_rw
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.Preferences
+import okio.Path.Companion.toPath
+
 interface Platform {
     val name: String
 }
@@ -13,3 +18,11 @@ expect object TelegramLauncher {
 expect object ClipboardReader {
     fun getText(): String?
 }
+
+/// Datastore
+fun createDataStore(producePath: () -> String): DataStore<Preferences> =
+    PreferenceDataStoreFactory.createWithPath(
+        produceFile = { producePath().toPath() }
+    )
+
+internal const val dataStoreFileName = "dice.preferences_pb"

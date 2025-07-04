@@ -1,7 +1,13 @@
 package org.purboyndradev.rt_rw
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import kotlinx.cinterop.ExperimentalForeignApi
+import platform.Foundation.NSDocumentDirectory
 import platform.UIKit.UIDevice
 import platform.Foundation.NSURL
+import platform.Foundation.NSUserDomainMask
+import platform.Foundation.NSFileManager
 import platform.UIKit.UIApplication
 import platform.UIKit.UIPasteboard
 
@@ -15,7 +21,7 @@ actual fun getPlatform(): Platform = IOSPlatform()
 actual object TelegramLauncher {
     actual fun open(url: String) {
         val nsUrl = NSURL.URLWithString(url)
-        
+
         if (nsUrl != null && UIApplication.sharedApplication.canOpenURL(nsUrl)) {
             UIApplication.sharedApplication.openURL(nsUrl)
         } else {
@@ -30,3 +36,18 @@ actual object ClipboardReader {
         return pasteBoard.string
     }
 }
+
+/// DATASTORE
+@OptIn(ExperimentalForeignApi::class)
+fun createDataStore(): DataStore<Preferences> = createDataStore(
+    producePath = {
+        val documentDirectory: NSURL? = NSFileManager.defaultManager.URLForDirectory(
+            directory = NSDocumentDirectory,
+            inDomain = NSUserDomainMask,
+            appropriateForURL = null,
+            create = false,
+            error = null,
+        )
+        requireNotNull(documentDirectory).path + "/$dataStoreFileName"
+    }
+)

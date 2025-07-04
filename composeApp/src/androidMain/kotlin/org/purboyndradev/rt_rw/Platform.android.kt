@@ -12,6 +12,8 @@ import android.os.Build
 import android.util.Log
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.net.toUri
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 
 class AndroidPlatform : Platform {
     override val name: String = "Android ${Build.VERSION.SDK_INT}"
@@ -126,3 +128,10 @@ actual object ClipboardReader {
         }
     }
 }
+
+
+/// DATASTORE
+fun createDataStore(context: Context): DataStore<Preferences> = createDataStore(
+    producePath = { context.filesDir.resolve(dataStoreFileName).absolutePath }
+)
+
