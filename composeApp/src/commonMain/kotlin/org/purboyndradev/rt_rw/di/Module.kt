@@ -7,7 +7,6 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
-import org.purboyndradev.rt_rw.ContextFactory
 import org.purboyndradev.rt_rw.core.data.datastore.UserRepository
 import org.purboyndradev.rt_rw.core.data.remote.api.AuthApi
 import org.purboyndradev.rt_rw.core.data.remote.impl.KtorAuthRemoteDatasource
