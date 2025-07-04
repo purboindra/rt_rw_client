@@ -7,6 +7,8 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
+import org.purboyndradev.rt_rw.ContextFactory
+import org.purboyndradev.rt_rw.core.data.datastore.UserRepository
 import org.purboyndradev.rt_rw.core.data.remote.api.AuthApi
 import org.purboyndradev.rt_rw.core.data.remote.impl.KtorAuthRemoteDatasource
 import org.purboyndradev.rt_rw.core.data.repository.AuthRepositoryImpl
@@ -54,6 +56,10 @@ val sharedModule: Module = module {
         VerifyOtpUseCase(get())
     }
     
+    single {
+        UserRepository()
+    }
+    
     /// PROVIDE VIEW MODEL
-    viewModel { AuthViewModel(get(), get()) }
+    viewModel { AuthViewModel(get(), get(), get()) }
 }
