@@ -4,30 +4,30 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun OTPScreen(navHostController: NavHostController) {
+fun OTPScreen(navHostController: NavHostController, phoneNumber: String) {
     
     val authViewModel = koinViewModel<AuthViewModel>()
     val otpUiState = authViewModel.otpUiState.collectAsStateWithLifecycle()
+    
+    LaunchedEffect(Unit) {
+        authViewModel.onUpdatePhoneNumber(phoneNumber)
+    }
     
     Scaffold { paddingValues ->
         Column(
@@ -51,8 +51,13 @@ fun OTPScreen(navHostController: NavHostController) {
                 onOtpInputComplete = {}
             )
             Spacer(modifier = Modifier.height(10.dp))
-            ElevatedButton(onClick = {}) {
-                Text("Login", style = MaterialTheme.typography.labelMedium)
+            ElevatedButton(
+                onClick = {
+                    authViewModel.verifyOtp()
+                },
+                enabled = otpUiState.value.otpValues.any { it.isNotEmpty() }
+            ) {
+                Text("Verify OTP", style = MaterialTheme.typography.labelMedium)
             }
         }
     }
