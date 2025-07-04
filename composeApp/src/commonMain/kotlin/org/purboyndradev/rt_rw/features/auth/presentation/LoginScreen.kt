@@ -76,7 +76,7 @@ fun LoginScreen(navHostController: NavHostController) {
                 },
                 label = {
                     Text(
-                        "WhatsApp Number",
+                        "Phone Number",
                         style = MaterialTheme.typography.labelMedium,
                     )
                 },
