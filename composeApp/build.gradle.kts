@@ -77,6 +77,10 @@ kotlin {
             
             /// COIL
             implementation(libs.coil.compose)
+
+            /// DATASTORE
+            implementation(libs.datastore.preferences)
+            implementation(libs.datastore)
         }
         
         iosMain.dependencies {
