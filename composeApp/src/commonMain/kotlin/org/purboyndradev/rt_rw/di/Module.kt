@@ -13,9 +13,11 @@ import org.purboyndradev.rt_rw.core.data.remote.impl.KtorAuthRemoteDatasource
 import org.purboyndradev.rt_rw.core.data.repository.AuthRepositoryImpl
 import org.purboyndradev.rt_rw.core.network.HttpClientFactory
 import org.purboyndradev.rt_rw.domain.repository.AuthRepository
+import org.purboyndradev.rt_rw.domain.usecases.RefreshTokenUseCase
 import org.purboyndradev.rt_rw.domain.usecases.SignInUseCase
 import org.purboyndradev.rt_rw.domain.usecases.VerifyOtpUseCase
 import org.purboyndradev.rt_rw.features.auth.presentation.AuthViewModel
+import org.purboyndradev.rt_rw.features.splash.SplashViewModel
 import org.purboyndradev.rt_rw.helper.BASE_URL
 
 fun initKoin(config: KoinAppDeclaration? = null) = startKoin {
@@ -56,9 +58,15 @@ val sharedModule: Module = module {
     }
     
     single {
+        RefreshTokenUseCase(get())
+    }
+    
+    /// PROVIDE DATA STORE
+    single {
         UserRepository()
     }
     
     /// PROVIDE VIEW MODEL
     viewModel { AuthViewModel(get(), get(), get()) }
+    viewModel { SplashViewModel(get(), get()) }
 }
