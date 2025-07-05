@@ -8,13 +8,14 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import org.purboyndradev.rt_rw.features.auth.presentation.LoginScreen
 import org.purboyndradev.rt_rw.features.auth.presentation.OTPScreen
+import org.purboyndradev.rt_rw.features.splash.SplashScreen
 
 @Composable
 fun NavigationGraph(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
     
     NavHost(
-        navController = navController, startDestination = Login,
+        navController = navController, startDestination = Splash,
         modifier = modifier
     ) {
         composable<Login> {
@@ -27,6 +28,9 @@ fun NavigationGraph(modifier: Modifier = Modifier) {
                 navHostController = navController,
                 phoneNumber = phoneNumber
             )
+        }
+        composable<Splash> {
+            SplashScreen(navHostController = navController)
         }
     }
 }

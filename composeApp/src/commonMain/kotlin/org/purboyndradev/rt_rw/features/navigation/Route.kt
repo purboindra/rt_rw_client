@@ -7,3 +7,6 @@ object Login
 
 @Serializable
 data class OTP(val phoneNumber: String)
+
+@Serializable
+object Splash
