@@ -7,6 +7,7 @@ import androidx.datastore.core.okio.OkioStorage // Use okio variant
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.Flow
 import okio.FileSystem
 import okio.Path.Companion.toPath
 import okio.SYSTEM
@@ -37,26 +38,30 @@ object UserDataStoreProvider {
 class UserRepository(
     private val userDataStore: DataStore<UserDBModel?> = UserDataStoreProvider.userDataStore
 ) {
-    val currentUserData: kotlinx.coroutines.flow.Flow<UserDBModel?> =
+    val currentUserData: Flow<UserDBModel?> =
         userDataStore.data
     
     suspend fun saveUser(user: UserDBModel) {
         userDataStore.updateData {
-            // It replaces the current data with this new user object
             user
         }
     }
     
     suspend fun clearUserData() {
         userDataStore.updateData {
-            null // This will trigger writeTo in serializer with t = null
+            null
         }
     }
     
-    suspend fun updateUserAccessToken(newAccessToken: String) {
+    suspend fun updateUserAccessToken(
+        newAccessToken: String,
+        newRefreshToken: String
+    ) {
         userDataStore.updateData { currentUser ->
-            currentUser?.copy(accessToken = newAccessToken)
-            // If currentUser is null, this will keep it null (or you could throw an error)
+            currentUser?.copy(
+                accessToken = newAccessToken,
+                refreshToken = newRefreshToken
+            )
         }
     }
 }
