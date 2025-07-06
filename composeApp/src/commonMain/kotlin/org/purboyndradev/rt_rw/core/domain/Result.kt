@@ -39,5 +39,15 @@ inline fun <T, E : Error> Result<T, E>.onError(action: (E) -> Unit): Result<T, E
     }
 }
 
+inline fun <S, E : Error, R, E2 : Error> Result<S, E>.mapBoth(
+    onSuccess: (S) -> Result<R, E2>,
+    onFailure: (E) -> Result<R, E2>
+): Result<R, E2> {
+    return when (this) {
+        is Result.Success -> onSuccess(data)
+        is Result.Error -> onFailure(error)
+    }
+}
+
 
 typealias EmptyResult<E> = Result<Unit, E>

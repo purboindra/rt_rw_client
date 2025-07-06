@@ -2,13 +2,19 @@ package org.purboyndradev.rt_rw.features.auth.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.koin.mp.KoinPlatform.getKoin
+import org.purboyndradev.rt_rw.core.data.datastore.UserRepository
+import org.purboyndradev.rt_rw.domain.model.UserDBModel
 import org.purboyndradev.rt_rw.core.domain.Result
+import org.purboyndradev.rt_rw.core.domain.model.AuthTokenInfo
 import org.purboyndradev.rt_rw.domain.usecases.SignInUseCase
 import org.purboyndradev.rt_rw.domain.usecases.VerifyOtpUseCase
+import org.purboyndradev.rt_rw.helper.JWTObject
 
 data class OTPUiState(
     val otpLength: Int = 6,
@@ -18,7 +24,8 @@ data class OTPUiState(
 
 class AuthViewModel(
     private val signInUseCase: SignInUseCase,
-    private val verifyOtpUseCase: VerifyOtpUseCase
+    private val verifyOtpUseCase: VerifyOtpUseCase,
+    private val userRepository: UserRepository,
 ) : ViewModel() {
     
     private val _signInState: MutableStateFlow<AuthState> =
@@ -69,43 +76,40 @@ class AuthViewModel(
     }
     
     fun signIn() {
-        _isLoadingState.update {
-            true
-        }
+        _isLoadingState.value = true
         viewModelScope.launch {
-            val result = signInUseCase.execute(_phoneNumberState.value)
+            val result = signInUseCase(_phoneNumberState.value)
             when (result) {
                 is Result.Success -> {
-                    println("Success: ${result.data}")
                     
                     val data = result.data
-                    val redirectUrl = data.data?.redirectUrl
                     
-                    redirectUrl?.let {
-                        _signInState.update {
-                            it.copy(
-                                redirectUrl = redirectUrl,
-                                success = true
-                            )
+                    val redirectUrl = data.redirectUrl
+                    val code = data.code
+                    
+                    if (code == "USER_NOT_VERIFIED") {
+                        redirectUrl?.let {
+                            _signInState.update {
+                                it.copy(
+                                    redirectUrl = redirectUrl,
+                                    success = true
+                                )
+                            }
                         }
+                        onOpenAlertDialogChange(!_openAlertDialog.value)
                     }
-                    
-                    onOpenAlertDialogChange(!_openAlertDialog.value)
-                    
                 }
                 
                 is Result.Error -> {
-                    println("Error: ${result.error.name}")
+                    println("Error: $result")
                     _signInState.update {
                         it.copy(
-                            error = result.error.name
+                            error = ""
                         )
                     }
                 }
             }
-        }
-        _isLoadingState.update {
-            false
+            _isLoadingState.value = false
         }
     }
     
@@ -114,20 +118,24 @@ class AuthViewModel(
             true
         }
         
-        val otp = _otpUiState.value.otpValues
-        
+        val otp = _otpUiState.value.otpValues.joinToString("")
         
         viewModelScope.launch {
-            val result = verifyOtpUseCase.execute(
+            val result = verifyOtpUseCase(
                 phoneNumber = _phoneNumberState.value,
-                otp = otp.joinToString("")
+                otp = otp,
             )
+            
+            when (result) {
+                is Result.Success -> {
+                    println("Success verify otp: ${result.data}")
+                }
+                
+                is Result.Error -> {
+                    println("Error verify otp: ${result.error}")
+                }
+            }
+            _isLoadingState.value = false
         }
-        
-        _isLoadingState.update {
-            false
-        }
-        
     }
-    
 }

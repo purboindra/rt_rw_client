@@ -1,5 +1,7 @@
 package org.purboyndradev.rt_rw.di
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import io.ktor.client.HttpClient
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -7,11 +9,14 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
+import org.purboyndradev.rt_rw.core.data.datastore.UserDataStore
 import org.purboyndradev.rt_rw.core.data.datastore.UserRepository
 import org.purboyndradev.rt_rw.core.data.remote.api.AuthApi
 import org.purboyndradev.rt_rw.core.data.remote.impl.KtorAuthRemoteDatasource
 import org.purboyndradev.rt_rw.core.data.repository.AuthRepositoryImpl
 import org.purboyndradev.rt_rw.core.network.HttpClientFactory
+import org.purboyndradev.rt_rw.database.createCurrentUserDataStore
+import org.purboyndradev.rt_rw.database.createPreferencesDataStore
 import org.purboyndradev.rt_rw.domain.repository.AuthRepository
 import org.purboyndradev.rt_rw.domain.usecases.RefreshTokenUseCase
 import org.purboyndradev.rt_rw.domain.usecases.SignInUseCase
@@ -45,7 +50,7 @@ val sharedModule: Module = module {
     
     /// PROVIDE REPOSITORY
     single<AuthRepository> {
-        AuthRepositoryImpl(get())
+        AuthRepositoryImpl(get(), get())
     }
     
     /// PROVIDE USE CASE
@@ -62,9 +67,15 @@ val sharedModule: Module = module {
     }
     
     /// PROVIDE DATA STORE
+    
     single {
-        UserRepository()
+        createCurrentUserDataStore()
     }
+    
+    single {
+        UserRepository(get())
+    }
+    single<DataStore<Preferences>> { createPreferencesDataStore() }
     
     /// PROVIDE VIEW MODEL
     viewModel { AuthViewModel(get(), get(), get()) }

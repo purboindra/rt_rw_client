@@ -46,16 +46,9 @@ actual object TelegramLauncher {
     
     @SuppressLint("QueryPermissionsNeeded")
     actual fun open(url: String) {
-        
         val currentContext = AndroidContextProvider.getContext()
-        
         val isInstalled = isTelegramInstalled(currentContext)
-        
         if (!isInstalled) {
-            Log.w(
-                "TelegramLauncher",
-                "Telegram app not found or no app to handle tg:// scheme."
-            )
             try {
                 val playStoreIntent = Intent(
                     Intent.ACTION_VIEW,
@@ -64,11 +57,6 @@ actual object TelegramLauncher {
                 playStoreIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 currentContext.startActivity(playStoreIntent)
             } catch (e: ActivityNotFoundException) {
-                Log.e(
-                    "TelegramLauncher",
-                    "Play Store not found to install Telegram.",
-                    e
-                )
                 val browserIntent = Intent(
                     Intent.ACTION_VIEW,
                     "https://play.google.com/store/apps/details?id=org.telegram.messenger".toUri()
@@ -98,7 +86,6 @@ actual object TelegramLauncher {
         } catch (e: Exception) {
             Log.e("TelegramLauncher", "Error opening URL: $url", e)
         }
-        
     }
 }
 
@@ -128,10 +115,3 @@ actual object ClipboardReader {
         }
     }
 }
-
-
-/// DATASTORE
-fun createDataStore(context: Context): DataStore<Preferences> = createDataStore(
-    producePath = { context.filesDir.resolve(dataStoreFileName).absolutePath }
-)
-

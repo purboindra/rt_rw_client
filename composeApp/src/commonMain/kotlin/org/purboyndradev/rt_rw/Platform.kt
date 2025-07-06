@@ -18,11 +18,3 @@ expect object TelegramLauncher {
 expect object ClipboardReader {
     fun getText(): String?
 }
-
-/// Datastore
-fun createDataStore(producePath: () -> String): DataStore<Preferences> =
-    PreferenceDataStoreFactory.createWithPath(
-        produceFile = { producePath().toPath() }
-    )
-
-internal const val dataStoreFileName = "dice.preferences_pb"

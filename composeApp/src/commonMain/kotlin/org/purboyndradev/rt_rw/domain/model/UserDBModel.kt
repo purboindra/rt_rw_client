@@ -1,4 +1,4 @@
-package org.purboyndradev.rt_rw.core.data.model
+package org.purboyndradev.rt_rw.domain.model
 
 
 import androidx.room.Entity
@@ -11,7 +11,7 @@ import kotlinx.serialization.Serializable
 data class UserDBModel(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @SerialName("username")
-    val name: String,
+    val username: String,
     @SerialName("access_token")
     val accessToken: String,
     @SerialName("refresh_token")
