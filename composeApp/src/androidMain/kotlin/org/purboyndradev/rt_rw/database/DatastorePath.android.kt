@@ -15,7 +15,6 @@ fun getPreferencesDataStorePath(appContext: Context): String =
 
 actual fun createPreferencesDataStore(): DataStore<Preferences> {
     val androidContext = AndroidContextProvider.getContext()
-    
     val path = getPreferencesDataStorePath(androidContext)
     return getPreferencesDataStore(path)
 }
@@ -24,7 +23,7 @@ actual fun createCurrentUserDataStore(): UserDataStore {
     val androidContext = AndroidContextProvider.getContext()
     return UserDataStore {
         androidContext.filesDir.resolve(
-            "current_user_prefs.json"
+            USER_DATASTORE_FILE_NAME
         ).absolutePath
     }
 }
