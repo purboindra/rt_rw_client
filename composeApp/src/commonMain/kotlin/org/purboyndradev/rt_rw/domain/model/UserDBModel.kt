@@ -11,7 +11,7 @@ import kotlinx.serialization.Serializable
 data class UserDBModel(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @SerialName("username")
-    val username: String,
+    val username: String? = null,
     @SerialName("access_token")
     val accessToken: String,
     @SerialName("refresh_token")
