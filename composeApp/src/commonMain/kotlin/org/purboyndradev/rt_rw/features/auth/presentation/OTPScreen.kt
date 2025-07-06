@@ -24,6 +24,7 @@ fun OTPScreen(navHostController: NavHostController, phoneNumber: String) {
     
     val authViewModel = koinViewModel<AuthViewModel>()
     val otpUiState = authViewModel.otpUiState.collectAsStateWithLifecycle()
+    val isLoading = authViewModel.isLoadingState.collectAsStateWithLifecycle()
     
     LaunchedEffect(Unit) {
         authViewModel.onUpdatePhoneNumber(phoneNumber)
@@ -55,9 +56,12 @@ fun OTPScreen(navHostController: NavHostController, phoneNumber: String) {
                 onClick = {
                     authViewModel.verifyOtp()
                 },
-                enabled = otpUiState.value.otpValues.any { it.isNotEmpty() }
+                enabled = otpUiState.value.otpValues.all { it.isNotEmpty() } || !isLoading.value
             ) {
-                Text("Verify OTP", style = MaterialTheme.typography.labelMedium)
+                Text(
+                    if (isLoading.value) "Loading..." else "Verify OTP",
+                    style = MaterialTheme.typography.labelMedium
+                )
             }
         }
     }
