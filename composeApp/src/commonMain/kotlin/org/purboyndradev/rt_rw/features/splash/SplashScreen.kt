@@ -2,6 +2,8 @@ package org.purboyndradev.rt_rw.features.splash
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -40,17 +42,14 @@ fun SplashScreen(navHostController: NavHostController) {
                     popUpTo(0) { inclusive = true }
                 }
             }
-            
             else -> Unit
         }
     }
     
     Scaffold { paddingValues ->
         Column(
-            modifier = Modifier.padding(paddingValues).padding(
-                horizontal = 12.dp,
-                vertical = 18.dp
-            ),
+            modifier = Modifier.padding(paddingValues)
+                .padding(16.dp).fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
