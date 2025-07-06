@@ -14,20 +14,34 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import org.koin.compose.viewmodel.koinViewModel
 import org.purboyndradev.rt_rw.features.navigation.Login
+import org.purboyndradev.rt_rw.features.navigation.OTP
 
 @Composable
 fun SplashScreen(navHostController: NavHostController) {
     
     val splashViewModel = koinViewModel<SplashViewModel>()
-    val isLoading = splashViewModel.isLoading.collectAsStateWithLifecycle()
+    val splashNavigationState =
+        splashViewModel.navigationState.collectAsStateWithLifecycle()
     
     LaunchedEffect(Unit) {
         splashViewModel.refreshToken()
     }
     
-    LaunchedEffect(isLoading.value) {
-        if (!isLoading.value) {
-            navHostController.navigate(Login)
+    LaunchedEffect(splashNavigationState.value) {
+        when (splashNavigationState.value) {
+            is SplashNavigationState.NavigateToLogin -> {
+                navHostController.navigate(Login) {
+                    popUpTo(0) { inclusive = true }
+                }
+            }
+            
+            is SplashNavigationState.NavigateToHome -> {
+                navHostController.navigate(OTP) {
+                    popUpTo(0) { inclusive = true }
+                }
+            }
+            
+            else -> Unit
         }
     }
     
