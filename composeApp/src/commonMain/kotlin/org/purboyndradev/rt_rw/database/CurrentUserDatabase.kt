@@ -16,10 +16,13 @@ internal object UserJsonSerializer : OkioSerializer<UserDBModel?> {
     override suspend fun readFrom(source: BufferedSource): UserDBModel? {
         return try {
             val raw = source.readUtf8()
-            if (raw.isEmpty()) defaultValue
-            json.decodeFromString<UserDBModel?>(raw)
+            if (raw.isBlank() || raw == "null") {
+                println("Datastore raw content is blank or 'null'")
+                return defaultValue
+            }
+            json.decodeFromString(UserDBModel.serializer(), raw)
         } catch (e: Exception) {
-            println("Error reading UserDBModel from DataStore: ${e.message}")
+            println("Error reading from DataStore: ${e.message}")
             defaultValue
         }
     }
