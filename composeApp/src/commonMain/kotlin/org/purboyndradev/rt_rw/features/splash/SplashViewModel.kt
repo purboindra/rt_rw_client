@@ -33,41 +33,50 @@ class SplashViewModel(
     }
     
     fun refreshToken() {
-        
         _isLoading.value = true
-        
         viewModelScope.launch {
-            
-            val userData = userRepository.currentUserData.firstOrNull()
-            
-            if (userData == null) {
-                onUpdateNavigationState(SplashNavigationState.NavigateToLogin)
-                return@launch
-            }
-            
-            println("Current user data: $userData")
-            
-            when (val result = refreshTokenUseCase(
-                accessToken = userData?.accessToken ?: "",
-                refreshToken = userData?.refreshToken ?: ""
-            )) {
-                is Result.Success -> {
-                    userRepository.updateUserAccessToken(
-                        newAccessToken = result.data.accessToken,
-                        newRefreshToken = result.data.refreshToken,
-                    )
-                    onUpdateNavigationState(SplashNavigationState.NavigateToHome)
+            try {
+                val userData = userRepository.currentUserData.firstOrNull()
+                println("Current user data: $userData")
+                
+                // If no user data, navigate to login
+                if (userData == null) {
+                    onUpdateNavigationState(SplashNavigationState.NavigateToLogin)
+                    return@launch
                 }
                 
-                is Result.Error -> {
-                    userRepository.clearUserData()
-                    onUpdateNavigationState(SplashNavigationState.NavigateToLogin)
-                    println("Error refresh splash: $result")
+                // Proceed with the token refresh
+                when (val result = refreshTokenUseCase(
+                    accessToken = userData?.accessToken ?: "",
+                    refreshToken = userData?.refreshToken ?: ""
+                )) {
+                    is Result.Success -> {
+                        // Update the user tokens
+                        userRepository.updateUserAccessToken(
+                            newAccessToken = result.data.accessToken,
+                            newRefreshToken = result.data.refreshToken,
+                        )
+                        onUpdateNavigationState(SplashNavigationState.NavigateToHome)
+                    }
+                    
+                    is Result.Error -> {
+                        // If error, clear the user data and navigate to login
+                        userRepository.clearUserData()
+                        onUpdateNavigationState(SplashNavigationState.NavigateToLogin)
+                        println("Error refreshing token: $result")
+                    }
                 }
+            } catch (e: NullPointerException) {
+                println("Error refresh splash NullPointerException: $e")
+                onUpdateNavigationState(SplashNavigationState.NavigateToLogin)
+            } catch (e: Exception) {
+                println("Error refresh splash: $e")
+                onUpdateNavigationState(SplashNavigationState.NavigateToLogin)
+            } finally {
+                _isLoading.value = false
             }
-            
-            _isLoading.value = false
         }
     }
+    
     
 }

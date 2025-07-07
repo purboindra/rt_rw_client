@@ -18,16 +18,18 @@ internal object UserJsonSerializer : OkioSerializer<UserDBModel?> {
             val raw = source.readUtf8()
             if (raw.isBlank() || raw == "null") {
                 println("Datastore raw content is blank or 'null'")
-                return defaultValue
+                throw Exception("Datastore raw content is blank or 'null'")
             }
+            println("Reading user from DataStore execute: $raw")
             json.decodeFromString(UserDBModel.serializer(), raw)
         } catch (e: Exception) {
             println("Error reading from DataStore: ${e.message}")
-            defaultValue
+            null
         }
     }
     
     override suspend fun writeTo(t: UserDBModel?, sink: BufferedSink) {
+        println("Writing user to DataStore: $t")
         sink.use {
             try {
                 if (t != null) {
@@ -41,5 +43,4 @@ internal object UserJsonSerializer : OkioSerializer<UserDBModel?> {
             }
         }
     }
-    
 }

@@ -2,17 +2,23 @@ package org.purboyndradev.rt_rw.core.data.datastore
 
 
 import androidx.datastore.core.DataStoreFactory
-import androidx.datastore.core.okio.OkioStorage // Use okio variant
+import androidx.datastore.core.okio.OkioStorage
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import okio.FileSystem
 import okio.Path.Companion.toPath
 import okio.SYSTEM
-import org.purboyndradev.rt_rw.domain.model.UserDBModel
 import org.purboyndradev.rt_rw.database.UserJsonSerializer
+import org.purboyndradev.rt_rw.domain.model.UserDBModel
 
 class UserDataStore(
     private val produceFilePath: () -> String,
 ) {
+    
+    private val lock = Mutex()
+    
     private val db = DataStoreFactory.create(
         storage = OkioStorage<UserDBModel?>(
             fileSystem = FileSystem.SYSTEM,
@@ -29,32 +35,36 @@ class UserDataStore(
         get() = db.data
     
     suspend fun addUser(user: UserDBModel) {
-        db.updateData {
-            user
+        lock.withLock {
+            db.updateData { user }
         }
     }
     
     suspend fun updateUser(user: UserDBModel) {
-        db.updateData { prevUser ->
-            println("Updating user. Prev: $prevUser, New: $user")
-            
-            val updated = prevUser?.copy(
-                accessToken = user.accessToken,
-                refreshToken = user.refreshToken,
-                profilePicture = user.profilePicture,
-                username = user.username,
-                email = user.email,
-                id = user.id
-            )
-                ?: user
-            println("Resulting user after update: $updated")
-            updated
+        lock.withLock {
+            db.updateData { prevUser ->
+                println("Updating user. Prev: $prevUser, New: $user")
+                
+                val updated = prevUser?.copy(
+                    accessToken = user.accessToken,
+                    refreshToken = user.refreshToken,
+                    profilePicture = user.profilePicture,
+                    username = user.username,
+                    email = user.email,
+                    id = user.id
+                )
+                    ?: user
+                println("Resulting user after update: $updated")
+                updated
+            }
         }
     }
     
     suspend fun removeUser() {
-        db.updateData {
-            null
+        lock.withLock {
+            db.updateData {
+                null
+            }
         }
     }
 }
@@ -63,9 +73,12 @@ class UserDataStore(
 class UserRepository(
     private val userDataStore: UserDataStore,
 ) {
-    val currentUserData: Flow<UserDBModel?> = userDataStore.user
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val currentUserData: Flow<UserDBModel?>
+        get() = userDataStore.user
     
     suspend fun saveUser(user: UserDBModel) {
+        println("Saving user: $user")
         try {
             userDataStore.addUser(user)
         } catch (e: Exception) {
@@ -88,5 +101,4 @@ class UserRepository(
             )
         )
     }
-    
 }

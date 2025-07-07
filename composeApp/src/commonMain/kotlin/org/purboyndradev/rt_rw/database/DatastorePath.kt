@@ -10,8 +10,6 @@ import org.purboyndradev.rt_rw.core.data.datastore.UserDataStore
 /// Datastore
 expect fun createPreferencesDataStore(): DataStore<Preferences>
 
-internal const val dataStoreFileName = "dice.preferences_pb"
-
 fun getPreferencesDataStore(path: String) =
     PreferenceDataStoreFactory.createWithPath {
         path.toPath()

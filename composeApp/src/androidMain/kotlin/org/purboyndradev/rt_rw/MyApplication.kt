@@ -18,6 +18,5 @@ class MyApplication : Application() {
             androidLogger()
             androidContext(this@MyApplication)
         }
-        
     }
 }

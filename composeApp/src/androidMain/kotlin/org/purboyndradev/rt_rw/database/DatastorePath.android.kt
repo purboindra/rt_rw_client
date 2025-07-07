@@ -7,11 +7,14 @@ import androidx.datastore.preferences.core.Preferences
 import org.purboyndradev.rt_rw.AndroidContextProvider
 import org.purboyndradev.rt_rw.core.data.datastore.UserDataStore
 
-private const val USER_DATASTORE_FILE_NAME =
-    "user_prefs.pb"
+ const val USER_DATASTORE_FILE_NAME =
+    "user_prefs.json"
 
-fun getPreferencesDataStorePath(appContext: Context): String =
-    appContext.filesDir.resolve(dataStoreFileName).absolutePath
+fun getPreferencesDataStorePath(appContext: Context): String {
+    val path = appContext.filesDir.resolve(USER_DATASTORE_FILE_NAME).absolutePath
+    Log.d("PreferencesDataStore", "Path: $path")
+    return path
+}
 
 actual fun createPreferencesDataStore(): DataStore<Preferences> {
     val androidContext = AndroidContextProvider.getContext()
@@ -21,9 +24,8 @@ actual fun createPreferencesDataStore(): DataStore<Preferences> {
 
 actual fun createCurrentUserDataStore(): UserDataStore {
     val androidContext = AndroidContextProvider.getContext()
+    val path = getPreferencesDataStorePath(androidContext)
     return UserDataStore {
-        androidContext.filesDir.resolve(
-            USER_DATASTORE_FILE_NAME
-        ).absolutePath
+        path
     }
 }

@@ -67,7 +67,6 @@ val sharedModule: Module = module {
     }
     
     /// PROVIDE DATA STORE
-    
     single {
         createCurrentUserDataStore()
     }
@@ -75,7 +74,8 @@ val sharedModule: Module = module {
     single {
         UserRepository(get())
     }
-    single<DataStore<Preferences>> { createPreferencesDataStore() }
+    
+//    single<DataStore<Preferences>> { createPreferencesDataStore() }
     
     /// PROVIDE VIEW MODEL
     viewModel { AuthViewModel(get(), get(), get()) }

@@ -18,17 +18,14 @@ class RefreshTokenUseCase(
         return when (val result =
             authRepository.refreshToken(accessToken, refreshToken)) {
             is Result.Success -> {
-                
                 val data = result.data.data
                     ?: return Result.Error(AuthError.InvalidResponse)
-                
                 val refreshTokenInfo = RefreshTokenInfo(
                     refreshToken = data.refreshToken,
                     accessToken = data.accessToken,
                 )
                 Result.Success(refreshTokenInfo)
             }
-            
             is Result.Error -> {
                 Result.Error(result.error)
             }

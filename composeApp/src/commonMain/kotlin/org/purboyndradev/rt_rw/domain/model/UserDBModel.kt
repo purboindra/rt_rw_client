@@ -10,14 +10,9 @@ import kotlinx.serialization.Serializable
 @Entity
 data class UserDBModel(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @SerialName("username")
-    val username: String? = null,
-    @SerialName("access_token")
+    val username: String? = "",
     val accessToken: String,
-    @SerialName("refresh_token")
     val refreshToken: String,
-    @SerialName("profile_picture")
-    val profilePicture: String? = null,
-    @SerialName("email")
-    val email: String? = null
+    val profilePicture: String? = "",
+    val email: String? = ""
 )

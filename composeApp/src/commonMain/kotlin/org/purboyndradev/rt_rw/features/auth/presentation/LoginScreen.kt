@@ -101,6 +101,17 @@ fun LoginScreen(navHostController: NavHostController) {
                     style = MaterialTheme.typography.labelMedium
                 )
             }
+            ElevatedButton(
+                onClick = {
+                    authViewModel.testDataStore()
+                },
+                enabled = !isLoadingState.value
+            ) {
+                Text(
+                    "Test Datastore",
+                    style = MaterialTheme.typography.labelMedium
+                )
+            }
         }
     }
 }

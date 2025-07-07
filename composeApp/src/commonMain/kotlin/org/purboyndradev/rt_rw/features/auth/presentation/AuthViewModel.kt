@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.mp.KoinPlatform.getKoin
@@ -72,6 +73,23 @@ class AuthViewModel(
     fun onUpdatePhoneNumber(phoneNumber: String) {
         _phoneNumberState.update {
             phoneNumber
+        }
+    }
+    
+    fun testDataStore() {
+        viewModelScope.launch {
+            try {
+                userRepository.saveUser(
+                    UserDBModel(
+                        accessToken = "test",
+                        refreshToken = "test",
+                        username = "test",
+                        email = "test",
+                    )
+                )
+            } catch (e: Exception) {
+                println("Error saving user: $e")
+            }
         }
     }
     
