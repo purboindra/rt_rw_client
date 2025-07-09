@@ -1,9 +1,6 @@
 package org.purboyndradev.rt_rw.domain.usecases
 
-import org.purboyndradev.rt_rw.core.data.dto.RefreshTokenDto
-import org.purboyndradev.rt_rw.core.data.dto.ResponseDto
 import org.purboyndradev.rt_rw.core.domain.AuthError
-import org.purboyndradev.rt_rw.core.domain.DataError
 import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.core.domain.model.RefreshTokenInfo
 import org.purboyndradev.rt_rw.domain.repository.AuthRepository
