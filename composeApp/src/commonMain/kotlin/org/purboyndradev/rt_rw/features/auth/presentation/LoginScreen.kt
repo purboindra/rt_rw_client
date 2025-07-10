@@ -24,6 +24,7 @@ import androidx.navigation.NavHostController
 import org.koin.compose.viewmodel.koinViewModel
 import org.purboyndradev.rt_rw.TelegramLauncher
 import org.purboyndradev.rt_rw.features.components.OpenTelegramDialog
+import org.purboyndradev.rt_rw.features.navigation.Main
 import org.purboyndradev.rt_rw.features.navigation.OTP
 
 @Composable
@@ -92,7 +93,8 @@ fun LoginScreen(navHostController: NavHostController) {
             Spacer(modifier = Modifier.height(10.dp))
             ElevatedButton(
                 onClick = {
-                    authViewModel.signIn()
+//                    authViewModel.signIn()
+                    navHostController.navigate(Main)
                 },
                 enabled = !isLoadingState.value
             ) {

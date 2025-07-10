@@ -10,13 +10,16 @@ import compose.icons.feathericons.User
 sealed class BottomNavItem(
     val route: String,
     val label: String,
-    val icon: ImageVector
+    val icon: ImageVector,
+    val id: Int,
 ) {
-    object Home : BottomNavItem("home", "Home", FeatherIcons.Home)
-    object Profile : BottomNavItem("profile", "Profile", FeatherIcons.User)
-    object News : BottomNavItem("news", "News", FeatherIcons.Book)
-    object Activity : BottomNavItem("activity", "Activity", FeatherIcons.Activity)
-
+    object Home : BottomNavItem("home", "Home", FeatherIcons.Home, 1)
+    object News : BottomNavItem("news", "News", FeatherIcons.Book, 2)
+    object Activity :
+        BottomNavItem("activity", "Activity", FeatherIcons.Activity, 3)
+    
+    object Profile : BottomNavItem("profile", "Profile", FeatherIcons.User, 4)
+    
     companion object {
         val items = listOf(Home, Profile, News, Activity)
     }

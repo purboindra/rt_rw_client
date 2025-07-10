@@ -9,6 +9,10 @@ import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -27,14 +31,19 @@ fun MainScreen(navHostController: NavHostController) {
     val bottomNavigationController = rememberNavController()
     val currentDestination =
         bottomNavigationController.currentBackStackEntryAsState().value?.destination?.route
+            ?: BottomNavItem.Home.route
+    var selectedDestination by rememberSaveable {
+        mutableIntStateOf(
+            BottomNavItem.Home.id
+        )
+    }
     
     Scaffold(
         bottomBar = {
             NavigationBar(windowInsets = NavigationBarDefaults.windowInsets) {
                 BottomNavItem.items.forEachIndexed { index, item ->
                     NavigationBarItem(
-                        selected = (currentDestination
-                            ?: BottomNavItem.Home.route) == item.route,
+                        selected = selectedDestination + 1 == index,
                         onClick = {
                             bottomNavigationController.navigate(
                                 item.route
@@ -47,6 +56,7 @@ fun MainScreen(navHostController: NavHostController) {
                                 launchSingleTop = true
                                 restoreState = true
                             }
+                            selectedDestination = index
                         },
                         icon = {
                             Icon(
@@ -68,11 +78,6 @@ fun MainScreen(navHostController: NavHostController) {
                 startDestination = BottomNavItem.Home.route,
                 modifier = Modifier.padding(innerPadding)
             ) {
-                composable(route = BottomNavItem.Home.route) {
-                    HomeScreen(
-                        navHostController = navHostController
-                    )
-                }
                 composable(route = BottomNavItem.Activity.route) {
                     ActivityScreen(
                         navHostController = navHostController
