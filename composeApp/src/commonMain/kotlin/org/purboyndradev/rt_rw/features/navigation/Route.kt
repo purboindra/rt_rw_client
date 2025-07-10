@@ -10,3 +10,6 @@ data class OTP(val phoneNumber: String)
 
 @Serializable
 object Splash
+
+@Serializable
+object Main
