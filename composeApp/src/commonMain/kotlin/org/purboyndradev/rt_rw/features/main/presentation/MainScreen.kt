@@ -4,24 +4,50 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarDefaults
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarDefaults
-import androidx.compose.material3.NavigationBarItem
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import org.purboyndradev.rt_rw.features.activity.presentation.ActivityScreen
 import org.purboyndradev.rt_rw.features.components.BottomNavItem
+import org.purboyndradev.rt_rw.features.home.presentation.HomeScreen
+import org.purboyndradev.rt_rw.features.news.presentation.NewsScreen
+import org.purboyndradev.rt_rw.features.profile.presentation.ProfileScreen
 
 @Composable
 fun MainScreen(navHostController: NavHostController) {
+    
+    val bottomNavigationController = rememberNavController()
+    val currentDestination =
+        bottomNavigationController.currentBackStackEntryAsState().value?.destination?.route
+    
     Scaffold(
         bottomBar = {
             NavigationBar(windowInsets = NavigationBarDefaults.windowInsets) {
                 BottomNavItem.items.forEachIndexed { index, item ->
                     NavigationBarItem(
-                        selected = index == 0,
-                        onClick = { /*TODO*/ },
+                        selected = (currentDestination
+                            ?: BottomNavItem.Home.route) == item.route,
+                        onClick = {
+                            bottomNavigationController.navigate(
+                                item.route
+                            ) {
+                                popUpTo(
+                                    bottomNavigationController.graph.startDestinationId
+                                ) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
                         icon = {
                             Icon(
                                 item.icon,
@@ -37,7 +63,32 @@ fun MainScreen(navHostController: NavHostController) {
         }
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
-
+            NavHost(
+                navController = bottomNavigationController,
+                startDestination = BottomNavItem.Home.route,
+                modifier = Modifier.padding(innerPadding)
+            ) {
+                composable(route = BottomNavItem.Home.route) {
+                    HomeScreen(
+                        navHostController = navHostController
+                    )
+                }
+                composable(route = BottomNavItem.Activity.route) {
+                    ActivityScreen(
+                        navHostController = navHostController
+                    )
+                }
+                composable(route = BottomNavItem.News.route) {
+                    NewsScreen(
+                        navHostController = navHostController
+                    )
+                }
+                composable(route = BottomNavItem.Profile.route) {
+                    ProfileScreen(
+                        navHostController = navHostController,
+                    )
+                }
+            }
         }
     }
 }
