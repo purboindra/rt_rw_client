@@ -13,3 +13,15 @@ object Splash
 
 @Serializable
 object Main
+
+@Serializable
+object Home
+
+@Serializable
+object Profile
+
+@Serializable
+object News
+
+@Serializable
+object Activity

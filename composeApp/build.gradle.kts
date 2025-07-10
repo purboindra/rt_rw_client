@@ -89,6 +89,9 @@ kotlin {
             
             /// ROOM
             implementation(libs.androidx.room.runtime)
+
+            /// COMPOSE ICONS
+            implementation(libs.composeIcons.feather)
         }
         
         iosMain.dependencies {
