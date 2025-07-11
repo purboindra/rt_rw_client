@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -31,7 +32,7 @@ fun ActivityCompose(modifier: Modifier = Modifier) {
         )
         Spacer(modifier = modifier.height(8.dp))
         Box(
-            modifier = Modifier.height(172.dp).fillMaxWidth()
+            modifier = Modifier.wrapContentHeight()
         ) {
             LazyRow(
             ) {

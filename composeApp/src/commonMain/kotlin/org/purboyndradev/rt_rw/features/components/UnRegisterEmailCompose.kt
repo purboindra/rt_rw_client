@@ -45,6 +45,7 @@ fun UnRegisterEmailCompose(modifier: Modifier = Modifier) {
                     "Kamu belum mendaftarkan alamat email, nih. Yuk, lengkapi data diri kamu supaya bisa menerima notifikasi dari kami",
                     style = MaterialTheme.typography.labelMedium.copy(
                         fontWeight = FontWeight.Normal,
+                        color = Color.Gray
                     )
                 )
                 Spacer(modifier = Modifier.height(8.dp))

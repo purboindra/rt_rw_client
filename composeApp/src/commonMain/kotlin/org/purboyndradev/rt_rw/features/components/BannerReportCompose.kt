@@ -25,54 +25,50 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun BannerReportCompose(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier.fillMaxWidth()
-            .padding(horizontal = 12.dp)
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Top
     ) {
-        Row(
-            modifier = modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Top
+        Box(
+            modifier = Modifier.height(124.dp)
+                .width(84.dp).clip(
+                    RoundedCornerShape(
+                        size = 14.dp
+                    )
+                ).background(Color.LightGray)
+        )
+        
+        Spacer(modifier = modifier.width(12.dp))
+        
+        Column(
+            modifier = Modifier.weight(1f)
         ) {
-            Box(
-                modifier = Modifier.height(124.dp)
-                    .width(84.dp).clip(
-                        RoundedCornerShape(
-                            size = 14.dp
-                        )
-                    ).background(Color.LightGray)
+            Text(
+                "Lapor Kejadian",
+                style = MaterialTheme.typography.labelLarge.copy(
+                    fontWeight = FontWeight.Bold,
+                )
             )
-            
-            Spacer(modifier = modifier.width(12.dp))
-            
-            Column(
-                modifier = Modifier.weight(1f)
+            Text(
+                "Ada kejadian di sekitar? Laporkan sekarang supaya pengurus bisa segera tindak lanjuti dan pastikan lingkungan kita tetap aman.",
+                style = MaterialTheme.typography.labelMedium.copy(
+                    fontWeight = FontWeight.Normal,
+                    color = Color.Gray
+                )
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = {},
+                modifier = Modifier.width(124.dp),
+                shape = RoundedCornerShape(
+                    size = 8.dp
+                )
             ) {
                 Text(
-                    "Lapor Kejadian",
-                    style = MaterialTheme.typography.labelLarge.copy(
-                        fontWeight = FontWeight.Bold,
-                    )
+                    "Laporkan",
+                    style = MaterialTheme.typography.labelLarge
                 )
-                Text(
-                    "Ada kejadian di sekitar? Laporkan sekarang supaya pengurus bisa segera tindak lanjuti dan pastikan lingkungan kita tetap aman.",
-                    style = MaterialTheme.typography.labelMedium.copy(
-                        fontWeight = FontWeight.Normal,
-                    )
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedButton(
-                    onClick = {},
-                    modifier = Modifier.width(124.dp),
-                    shape = RoundedCornerShape(
-                        size = 8.dp
-                    )
-                ) {
-                    Text(
-                        "Laporkan",
-                        style = MaterialTheme.typography.labelLarge
-                    )
-                }
             }
         }
     }
