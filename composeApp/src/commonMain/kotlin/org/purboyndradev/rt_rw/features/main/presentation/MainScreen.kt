@@ -22,28 +22,27 @@ import androidx.navigation.compose.rememberNavController
 import org.purboyndradev.rt_rw.features.activity.presentation.ActivityScreen
 import org.purboyndradev.rt_rw.features.components.BottomNavItem
 import org.purboyndradev.rt_rw.features.home.presentation.HomeScreen
+import org.purboyndradev.rt_rw.features.navigation.Activity
+import org.purboyndradev.rt_rw.features.navigation.Home
+import org.purboyndradev.rt_rw.features.navigation.News
+import org.purboyndradev.rt_rw.features.navigation.Profile
 import org.purboyndradev.rt_rw.features.news.presentation.NewsScreen
 import org.purboyndradev.rt_rw.features.profile.presentation.ProfileScreen
 
 @Composable
 fun MainScreen(navHostController: NavHostController) {
-    
+
     val bottomNavigationController = rememberNavController()
     val currentDestination =
         bottomNavigationController.currentBackStackEntryAsState().value?.destination?.route
-            ?: BottomNavItem.Home.route
-    var selectedDestination by rememberSaveable {
-        mutableIntStateOf(
-            BottomNavItem.Home.id
-        )
-    }
-    
+            ?: Home.ROUTE
+
     Scaffold(
         bottomBar = {
-            NavigationBar(windowInsets = NavigationBarDefaults.windowInsets) {
+            NavigationBar {
                 BottomNavItem.items.forEachIndexed { index, item ->
                     NavigationBarItem(
-                        selected = selectedDestination + 1 == index,
+                        selected = currentDestination == item.route,
                         onClick = {
                             bottomNavigationController.navigate(
                                 item.route
@@ -56,7 +55,6 @@ fun MainScreen(navHostController: NavHostController) {
                                 launchSingleTop = true
                                 restoreState = true
                             }
-                            selectedDestination = index
                         },
                         icon = {
                             Icon(
@@ -75,20 +73,25 @@ fun MainScreen(navHostController: NavHostController) {
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             NavHost(
                 navController = bottomNavigationController,
-                startDestination = BottomNavItem.Home.route,
+                startDestination = currentDestination,
                 modifier = Modifier.padding(innerPadding)
             ) {
-                composable(route = BottomNavItem.Activity.route) {
+                composable(route = Home.ROUTE) {
+                    HomeScreen(
+                        navHostController = navHostController
+                    )
+                }
+                composable(route = Activity.ROUTE) {
                     ActivityScreen(
                         navHostController = navHostController
                     )
                 }
-                composable(route = BottomNavItem.News.route) {
+                composable(route = News.ROUTE) {
                     NewsScreen(
                         navHostController = navHostController
                     )
                 }
-                composable(route = BottomNavItem.Profile.route) {
+                composable(route = Profile.ROUTE) {
                     ProfileScreen(
                         navHostController = navHostController,
                     )

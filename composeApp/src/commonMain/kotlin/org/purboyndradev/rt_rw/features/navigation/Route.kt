@@ -15,13 +15,21 @@ object Splash
 object Main
 
 @Serializable
-object Home
+object Home {
+    const val ROUTE = "home"
+}
 
 @Serializable
-object Profile
+object Profile {
+    const val ROUTE = "profile"
+}
 
 @Serializable
-object News
+object News {
+    const val ROUTE = "news"
+}
 
 @Serializable
-object Activity
+object Activity {
+    const val ROUTE = "activity"
+}

@@ -17,10 +17,10 @@ sealed class BottomNavItem(
     object News : BottomNavItem("news", "News", FeatherIcons.Book, 2)
     object Activity :
         BottomNavItem("activity", "Activity", FeatherIcons.Activity, 3)
-    
+
     object Profile : BottomNavItem("profile", "Profile", FeatherIcons.User, 4)
-    
+
     companion object {
-        val items = listOf(Home, Profile, News, Activity)
+        val items = listOf(Home, News, Activity, Profile)
     }
 }
