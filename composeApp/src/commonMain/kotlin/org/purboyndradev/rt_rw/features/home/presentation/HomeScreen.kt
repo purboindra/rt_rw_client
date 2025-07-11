@@ -16,6 +16,7 @@ import org.purboyndradev.rt_rw.features.components.ActivityCompose
 import org.purboyndradev.rt_rw.features.components.BannerHomeCompose
 import org.purboyndradev.rt_rw.features.components.BannerReportCompose
 import org.purboyndradev.rt_rw.features.components.HeaderUserCompose
+import org.purboyndradev.rt_rw.features.components.NewsCompose
 import org.purboyndradev.rt_rw.features.components.UnRegisterEmailCompose
 
 @Preview
@@ -48,6 +49,11 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(16.dp))
             /// Banner Report Kejadian
             BannerReportCompose()
+            Spacer(modifier = Modifier.height(16.dp))
+            /// Activity
+            NewsCompose(
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
