@@ -33,15 +33,15 @@ import org.purboyndradev.rt_rw.features.profile.presentation.ProfileScreen
 
 @Composable
 fun MainScreen(navHostController: NavHostController) {
-
+    
     val bottomNavigationController = rememberNavController()
     val currentDestination =
         bottomNavigationController.currentBackStackEntryAsState().value?.destination?.route
             ?: Home.ROUTE
-
+    
     Scaffold(
         bottomBar = {
-            NavigationBar (
+            NavigationBar(
                 containerColor = Color.Transparent,
             ) {
                 BottomNavItem.items.forEachIndexed { index, item ->
@@ -75,32 +75,30 @@ fun MainScreen(navHostController: NavHostController) {
             }
         }
     ) { innerPadding ->
-        Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
-            NavHost(
-                navController = bottomNavigationController,
-                startDestination = currentDestination,
-                modifier = Modifier.padding(innerPadding)
-            ) {
-                composable(route = Home.ROUTE) {
-                    HomeScreen(
-                        navHostController = navHostController
-                    )
-                }
-                composable(route = Activity.ROUTE) {
-                    ActivityScreen(
-                        navHostController = navHostController
-                    )
-                }
-                composable(route = News.ROUTE) {
-                    NewsScreen(
-                        navHostController = navHostController
-                    )
-                }
-                composable(route = Profile.ROUTE) {
-                    ProfileScreen(
-                        navHostController = navHostController,
-                    )
-                }
+        NavHost(
+            navController = bottomNavigationController,
+            startDestination = currentDestination,
+            modifier = Modifier.padding(innerPadding).fillMaxSize()
+        ) {
+            composable(route = Home.ROUTE) {
+                HomeScreen(
+                    navHostController = navHostController
+                )
+            }
+            composable(route = Activity.ROUTE) {
+                ActivityScreen(
+                    navHostController = navHostController
+                )
+            }
+            composable(route = News.ROUTE) {
+                NewsScreen(
+                    navHostController = navHostController
+                )
+            }
+            composable(route = Profile.ROUTE) {
+                ProfileScreen(
+                    navHostController = navHostController,
+                )
             }
         }
     }
