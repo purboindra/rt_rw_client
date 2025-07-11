@@ -3,6 +3,7 @@ package org.purboyndradev.rt_rw.features.main.presentation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
@@ -14,6 +15,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -39,10 +41,13 @@ fun MainScreen(navHostController: NavHostController) {
 
     Scaffold(
         bottomBar = {
-            NavigationBar {
+            NavigationBar (
+                containerColor = Color.Transparent,
+            ) {
                 BottomNavItem.items.forEachIndexed { index, item ->
                     NavigationBarItem(
                         selected = currentDestination == item.route,
+                        
                         onClick = {
                             bottomNavigationController.navigate(
                                 item.route
