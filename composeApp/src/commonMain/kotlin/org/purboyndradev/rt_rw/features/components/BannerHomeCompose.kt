@@ -33,7 +33,7 @@ data class CarouselItem(
 fun BannerHomeCompose(
     modifier: Modifier = Modifier,
 ) {
-
+    
     val items = remember {
         listOf(
             CarouselItem(0, "cupcake"),
@@ -43,18 +43,18 @@ fun BannerHomeCompose(
             CarouselItem(4, "gingerbread"),
         )
     }
-
+    
     HorizontalMultiBrowseCarousel(
         state = rememberCarouselState { items.count() },
         modifier = modifier.fillMaxWidth().wrapContentHeight().padding(
             top = 16.dp, bottom = 16.dp
         ),
-        preferredItemWidth = 250.dp,
+        preferredItemWidth = 420.dp,
         itemSpacing = 8.dp,
     ) { i ->
         val item = items[i]
         Box(
-            modifier = Modifier.height(148.dp).width(250.dp).clip(
+            modifier = Modifier.height(148.dp).width(320.dp).clip(
                 RoundedCornerShape(
                     size = 16.dp
                 )
@@ -66,5 +66,5 @@ fun BannerHomeCompose(
             Text(item.contentDescription)
         }
     }
-
+    
 }
