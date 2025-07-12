@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.purboyndradev.rt_rw.features.activity.presentation.ActivityState
 import org.purboyndradev.rt_rw.features.components.ActivityCompose
 import org.purboyndradev.rt_rw.features.components.BannerHomeCompose
 import org.purboyndradev.rt_rw.features.components.BannerReportCompose
@@ -23,7 +24,8 @@ import org.purboyndradev.rt_rw.features.components.UnRegisterEmailCompose
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    activityState: ActivityState
 ) {
     LazyColumn(
         modifier = modifier.padding(horizontal = 18.dp)
@@ -36,20 +38,23 @@ fun HomeScreen(
             BannerHomeCompose(
                 modifier = modifier.fillMaxWidth()
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(22.dp))
             /// Banner Unregistered Email
             UnRegisterEmailCompose(
                 modifier
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(22.dp))
             /// Activity
             ActivityCompose(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                isLoading = activityState.loading,
+                error = activityState.error,
+                activities = activityState.activities
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(22.dp))
             /// Banner Report Kejadian
             BannerReportCompose()
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(22.dp))
             /// Activity
             NewsCompose(
                 modifier = Modifier.fillMaxWidth()
