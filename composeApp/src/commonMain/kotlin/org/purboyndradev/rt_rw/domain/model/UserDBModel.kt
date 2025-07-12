@@ -16,3 +16,12 @@ data class UserDBModel(
     val profilePicture: String? = "",
     val email: String? = ""
 )
+
+fun UserDBModel.toEmptyModel(): UserDBModel {
+    return UserDBModel(
+        accessToken = "",
+        refreshToken = "",
+        username = "",
+        email = "",
+    );
+}
