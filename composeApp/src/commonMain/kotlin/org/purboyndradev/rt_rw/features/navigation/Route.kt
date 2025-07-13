@@ -33,3 +33,6 @@ object News {
 object Activity {
     const val ROUTE = "activity"
 }
+
+@Serializable
+data class ActivityDetail(val id: String)

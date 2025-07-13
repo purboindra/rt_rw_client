@@ -21,7 +21,8 @@ class ActivityViewModel(
     private val fetchActivitiesUseCase: FetchActivitiesUseCase,
     private val fetchActivityByIdUseCase: FetchActivityByIdUseCase,
     private val deleteActivityUseCase: DeleteActivityUseCase,
-    private val editActivityUseCase: EditActivityUseCase
+    private val editActivityUseCase: EditActivityUseCase,
+    private val activityId: String,
 ) : ViewModel() {
     
     private val _activitiesState: MutableStateFlow<ActivityState> =
@@ -31,7 +32,7 @@ class ActivityViewModel(
             )
         )
     val activitiesState = _activitiesState.onStart {
-        fetchActivitiesUseCase.invoke()
+        fetchActivityDetail()
     }.stateIn(
         viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -39,6 +40,41 @@ class ActivityViewModel(
             activities = emptyList()
         )
     )
+    
+    fun fetchActivityDetail() {
+        viewModelScope.launch {
+            _activitiesState.value = _activitiesState.value.copy(
+                loading = true
+            )
+            
+            val result = fetchActivityByIdUseCase.invoke(activityId)
+            
+            when (result) {
+                is Result.Success -> {
+                    val activity = result.data
+                    _activitiesState.value = _activitiesState.value.copy(
+                        activities = listOf(activity)
+                    )
+                }
+                
+                is Result.Error -> {
+                    val error = result.error
+                    _activitiesState.value = _activitiesState.value.copy(
+                        error = when (error) {
+                            is ActivityError.InvalidResponse -> "Invalid Response"
+                            is ActivityError.Server -> "Internal Server Error"
+                            else -> "Unknown Error"
+                        }
+                    )
+                }
+            }
+            
+            _activitiesState.value = _activitiesState.value.copy(
+                loading = false
+            )
+            
+        }
+    }
     
     fun fetchActivities() {
         viewModelScope.launch {

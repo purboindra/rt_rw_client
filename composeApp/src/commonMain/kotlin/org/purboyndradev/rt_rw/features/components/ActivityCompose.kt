@@ -1,6 +1,7 @@
 package org.purboyndradev.rt_rw.features.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -32,7 +33,8 @@ fun ActivityCompose(
     modifier: Modifier = Modifier,
     isLoading: Boolean,
     error: String? = null,
-    activities: List<ActivityModel>
+    activities: List<ActivityModel>,
+    onActivityTapped: (id: String) -> Unit
 ) {
     Column {
         Text(
@@ -72,9 +74,11 @@ fun ActivityCompose(
                                             RoundedCornerShape(size = 16.dp)
                                         ).background(
                                             Color.LightGray.copy(
-                                                alpha = 0.65f
+                                                alpha = 0.35f
                                             )
-                                        ),
+                                        ).clickable {
+                                            onActivityTapped(activity.id)
+                                        },
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(activity.title)

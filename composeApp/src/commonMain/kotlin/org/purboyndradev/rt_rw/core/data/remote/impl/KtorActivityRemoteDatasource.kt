@@ -52,7 +52,6 @@ class KtorActivityRemoteDatasource(private val httpClient: HttpClient) : Activit
                     parameters.append("id", id)
                 }
             }
-
         }
     }
 

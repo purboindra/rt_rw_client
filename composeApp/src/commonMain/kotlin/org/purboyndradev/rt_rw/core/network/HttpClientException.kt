@@ -4,6 +4,7 @@ import io.ktor.client.call.body
 import io.ktor.client.network.sockets.SocketTimeoutException
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
+import io.ktor.client.statement.request
 import org.purboyndradev.rt_rw.core.domain.Result
 import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.coroutines.ensureActive
@@ -38,6 +39,7 @@ suspend inline fun <reified T> responseToResult(response: HttpResponse): Result<
     
     val bodyText = response.bodyAsText()
     println("Raw Response Body: $bodyText")
+    println("Response hit URL: ${response.request.url}")
     
     return when (response.status.value) {
         in 200..299 -> {

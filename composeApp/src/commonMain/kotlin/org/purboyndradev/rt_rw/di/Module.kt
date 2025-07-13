@@ -30,6 +30,7 @@ import org.purboyndradev.rt_rw.domain.usecases.FetchActivityByIdUseCase
 import org.purboyndradev.rt_rw.domain.usecases.RefreshTokenUseCase
 import org.purboyndradev.rt_rw.domain.usecases.SignInUseCase
 import org.purboyndradev.rt_rw.domain.usecases.VerifyOtpUseCase
+import org.purboyndradev.rt_rw.features.activity.presentation.ActivityViewModel
 import org.purboyndradev.rt_rw.features.auth.presentation.AuthViewModel
 import org.purboyndradev.rt_rw.features.main.presentation.MainViewModel
 import org.purboyndradev.rt_rw.features.splash.SplashViewModel
@@ -110,4 +111,7 @@ val sharedModule: Module = module {
     viewModel { AuthViewModel(get(), get(), get()) }
     viewModel { SplashViewModel(get(), get()) }
     viewModel { MainViewModel(get()) }
+    viewModel { params ->
+        ActivityViewModel(get(), get(), get(), get(), get(), params.get())
+    }
 }

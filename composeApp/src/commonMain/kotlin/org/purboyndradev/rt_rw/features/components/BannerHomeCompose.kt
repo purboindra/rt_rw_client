@@ -36,11 +36,14 @@ fun BannerHomeCompose(
     
     val items = remember {
         listOf(
-            CarouselItem(0, "cupcake"),
-            CarouselItem(1, "donut"),
-            CarouselItem(2, "eclair"),
-            CarouselItem(3, "froyo"),
-            CarouselItem(4, "gingerbread"),
+            CarouselItem(0, "Informasi IPL"),
+            CarouselItem(1, "Kegiatan Mingguan"),
+            CarouselItem(2, "Kegiatan Bulanan"),
+            CarouselItem(3, "Pemadaman Listrik Bergilir"),
+            CarouselItem(
+                4,
+                "Meninggalkan Rumah dalam Waktu Lama? Silahkan Hubungi Pengurus"
+            ),
         )
     }
     
@@ -63,7 +66,7 @@ fun BannerHomeCompose(
             ),
             contentAlignment = Alignment.Center
         ) {
-            Text(item.contentDescription)
+            Text(item.contentDescription, modifier = Modifier.padding(12.dp))
         }
     }
     
