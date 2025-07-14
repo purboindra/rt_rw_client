@@ -17,7 +17,8 @@ import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.core.network.safeCall
 import org.purboyndradev.rt_rw.helper.BASE_URL
 
-class KtorActivityRemoteDatasource(private val httpClient: HttpClient) : ActivityApi {
+class KtorActivityRemoteDatasource(private val httpClient: HttpClient) :
+    ActivityApi {
     override suspend fun createActivity(params: CreateActivityParams): Result<ResponseDto<Unit>, DataError.Remote> {
         return safeCall {
             httpClient.post("$BASE_URL/activities") {
@@ -25,7 +26,7 @@ class KtorActivityRemoteDatasource(private val httpClient: HttpClient) : Activit
             }
         }
     }
-
+    
     override suspend fun fetchAllActivities(
         paginationParams: PaginationParams?,
         queryParams: QueryParams?
@@ -44,36 +45,25 @@ class KtorActivityRemoteDatasource(private val httpClient: HttpClient) : Activit
             }
         }
     }
-
+    
     override suspend fun fetchActivityById(id: String): Result<ResponseDto<ActivityDto>, DataError.Remote> {
         return safeCall {
-            httpClient.get("$BASE_URL/activities") {
-                url {
-                    parameters.append("id", id)
-                }
-            }
+            httpClient.get("$BASE_URL/activities/${id}")
         }
     }
-
+    
     override suspend fun deleteActivity(id: String): Result<ResponseDto<Unit>, DataError.Remote> {
         return safeCall {
-            httpClient.delete("$BASE_URL/activities") {
-                url {
-                    parameters.append("id", id)
-                }
-            }
+            httpClient.delete("$BASE_URL/activities/${id}")
         }
     }
-
+    
     override suspend fun editActivity(
         id: String,
         params: CreateActivityParams
     ): Result<ResponseDto<Unit>, DataError.Remote> {
         return safeCall {
-            httpClient.put("$BASE_URL/activities") {
-                url {
-                    parameters.append("id", id)
-                }
+            httpClient.put("$BASE_URL/activities/${id}") {
                 setBody(params)
             }
         }
