@@ -22,7 +22,7 @@ class ActivityViewModel(
     private val fetchActivityByIdUseCase: FetchActivityByIdUseCase,
     private val deleteActivityUseCase: DeleteActivityUseCase,
     private val editActivityUseCase: EditActivityUseCase,
-    private val activityId: String,
+    private val activityId: String?,
 ) : ViewModel() {
     
     private val _activitiesState: MutableStateFlow<ActivityState> =
@@ -31,15 +31,7 @@ class ActivityViewModel(
                 activities = emptyList()
             )
         )
-    val activitiesState = _activitiesState.onStart {
-        fetchActivityDetail()
-    }.stateIn(
-        viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = ActivityState(
-            activities = emptyList()
-        )
-    )
+    val activitiesState = _activitiesState.asStateFlow()
     
     fun fetchActivityDetail() {
         viewModelScope.launch {
@@ -47,13 +39,13 @@ class ActivityViewModel(
                 loading = true
             )
             
-            val result = fetchActivityByIdUseCase.invoke(activityId)
+            val result = fetchActivityByIdUseCase.invoke(activityId ?: "0")
             
             when (result) {
                 is Result.Success -> {
                     val activity = result.data
                     _activitiesState.value = _activitiesState.value.copy(
-                        activities = listOf(activity)
+                        activity = activity
                     )
                 }
                 
