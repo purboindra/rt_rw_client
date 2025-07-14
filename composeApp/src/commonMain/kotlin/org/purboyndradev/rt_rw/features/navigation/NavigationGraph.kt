@@ -13,7 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import org.purboyndradev.rt_rw.features.components.ActivityDetailScreen
+import org.purboyndradev.rt_rw.features.activity.presentation.ActivityDetailScreen
 import org.purboyndradev.rt_rw.features.auth.presentation.LoginScreen
 import org.purboyndradev.rt_rw.features.auth.presentation.OTPScreen
 import org.purboyndradev.rt_rw.features.main.presentation.MainScreen
