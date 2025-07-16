@@ -92,6 +92,9 @@ kotlin {
 
             /// COMPOSE ICONS
             implementation(libs.composeIcons.feather)
+            
+            /// KOTLINX DATETIME
+            implementation(libs.kotlinx.datetime)
         }
         
         iosMain.dependencies {
