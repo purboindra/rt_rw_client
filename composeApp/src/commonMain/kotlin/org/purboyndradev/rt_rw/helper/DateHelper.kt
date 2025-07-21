@@ -7,12 +7,6 @@ import kotlin.time.Instant
 
 class DateHelper {
     companion object {
-        
-        @OptIn(FormatStringsInDatetimeFormats::class)
-        private val dateTimeFormatFinal = LocalDateTime.Format {
-            byUnicodePattern("ddd, dd MMM yyyy'T'HH:mm")
-        }
-        
         private val dateTimeFormat = LocalDateTime.Format {
             year()
             char('-')
@@ -29,20 +23,24 @@ class DateHelper {
         
         @OptIn(ExperimentalTime::class)
         fun convertEpochToDate(epochTime: Int): String {
-            
-            val epochMillis =
-                if (epochTime.toString().length <= 10) {
-                    epochTime * 1000L
-                } else {
-                    epochTime.toLong()
-                }
-            
-            val instant = Instant.fromEpochMilliseconds(epochMillis)
-            val localDateTime =
-                instant.toLocalDateTime(TimeZone.currentSystemDefault())
-            
-            val formatted = localDateTime.format(dateTimeFormat)
-            return formatted
+            try {
+                val epochMillis =
+                    if (epochTime.toString().length <= 10) {
+                        epochTime * 1000L
+                    } else {
+                        epochTime.toLong()
+                    }
+                
+                val instant = Instant.fromEpochMilliseconds(epochMillis)
+                val localDateTime =
+                    instant.toLocalDateTime(TimeZone.currentSystemDefault())
+                
+                val formatted = localDateTime.format(dateTimeFormat)
+                return formatted
+            } catch (e: Exception) {
+                println("Error convertEpochToDate: $e")
+                return ""
+            }
         }
     }
 }
