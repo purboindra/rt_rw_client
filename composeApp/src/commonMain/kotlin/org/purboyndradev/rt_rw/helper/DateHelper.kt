@@ -7,18 +7,18 @@ import kotlin.time.Instant
 
 class DateHelper {
     companion object {
-        private val dateTimeFormat = LocalDateTime.Format {
-            year()
-            char('-')
-            monthNumber(padding = Padding.ZERO)
-            char('-')
-            dayOfMonth(padding = Padding.ZERO)
+        private val customDateTimeFormatAmPm = LocalDateTime.Format {
+            day(padding = Padding.ZERO)
             char(' ')
-            hour(padding = Padding.ZERO)
+            monthName(MonthNames.ENGLISH_ABBREVIATED)
+            char(' ')
+            year()
+            char(' ')
+            amPmHour(padding = Padding.ZERO)
             char(':')
             minute(padding = Padding.ZERO)
-            char(':')
-            second(padding = Padding.ZERO)
+            char(' ')
+            amPmMarker("AM", "PM")
         }
         
         @OptIn(ExperimentalTime::class)
@@ -35,7 +35,7 @@ class DateHelper {
                 val localDateTime =
                     instant.toLocalDateTime(TimeZone.currentSystemDefault())
                 
-                val formatted = localDateTime.format(dateTimeFormat)
+                val formatted = localDateTime.format(customDateTimeFormatAmPm)
                 return formatted
             } catch (e: Exception) {
                 println("Error convertEpochToDate: $e")
