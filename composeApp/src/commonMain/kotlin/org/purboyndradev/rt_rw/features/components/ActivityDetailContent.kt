@@ -2,11 +2,14 @@ package org.purboyndradev.rt_rw.features.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -32,17 +35,30 @@ fun ActivityDetailContent(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                activityModel.title,
-                style = MaterialTheme.typography.titleLarge
-            )
-            Text(
-                date,
-                style = MaterialTheme.typography.labelSmall.copy(
-                    color = Color.Gray
+            Column(modifier = modifier.weight(1f)) {
+                Text(
+                    activityModel.title,
+                    style = MaterialTheme.typography.titleLarge,
                 )
-            )
+                Text(
+                    date,
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        color = Color.Gray
+                    )
+                )
+            }
+            Spacer(modifier = modifier.width(8.dp))
+            Box(modifier = modifier.width(112.dp)) {
+                ElevatedButton(
+                    onClick = {},
+                    modifier = modifier.fillMaxWidth()
+                ) {
+                    Text("Join", style = MaterialTheme.typography.labelMedium)
+                }
+            }
         }
+        
+        Spacer(modifier = modifier.height(24.dp))
         Text(
             activityModel.description,
             style = MaterialTheme.typography.labelMedium

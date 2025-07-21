@@ -1,15 +1,31 @@
 package org.purboyndradev.rt_rw.features.activity.presentation
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,9 +33,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.Send
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import org.purboyndradev.rt_rw.features.components.ActivityDetailContent
@@ -31,7 +54,7 @@ fun ActivityDetailScreen(id: String, navHostController: NavHostController) {
     val activityViewModel =
         koinViewModel<ActivityViewModel>(parameters = { parametersOf(id) })
     val activityState by
-        activityViewModel.activitiesState.collectAsStateWithLifecycle()
+    activityViewModel.activitiesState.collectAsStateWithLifecycle()
     
     LaunchedEffect(Unit) {
         activityViewModel.fetchActivityDetail()
@@ -43,18 +66,60 @@ fun ActivityDetailScreen(id: String, navHostController: NavHostController) {
         },
         bottomBar = {
             Box(
-                modifier = Modifier.padding(
-                    horizontal = 18.dp
-                ).padding(bottom = 16.dp).systemBarsPadding()
+                modifier = Modifier.background(Color.LightGray).padding(12.dp).padding(vertical = 22.dp),
+                contentAlignment = Alignment.Center
             ) {
-                OutlinedButton(
-                    onClick = {},
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(
-                        size = 8.dp
-                    )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(horizontal = 12.dp).padding(bottom = 9.dp)
                 ) {
-                    Text("Join")
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp)
+                            .background(Color.Transparent)
+                            .border(1.dp, Color.Gray, RoundedCornerShape(12.dp)),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        BasicTextField(
+                            value = "",
+                            onValueChange = { newText ->
+                            
+                            },
+                            textStyle = TextStyle(
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontSize = 14.sp
+                            ),
+                            singleLine = true,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 16.dp),
+                            decorationBox = { innerTextField ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(start = 16.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    innerTextField()
+                                }
+                            }
+                        )
+                    }
+                    Box(
+                        modifier = Modifier.height(38.dp).width(38.dp).clip(
+                            CircleShape
+                        ).background(Color.Blue).padding(4.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            FeatherIcons.Send,
+                            contentDescription = "Send",
+                            modifier = Modifier.size(24.dp),
+                            tint = Color.White
+                        )
+                    }
                 }
             }
         }
