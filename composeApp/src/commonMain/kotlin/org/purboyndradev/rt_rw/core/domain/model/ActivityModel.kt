@@ -26,5 +26,29 @@ data class ActivityModel(
     @SerialName("imageUrl")
     val imageUrl: String? = null,
     @SerialName("type")
-    val type: String
+    val type: String,
+    @SerialName("createdBy")
+    val createdBy: CreatedByModel
+)
+
+@Serializable
+data class CreatedByModel(
+    @SerialName("id")
+    val id: String,
+    @SerialName("name")
+    val name: String,
+    @SerialName("rt")
+    val rt: RTModel,
+    @SerialName("role")
+    val role: String
+)
+
+@Serializable
+data class RTModel(
+    @SerialName("id")
+    val id: String,
+    @SerialName("name")
+    val name: String,
+    @SerialName("address")
+    val address: String
 )
