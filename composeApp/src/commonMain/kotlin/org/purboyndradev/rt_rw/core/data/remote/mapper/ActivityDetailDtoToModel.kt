@@ -14,6 +14,7 @@ fun ActivityDetailDto.toActivityDetailModel(): ActivityDetailModel {
         bannerImageUrl = bannerImageUrl,
         imageUrl = imageUrl,
         type = type,
-        createdBy = createdBy.toCreatedByModel()
+        createdBy = createdBy.toCreatedByModel(),
+        users = users
     )
 }
