@@ -16,5 +16,6 @@ data class ActivityDetailDto(
     val bannerImageUrl: String? = null,
     val imageUrl: String? = null,
     val createdBy: CreatedByDto,
-    val pic: UserModel
+    val pic: UserModel,
+    val users: List<UserModel>
 )
