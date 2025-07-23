@@ -1,5 +1,6 @@
 package org.purboyndradev.rt_rw.core.data.repository
 
+import org.purboyndradev.rt_rw.core.data.dto.ActivityDetailDto
 import org.purboyndradev.rt_rw.core.data.dto.ActivityDto
 import org.purboyndradev.rt_rw.core.data.dto.ResponseDto
 import org.purboyndradev.rt_rw.core.data.remote.api.ActivityApi
@@ -39,13 +40,12 @@ class ActivityRepositoryImpl(
             },
             onFailure = { error ->
                 Result.Error(error)
-
             }
         )
     }
 
     override suspend
-    fun fetchActivityById(id: String): Result<ResponseDto<ActivityDto>, DataError.Remote> {
+    fun fetchActivityById(id: String): Result<ResponseDto<ActivityDetailDto>, DataError.Remote> {
         return activityApi.fetchActivityById(id).mapBoth(
             onSuccess = { data -> Result.Success(data) },
             onFailure = { error -> Result.Error(error) }

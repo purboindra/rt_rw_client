@@ -2,10 +2,10 @@ package org.purboyndradev.rt_rw.core.domain.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import org.purboyndradev.rt_rw.domain.model.UserDBModel
+
 
 @Serializable
-data class ActivityModel(
+data class ActivityDetailModel(
     @SerialName("id")
     val id: String,
     @SerialName("title")
@@ -19,10 +19,14 @@ data class ActivityModel(
     val date: Int,
     @SerialName("pic")
     val pic: UserModel,
+    @SerialName("users")
+    val users: List<UserModel> = emptyList<UserModel>(),
     @SerialName("bannerImageUrl")
     val bannerImageUrl: String? = null,
     @SerialName("imageUrl")
     val imageUrl: String? = null,
     @SerialName("type")
     val type: String,
+    @SerialName("createdBy")
+    val createdBy: CreatedByModel
 )

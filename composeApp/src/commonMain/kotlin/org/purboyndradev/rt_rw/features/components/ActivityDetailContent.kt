@@ -18,17 +18,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import org.purboyndradev.rt_rw.core.domain.model.ActivityDetailModel
 import org.purboyndradev.rt_rw.core.domain.model.ActivityModel
 import org.purboyndradev.rt_rw.helper.DateHelper
 
 
 @Composable
 fun ActivityDetailContent(
-    activityModel: ActivityModel,
+    activity: ActivityDetailModel,
     modifier: Modifier = Modifier
 ) {
     
-    val date = DateHelper.convertEpochToDate(activityModel.date)
+    val date = DateHelper.convertEpochToDate(activity.date)
     
     Column(modifier = modifier.fillMaxWidth()) {
         Row(
@@ -37,7 +38,7 @@ fun ActivityDetailContent(
         ) {
             Column(modifier = modifier.weight(1f)) {
                 Text(
-                    activityModel.title,
+                    activity.title,
                     style = MaterialTheme.typography.titleLarge,
                 )
                 Text(
@@ -60,7 +61,7 @@ fun ActivityDetailContent(
         
         Spacer(modifier = modifier.height(24.dp))
         Text(
-            activityModel.description,
+            activity.description,
             style = MaterialTheme.typography.labelMedium
         )
         Spacer(modifier = Modifier.height(8.dp))
@@ -81,6 +82,6 @@ fun ActivityDetailContent(
                 modifier = modifier.clickable { }
             )
         }
-        Text(activityModel.pic.username ?: "-")
+        Text(activity.pic.name ?: "-")
     }
 }

@@ -6,6 +6,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
+import org.purboyndradev.rt_rw.core.data.dto.ActivityDetailDto
 import org.purboyndradev.rt_rw.core.data.dto.ActivityDto
 import org.purboyndradev.rt_rw.core.data.dto.ResponseDto
 import org.purboyndradev.rt_rw.core.data.remote.api.ActivityApi
@@ -46,7 +47,7 @@ class KtorActivityRemoteDatasource(private val httpClient: HttpClient) :
         }
     }
     
-    override suspend fun fetchActivityById(id: String): Result<ResponseDto<ActivityDto>, DataError.Remote> {
+    override suspend fun fetchActivityById(id: String): Result<ResponseDto<ActivityDetailDto>, DataError.Remote> {
         return safeCall {
             httpClient.get("$BASE_URL/activities/${id}")
         }

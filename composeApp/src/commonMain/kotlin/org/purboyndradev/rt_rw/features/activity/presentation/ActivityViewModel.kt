@@ -3,18 +3,15 @@ package org.purboyndradev.rt_rw.features.activity.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.purboyndradev.rt_rw.core.domain.ActivityError
 import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.domain.usecases.CreateActivityUseCase
-import org.purboyndradev.rt_rw.domain.usecases.FetchActivityByIdUseCase
-import org.purboyndradev.rt_rw.domain.usecases.FetchActivitiesUseCase
 import org.purboyndradev.rt_rw.domain.usecases.DeleteActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.EditActivityUseCase
+import org.purboyndradev.rt_rw.domain.usecases.FetchActivitiesUseCase
+import org.purboyndradev.rt_rw.domain.usecases.FetchActivityByIdUseCase
 
 class ActivityViewModel(
     private val createActivityUseCase: CreateActivityUseCase,

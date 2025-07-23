@@ -1,5 +1,6 @@
 package org.purboyndradev.rt_rw.core.data.remote.api
 
+import org.purboyndradev.rt_rw.core.data.dto.ActivityDetailDto
 import org.purboyndradev.rt_rw.core.data.dto.ActivityDto
 import org.purboyndradev.rt_rw.core.data.dto.ResponseDto
 import org.purboyndradev.rt_rw.core.data.remote.params.CreateActivityParams
@@ -15,7 +16,7 @@ interface ActivityApi {
         queryParams: QueryParams? = null
     ): Result<ResponseDto<List<ActivityDto>>, DataError.Remote>
 
-    suspend fun fetchActivityById(id: String): Result<ResponseDto<ActivityDto>, DataError.Remote>
+    suspend fun fetchActivityById(id: String): Result<ResponseDto<ActivityDetailDto>, DataError.Remote>
     suspend fun deleteActivity(id: String): Result<ResponseDto<Unit>, DataError.Remote>
     suspend fun editActivity(
         id: String,
