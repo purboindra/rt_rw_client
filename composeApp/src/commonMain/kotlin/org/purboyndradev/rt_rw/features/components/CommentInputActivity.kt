@@ -33,14 +33,16 @@ fun CommentInputActivity(
     modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = modifier.background(Color.LightGray)
+        modifier = modifier.background(Color.LightGray.copy(
+            alpha = 0.08f
+        ))
             .padding(horizontal = 12.dp).systemBarsPadding(),
         contentAlignment = Alignment.Center
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,
-            modifier = modifier      .height(48.dp)
+            modifier = modifier      .height(42.dp)
                 .padding(bottom = 6.dp)
         ) {
             Box(

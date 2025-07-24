@@ -5,6 +5,7 @@ import org.purboyndradev.rt_rw.core.data.dto.ActivityDto
 import org.purboyndradev.rt_rw.core.data.dto.ResponseDto
 import org.purboyndradev.rt_rw.core.data.remote.api.ActivityApi
 import org.purboyndradev.rt_rw.core.data.remote.params.CreateActivityParams
+import org.purboyndradev.rt_rw.core.data.remote.params.JoinActivityParams
 import org.purboyndradev.rt_rw.core.data.remote.params.PaginationParams
 import org.purboyndradev.rt_rw.core.data.remote.params.QueryParams
 import org.purboyndradev.rt_rw.core.domain.DataError
@@ -71,8 +72,8 @@ class ActivityRepositoryImpl(
         )
     }
     
-    override suspend fun joinActivity(id: String): Result<ResponseDto<Unit>, DataError.Remote> {
-        return activityApi.joinActivity(id).mapBoth(
+    override suspend fun joinActivity(params: JoinActivityParams): Result<ResponseDto<Unit>, DataError.Remote> {
+        return activityApi.joinActivity(params).mapBoth(
             onSuccess = { data -> Result.Success(data) },
             onFailure = { error -> Result.Error(error) }
         )

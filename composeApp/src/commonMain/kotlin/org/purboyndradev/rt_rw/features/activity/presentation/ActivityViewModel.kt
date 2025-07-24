@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.purboyndradev.rt_rw.core.data.remote.params.JoinActivityParams
 import org.purboyndradev.rt_rw.core.domain.ActivityError
 import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.domain.usecases.CreateActivityUseCase
@@ -111,7 +112,11 @@ class ActivityViewModel(
                 loading = true
             )
             
-            val result = joinActivityUseCase.invoke(id)
+            val params = JoinActivityParams(
+                id
+            )
+            
+            val result = joinActivityUseCase.invoke(params)
             
             when (result) {
                 is Result.Success -> {
