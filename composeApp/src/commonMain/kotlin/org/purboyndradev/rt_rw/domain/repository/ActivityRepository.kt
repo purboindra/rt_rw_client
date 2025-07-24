@@ -22,4 +22,7 @@ interface ActivityRepository {
         id: String,
         params: CreateActivityParams
     ): Result<ResponseDto<Unit>, DataError.Remote>
+    suspend fun joinActivity(
+        id: String
+    ): Result<ResponseDto<Unit>, DataError.Remote>
 }

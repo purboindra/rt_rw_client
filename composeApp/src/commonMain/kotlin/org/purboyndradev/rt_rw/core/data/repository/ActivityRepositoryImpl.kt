@@ -27,7 +27,7 @@ class ActivityRepositoryImpl(
             }
         )
     }
-
+    
     override suspend fun fetchAllActivities(
         paginationParams: PaginationParams?,
         queryParams: QueryParams?
@@ -43,7 +43,7 @@ class ActivityRepositoryImpl(
             }
         )
     }
-
+    
     override suspend
     fun fetchActivityById(id: String): Result<ResponseDto<ActivityDetailDto>, DataError.Remote> {
         return activityApi.fetchActivityById(id).mapBoth(
@@ -51,7 +51,7 @@ class ActivityRepositoryImpl(
             onFailure = { error -> Result.Error(error) }
         )
     }
-
+    
     override suspend
     fun deleteActivity(id: String): Result<ResponseDto<Unit>, DataError.Remote> {
         return activityApi.deleteActivity(id).mapBoth(
@@ -59,13 +59,20 @@ class ActivityRepositoryImpl(
             onFailure = { error -> Result.Error(error) }
         )
     }
-
+    
     override suspend
     fun editActivity(
         id: String,
         params: CreateActivityParams
     ): Result<ResponseDto<Unit>, DataError.Remote> {
         return activityApi.editActivity(id, params).mapBoth(
+            onSuccess = { data -> Result.Success(data) },
+            onFailure = { error -> Result.Error(error) }
+        )
+    }
+    
+    override suspend fun joinActivity(id: String): Result<ResponseDto<Unit>, DataError.Remote> {
+        return activityApi.joinActivity(id).mapBoth(
             onSuccess = { data -> Result.Success(data) },
             onFailure = { error -> Result.Error(error) }
         )

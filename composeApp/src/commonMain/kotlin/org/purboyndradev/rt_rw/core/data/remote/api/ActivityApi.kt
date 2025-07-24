@@ -15,11 +15,13 @@ interface ActivityApi {
         paginationParams: PaginationParams? = null,
         queryParams: QueryParams? = null
     ): Result<ResponseDto<List<ActivityDto>>, DataError.Remote>
-
+    
     suspend fun fetchActivityById(id: String): Result<ResponseDto<ActivityDetailDto>, DataError.Remote>
     suspend fun deleteActivity(id: String): Result<ResponseDto<Unit>, DataError.Remote>
     suspend fun editActivity(
         id: String,
         params: CreateActivityParams
     ): Result<ResponseDto<Unit>, DataError.Remote>
+    
+    suspend fun joinActivity(id: String): Result<ResponseDto<Unit>, DataError.Remote>
 }

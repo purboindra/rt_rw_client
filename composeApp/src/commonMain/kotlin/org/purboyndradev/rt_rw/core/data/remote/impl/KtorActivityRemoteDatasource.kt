@@ -69,4 +69,10 @@ class KtorActivityRemoteDatasource(private val httpClient: HttpClient) :
             }
         }
     }
+    
+    override suspend fun joinActivity(id: String): Result<ResponseDto<Unit>, DataError.Remote> {
+        return safeCall {
+            httpClient.post("${BASE_URL}/activities/${id}/join")
+        }
+    }
 }

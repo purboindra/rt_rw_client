@@ -12,6 +12,7 @@ import org.purboyndradev.rt_rw.domain.usecases.DeleteActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.EditActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchActivitiesUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchActivityByIdUseCase
+import org.purboyndradev.rt_rw.domain.usecases.JoinActivityUseCase
 
 class ActivityViewModel(
     private val createActivityUseCase: CreateActivityUseCase,
@@ -19,6 +20,7 @@ class ActivityViewModel(
     private val fetchActivityByIdUseCase: FetchActivityByIdUseCase,
     private val deleteActivityUseCase: DeleteActivityUseCase,
     private val editActivityUseCase: EditActivityUseCase,
+    private val joinActivityUseCase: JoinActivityUseCase,
     private val activityId: String?,
 ) : ViewModel() {
     
@@ -30,13 +32,19 @@ class ActivityViewModel(
         )
     val activitiesState = _activitiesState.asStateFlow()
     
-    fun fetchActivityDetail() {
+    private val _joinActivityState: MutableStateFlow<JoinActivityState> =
+        MutableStateFlow(
+            JoinActivityState()
+        )
+    val joinActivityState = _joinActivityState.asStateFlow()
+    
+    fun fetchActivityDetail(id: String) {
         viewModelScope.launch {
             _activitiesState.value = _activitiesState.value.copy(
                 loading = true
             )
             
-            val result = fetchActivityByIdUseCase.invoke(activityId ?: "0")
+            val result = fetchActivityByIdUseCase.invoke(id)
             
             when (result) {
                 is Result.Success -> {
@@ -93,6 +101,39 @@ class ActivityViewModel(
             }
             
             _activitiesState.value = _activitiesState.value.copy(
+                loading = false
+            )
+        }
+    }
+    
+    fun joinActivity(id: String) {
+        viewModelScope.launch {
+            _joinActivityState.value = _joinActivityState.value.copy(
+                loading = true
+            )
+            
+            val result = joinActivityUseCase.invoke(id)
+            
+            when (result) {
+                is Result.Success -> {
+                    _joinActivityState.value = _joinActivityState.value.copy(
+                        success = true
+                    )
+                }
+                
+                is Result.Error -> {
+                    val error = result.error
+                    _activitiesState.value = _activitiesState.value.copy(
+                        error = when (error) {
+                            is ActivityError.InvalidResponse -> "Invalid Response"
+                            is ActivityError.Server -> "Internal Server Error"
+                            else -> "Unknown Error"
+                        }
+                    )
+                }
+            }
+            
+            _joinActivityState.value = _joinActivityState.value.copy(
                 loading = false
             )
         }
