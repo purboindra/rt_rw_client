@@ -67,9 +67,10 @@ fun ActivityDetailContent(
         Spacer(modifier = Modifier.height(8.dp))
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = modifier.fillMaxWidth()
         ) {
             Text(
-                "0 partisipan",
+                "${activity.users.size} partisipan",
                 style = MaterialTheme.typography.labelSmall.copy(
                     color = Color.Gray
                 )
@@ -82,6 +83,6 @@ fun ActivityDetailContent(
                 modifier = modifier.clickable { }
             )
         }
-        Text(activity.pic.name ?: "-")
+        Text(activity.pic.name)
     }
 }

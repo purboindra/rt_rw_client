@@ -46,6 +46,7 @@ import compose.icons.feathericons.Send
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import org.purboyndradev.rt_rw.features.components.ActivityDetailContent
+import org.purboyndradev.rt_rw.features.components.CommentInputActivity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,63 +66,9 @@ fun ActivityDetailScreen(id: String, navHostController: NavHostController) {
             TopAppBarCompose(navHostController, title = "Activity Detail")
         },
         bottomBar = {
-            Box(
-                modifier = Modifier.background(Color.LightGray).padding(12.dp).padding(vertical = 22.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(horizontal = 12.dp).padding(bottom = 9.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(48.dp)
-                            .background(Color.Transparent)
-                            .border(1.dp, Color.Gray, RoundedCornerShape(12.dp)),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        BasicTextField(
-                            value = "",
-                            onValueChange = { newText ->
-                            
-                            },
-                            textStyle = TextStyle(
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontSize = 14.sp
-                            ),
-                            singleLine = true,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 16.dp),
-                            decorationBox = { innerTextField ->
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(start = 16.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    innerTextField()
-                                }
-                            }
-                        )
-                    }
-                    Box(
-                        modifier = Modifier.height(38.dp).width(38.dp).clip(
-                            CircleShape
-                        ).background(Color.Blue).padding(4.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            FeatherIcons.Send,
-                            contentDescription = "Send",
-                            modifier = Modifier.size(24.dp),
-                            tint = Color.White
-                        )
-                    }
-                }
-            }
+            CommentInputActivity(
+                modifier = Modifier,
+            )
         }
     ) { innerPadding ->
         LazyColumn(
