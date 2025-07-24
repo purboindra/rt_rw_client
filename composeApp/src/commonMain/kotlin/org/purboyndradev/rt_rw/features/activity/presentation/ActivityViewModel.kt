@@ -21,7 +21,6 @@ class ActivityViewModel(
     private val deleteActivityUseCase: DeleteActivityUseCase,
     private val editActivityUseCase: EditActivityUseCase,
     private val joinActivityUseCase: JoinActivityUseCase,
-    private val activityId: String?,
 ) : ViewModel() {
     
     private val _activitiesState: MutableStateFlow<ActivityState> =
