@@ -12,14 +12,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.koin.compose.viewmodel.koinViewModel
 import org.purboyndradev.rt_rw.core.domain.model.ActivityDetailModel
-import org.purboyndradev.rt_rw.core.domain.model.ActivityModel
+import org.purboyndradev.rt_rw.features.activity.presentation.ActivityViewModel
 import org.purboyndradev.rt_rw.helper.DateHelper
 
 
@@ -28,6 +30,9 @@ fun ActivityDetailContent(
     activity: ActivityDetailModel,
     modifier: Modifier = Modifier
 ) {
+    
+    val activityViewModel = koinViewModel<ActivityViewModel>()
+    val joinActivityState by activityViewModel.joinActivityState.collectAsStateWithLifecycle()
     
     val date = DateHelper.convertEpochToDate(activity.date)
     
@@ -51,7 +56,9 @@ fun ActivityDetailContent(
             Spacer(modifier = modifier.width(8.dp))
             Box(modifier = modifier.width(112.dp)) {
                 ElevatedButton(
-                    onClick = {},
+                    onClick = {
+                        activityViewModel.joinActivity(activity.id)
+                    },
                     modifier = modifier.fillMaxWidth()
                 ) {
                     Text("Join", style = MaterialTheme.typography.labelMedium)
