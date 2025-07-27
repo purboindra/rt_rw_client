@@ -2,7 +2,7 @@ package org.purboyndradev.rt_rw.core.data.repository
 
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
-import org.purboyndradev.rt_rw.core.data.datastore.UserRepository
+import org.purboyndradev.rt_rw.core.data.datastore.AppAuthRepository
 import org.purboyndradev.rt_rw.core.data.dto.RefreshTokenDto
 import org.purboyndradev.rt_rw.core.data.dto.ResponseDto
 import org.purboyndradev.rt_rw.core.data.dto.SignInDto
@@ -12,13 +12,12 @@ import org.purboyndradev.rt_rw.core.data.remote.mapper.toAuthError
 import org.purboyndradev.rt_rw.core.domain.AuthError
 import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.core.domain.mapBoth
-import org.purboyndradev.rt_rw.domain.model.UserDBModel
 import org.purboyndradev.rt_rw.domain.repository.AuthRepository
 import org.purboyndradev.rt_rw.helper.JWTObject
 
 class AuthRepositoryImpl(
     private val api: AuthApi,
-    private val userRepository: UserRepository
+    private val appAuthRepository: AppAuthRepository
 ) : AuthRepository {
     override suspend fun signIn(phoneNumber: String): Result<ResponseDto<SignInDto>, AuthError> {
         return api.signIn(phoneNumber).mapBoth(
@@ -35,18 +34,29 @@ class AuthRepositoryImpl(
                 val payload = JWTObject.decodeJwtPayload(data.accessToken)
                     ?: return@mapBoth Result.Error(AuthError.InvalidResponse)
                 
+                println("Payload sign in: $payload")
+                
                 val username =
                     payload["username"]?.jsonPrimitive?.contentOrNull ?: ""
                 
                 val email = payload["email"]?.jsonPrimitive?.contentOrNull
                 
-                userRepository.saveUser(
-                    UserDBModel(
-                        accessToken = data.accessToken,
-                        refreshToken = data.refreshToken,
-                        username = username,
-                        email = email
-                    )
+                val userId = payload["userId"]?.jsonPrimitive?.contentOrNull
+                
+                val accessToken = data.accessToken
+                val refreshToken = data.refreshToken
+                
+                appAuthRepository.saveTokens(
+                    accessToken,
+                    refreshToken
+                )
+                
+                appAuthRepository.saveUsername(
+                    username
+                )
+                
+                appAuthRepository.saveUserId(
+                    userId ?: ""
                 )
                 
                 Result.Success(responseDto)
@@ -73,14 +83,22 @@ class AuthRepositoryImpl(
                 
                 val email = payload["email"]?.jsonPrimitive?.contentOrNull
                 
-                userRepository.saveUser(
-                    UserDBModel(
-                        accessToken = data.accessToken,
-                        refreshToken = data.refreshToken,
-                        username = username,
-                        email = email,
-                        profilePicture = null
-                    )
+                val userId = payload["userId"]?.jsonPrimitive?.contentOrNull
+                
+                val accessToken = data.accessToken
+                val refreshToken = data.refreshToken
+                
+                appAuthRepository.saveTokens(
+                    accessToken,
+                    refreshToken
+                )
+                
+                appAuthRepository.saveUsername(
+                    username
+                )
+                
+                appAuthRepository.saveUserId(
+                    userId ?: ""
                 )
                 
                 Result.Success(it)
@@ -93,10 +111,9 @@ class AuthRepositoryImpl(
     }
     
     override suspend fun refreshToken(
-        accessToken: String,
         refreshToken: String
     ): Result<ResponseDto<RefreshTokenDto>, AuthError> {
-        return api.refreshToken(accessToken, refreshToken).mapBoth(
+        return api.refreshToken(refreshToken).mapBoth(
             onSuccess = {
                 Result.Success(it)
             },

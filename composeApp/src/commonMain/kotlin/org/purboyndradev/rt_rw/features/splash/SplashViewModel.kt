@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import org.purboyndradev.rt_rw.core.data.datastore.UserRepository
+import org.purboyndradev.rt_rw.core.data.datastore.AppAuthRepository
 import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.domain.usecases.RefreshTokenUseCase
 
@@ -18,7 +18,7 @@ sealed class SplashNavigationState {
 
 class SplashViewModel(
     private val refreshTokenUseCase: RefreshTokenUseCase,
-    private val userRepository: UserRepository
+    private val appAuthRepository: AppAuthRepository,
 ) : ViewModel() {
     
     private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -36,32 +36,33 @@ class SplashViewModel(
         _isLoading.value = true
         viewModelScope.launch {
             try {
-                val userData = userRepository.currentUserData.firstOrNull()
-                println("Current user data: $userData")
+                val accessToken =
+                    appAuthRepository.accessTokenFlow.firstOrNull()
+                val refreshToken =
+                    appAuthRepository.refreshTokenFlow.firstOrNull()
+                
+                println("Access Token: $accessToken, Refresh Token: $refreshToken")
                 
                 // If no user data, navigate to login
-                if (userData == null) {
+                if (accessToken == null || refreshToken == null) {
                     onUpdateNavigationState(SplashNavigationState.NavigateToLogin)
                     return@launch
                 }
                 
-                // Proceed with the token refresh
                 when (val result = refreshTokenUseCase(
-                    accessToken = userData?.accessToken ?: "",
-                    refreshToken = userData?.refreshToken ?: ""
+                    refreshToken = refreshToken
                 )) {
                     is Result.Success -> {
-                        // Update the user tokens
-                        userRepository.updateUserAccessToken(
-                            newAccessToken = result.data.accessToken,
-                            newRefreshToken = result.data.refreshToken,
+                        appAuthRepository.saveTokens(
+                            accessToken = result.data.accessToken,
+                            refreshToken = result.data.refreshToken
                         )
                         onUpdateNavigationState(SplashNavigationState.NavigateToHome)
                     }
                     
                     is Result.Error -> {
                         // If error, clear the user data and navigate to login
-                        userRepository.clearUserData()
+//                        userRepository.clearUserData()
                         onUpdateNavigationState(SplashNavigationState.NavigateToLogin)
                         println("Error refreshing token: $result")
                     }

@@ -15,6 +15,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -39,6 +40,13 @@ fun LoginScreen(navHostController: NavHostController) {
     val authState = authViewModel.signInState.collectAsStateWithLifecycle()
     val openAlertDialog =
         authViewModel.openAlertDialog.collectAsStateWithLifecycle()
+    
+    LaunchedEffect(authState.value) {
+        /// MEAN: User already verify their phone
+        if (authState.value.success && authState.value.code == null) {
+            navHostController.navigate(Main)
+        }
+    }
     
     when {
         openAlertDialog.value -> {
@@ -93,8 +101,8 @@ fun LoginScreen(navHostController: NavHostController) {
             Spacer(modifier = Modifier.height(10.dp))
             ElevatedButton(
                 onClick = {
-//                    authViewModel.signIn()
-                    navHostController.navigate(Main)
+                    authViewModel.signIn()
+//                    navHostController.navigate(Main)
                 },
                 enabled = !isLoadingState.value
             ) {

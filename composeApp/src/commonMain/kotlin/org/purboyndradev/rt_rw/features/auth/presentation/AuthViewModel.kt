@@ -2,20 +2,16 @@ package org.purboyndradev.rt_rw.features.auth.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.mp.KoinPlatform.getKoin
+import org.purboyndradev.rt_rw.core.data.datastore.AppAuthRepository
 import org.purboyndradev.rt_rw.core.data.datastore.UserRepository
-import org.purboyndradev.rt_rw.domain.model.UserDBModel
 import org.purboyndradev.rt_rw.core.domain.Result
-import org.purboyndradev.rt_rw.core.domain.model.AuthTokenInfo
 import org.purboyndradev.rt_rw.domain.usecases.SignInUseCase
 import org.purboyndradev.rt_rw.domain.usecases.VerifyOtpUseCase
-import org.purboyndradev.rt_rw.helper.JWTObject
 
 data class OTPUiState(
     val otpLength: Int = 6,
@@ -27,6 +23,7 @@ class AuthViewModel(
     private val signInUseCase: SignInUseCase,
     private val verifyOtpUseCase: VerifyOtpUseCase,
     private val userRepository: UserRepository,
+    private val appAuthRepository: AppAuthRepository
 ) : ViewModel() {
     
     private val _signInState: MutableStateFlow<AuthState> =
@@ -79,14 +76,26 @@ class AuthViewModel(
     fun testDataStore() {
         viewModelScope.launch {
             try {
-                userRepository.saveUser(
-                    UserDBModel(
-                        accessToken = "test",
-                        refreshToken = "test",
-                        username = "test",
-                        email = "test",
-                    )
-                )
+//                appAuthRepository.saveTokens(
+//                    accessToken = "ACCESS TOKEN",
+//                    refreshToken = "REFRESH TOKEN"
+//                )
+//
+//                appAuthRepository.saveUserId("USER_ID")
+//
+//                appAuthRepository.saveUsername("USERNAME")
+                
+                combine(
+                    appAuthRepository.accessTokenFlow,
+                    appAuthRepository.refreshTokenFlow,
+                    appAuthRepository.userIdFlow,
+                    appAuthRepository.userNameFlow
+                ) { accessToken, refreshToken, userId, username ->
+                    println("Access Token: $accessToken, Refresh Token: $refreshToken, User Id: $userId, Username: $username")
+                }.collect {
+                    println("Collecting...")
+                }
+                
             } catch (e: Exception) {
                 println("Error saving user: $e")
             }
@@ -104,6 +113,15 @@ class AuthViewModel(
                     
                     val redirectUrl = data.redirectUrl
                     val code = data.code
+                    
+                    println("Redirect Url: $redirectUrl, Code: $code")
+                    
+                    if (code == null) {
+                        _signInState.value = _signInState.value.copy(
+                            success = true
+                        )
+                        return@launch
+                    }
                     
                     if (code == "USER_NOT_VERIFIED") {
                         redirectUrl?.let {

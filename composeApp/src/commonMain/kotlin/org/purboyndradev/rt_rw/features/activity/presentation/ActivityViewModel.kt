@@ -127,7 +127,7 @@ class ActivityViewModel(
                 
                 is Result.Error -> {
                     val error = result.error
-                    _activitiesState.value = _activitiesState.value.copy(
+                    _joinActivityState.value = _joinActivityState.value.copy(
                         error = when (error) {
                             is ActivityError.InvalidResponse -> "Invalid Response"
                             is ActivityError.Server -> "Internal Server Error"

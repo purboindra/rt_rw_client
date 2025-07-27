@@ -9,11 +9,10 @@ class RefreshTokenUseCase(
     private val authRepository: AuthRepository
 ) {
     suspend operator fun invoke(
-        accessToken: String,
         refreshToken: String
     ): Result<RefreshTokenInfo, AuthError> {
         return when (val result =
-            authRepository.refreshToken(accessToken, refreshToken)) {
+            authRepository.refreshToken(refreshToken)) {
             is Result.Success -> {
                 val data = result.data.data
                     ?: return Result.Error(AuthError.InvalidResponse)
@@ -23,6 +22,7 @@ class RefreshTokenUseCase(
                 )
                 Result.Success(refreshTokenInfo)
             }
+            
             is Result.Error -> {
                 Result.Error(result.error)
             }

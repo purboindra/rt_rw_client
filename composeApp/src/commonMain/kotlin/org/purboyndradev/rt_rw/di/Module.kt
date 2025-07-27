@@ -1,12 +1,19 @@
 package org.purboyndradev.rt_rw.di
 
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
+import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.json.Json
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
+import org.purboyndradev.rt_rw.core.data.datastore.AppAuthRepository
 import org.purboyndradev.rt_rw.core.data.datastore.UserRepository
 import org.purboyndradev.rt_rw.core.data.remote.api.ActivityApi
 import org.purboyndradev.rt_rw.core.data.remote.api.AuthApi
@@ -45,15 +52,38 @@ expect val platformModule: Module
 
 val sharedModule: Module = module {
     
-    single<String>(qualifier = named("baseUrl")) { BASE_URL }
+    
+    /// PROVIDE HTTP CLIENT FACTORY
+     val authHttpClient = named("AuthHttpClient")
+    single<HttpClient>(qualifier = authHttpClient) {
+        HttpClient(get()) {
+            install(ContentNegotiation) {
+                json(Json {
+                    ignoreUnknownKeys = true
+                    prettyPrint = true
+                    isLenient = true
+                })
+            }
+            defaultRequest {
+                contentType(ContentType.Application.Json)
+            }
+        }
+    }
     
     single<HttpClient> {
-        HttpClientFactory.create(get())
+        HttpClientFactory.create(get(), get(), get())
+    }
+    
+    single<String>(qualifier = named("baseUrl")) { BASE_URL }
+    
+    /// PROVIDE OBJECT KEYS DATASTORE
+    single<AuthKeys> {
+        AuthKeys
     }
     
     /// PROVIDE REMOTE DATA SOURCE
     single<AuthApi> {
-        KtorAuthRemoteDatasource(get())
+        KtorAuthRemoteDatasource(get(qualifier = authHttpClient))
     }
     single<ActivityApi> {
         KtorActivityRemoteDatasource(get())
@@ -101,18 +131,26 @@ val sharedModule: Module = module {
         JoinActivityUseCase(get())
     }
     
-    
     /// PROVIDE DATA STORE
     single {
         createCurrentUserDataStore()
+    }
+    
+    /// PROVIDE APP AUTH DATA STORE
+    single {
+        createDataStore()
     }
     
     single {
         UserRepository(get())
     }
     
+    single {
+        AppAuthRepository(get())
+    }
+    
     /// PROVIDE VIEW MODEL
-    viewModel { AuthViewModel(get(), get(), get()) }
+    viewModel { AuthViewModel(get(), get(), get(), get()) }
     viewModel { SplashViewModel(get(), get()) }
     viewModel { MainViewModel(get()) }
     viewModel { params ->

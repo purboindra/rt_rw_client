@@ -2,7 +2,6 @@ package org.purboyndradev.rt_rw.features.splash
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -16,7 +15,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import org.koin.compose.viewmodel.koinViewModel
 import org.purboyndradev.rt_rw.features.navigation.Login
-import org.purboyndradev.rt_rw.features.navigation.OTP
+import org.purboyndradev.rt_rw.features.navigation.Main
 
 @Composable
 fun SplashScreen(navHostController: NavHostController) {
@@ -38,7 +37,7 @@ fun SplashScreen(navHostController: NavHostController) {
             }
             
             is SplashNavigationState.NavigateToHome -> {
-                navHostController.navigate(OTP) {
+                navHostController.navigate(Main) {
                     popUpTo(0) { inclusive = true }
                 }
             }
