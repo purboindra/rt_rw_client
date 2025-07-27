@@ -14,6 +14,7 @@ class JoinActivityUseCase(private val activityRepository: ActivityRepository) {
             }
             
             is Result.Error -> {
+                println("Error joining activity: ${result.error}")
                 Result.Error(result.error.toActivityError())
             }
         }
