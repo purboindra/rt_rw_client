@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
+    alias(libs.plugins.google.services)
 }
 
 kotlin {
@@ -83,19 +84,23 @@ kotlin {
             
             /// COIL
             implementation(libs.coil.compose)
-
+            
             /// DATASTORE
             implementation(libs.datastore.preferences)
             implementation(libs.datastore)
             
             /// ROOM
             implementation(libs.androidx.room.runtime)
-
+            
             /// COMPOSE ICONS
             implementation(libs.composeIcons.feather)
             
             /// KOTLINX DATETIME
             implementation(libs.kotlinx.datetime)
+            
+            /// FIREBASE
+            implementation(project.dependencies.platform(libs.firebase.bom))
+            implementation(libs.cloud.messaging)
         }
         
         iosMain.dependencies {
