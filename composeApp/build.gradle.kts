@@ -101,6 +101,7 @@ kotlin {
             /// FIREBASE
             implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.cloud.messaging)
+            implementation(libs.firebase.messaging.directboot)
         }
         
         iosMain.dependencies {

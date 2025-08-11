@@ -26,6 +26,7 @@ composeIcons = "1.1.1"
 kotlinx-datetime = "0.7.1"
 gms-google-services = "4.4.3"
 firebase-bom = "34.1.0"
+firebase-direct-boot = "20.2.0"
 
 
 [libraries]
@@ -44,6 +45,7 @@ androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle
 # FIREBASE
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 cloud-messaging = { module = "com.google.firebase:firebase-messaging" }
+firebase-messaging-directboot = { module = "com.google.firebase:firebase-messaging-directboot", version.ref = "firebase-direct-boot" }
 
 #COIL
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
