@@ -9,11 +9,14 @@ import kotlinx.coroutines.launch
 import org.purboyndradev.rt_rw.core.data.datastore.AppAuthRepository
 import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.domain.usecases.RefreshTokenUseCase
+import org.purboyndradev.rt_rw.features.navigation.StartDestinationData
 
 sealed class SplashNavigationState {
     data object Idle : SplashNavigationState()
     data object NavigateToLogin : SplashNavigationState()
     data object NavigateToHome : SplashNavigationState()
+    data class NavigateToActivity(val activityId: String) :
+        SplashNavigationState()
 }
 
 class SplashViewModel(
@@ -24,6 +27,7 @@ class SplashViewModel(
     private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
     
+    
     private val _navigationState =
         MutableStateFlow<SplashNavigationState>(SplashNavigationState.Idle)
     val navigationState = _navigationState.asStateFlow()
@@ -32,7 +36,7 @@ class SplashViewModel(
         _navigationState.value = value
     }
     
-    fun refreshToken() {
+    fun refreshToken(startDestination: StartDestinationData? = null) {
         _isLoading.value = true
         viewModelScope.launch {
             try {
@@ -57,12 +61,10 @@ class SplashViewModel(
                             accessToken = result.data.accessToken,
                             refreshToken = result.data.refreshToken
                         )
-                        onUpdateNavigationState(SplashNavigationState.NavigateToHome)
+//                        checkAndExecutePendingNavigation(startDestination)
                     }
                     
                     is Result.Error -> {
-                        // If error, clear the user data and navigate to login
-//                        userRepository.clearUserData()
                         onUpdateNavigationState(SplashNavigationState.NavigateToLogin)
                         println("Error refreshing token: $result")
                     }
@@ -75,9 +77,29 @@ class SplashViewModel(
                 onUpdateNavigationState(SplashNavigationState.NavigateToLogin)
             } finally {
                 _isLoading.value = false
+                startDestination?.let {
+                    checkAndExecutePendingNavigation(it)
+                }
             }
         }
     }
     
-    
+    private fun checkAndExecutePendingNavigation(startDestination: StartDestinationData? = null) {
+        
+        println("checkAndExecutePendingNavigation startDestination: $startDestination")
+        
+        if (startDestination != null) {
+            val splashNavigationState = when (startDestination.route) {
+                "activity" -> {
+                    val itemId = startDestination.data as String
+                    SplashNavigationState.NavigateToActivity(itemId)
+                }
+                
+                else -> {
+                    SplashNavigationState.NavigateToHome
+                }
+            }
+            onUpdateNavigationState(splashNavigationState)
+        }
+    }
 }

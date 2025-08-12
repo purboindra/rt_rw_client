@@ -12,12 +12,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import org.koin.compose.viewmodel.koinViewModel
+import org.purboyndradev.rt_rw.features.navigation.ActivityDetail
 import org.purboyndradev.rt_rw.features.navigation.Login
 import org.purboyndradev.rt_rw.features.navigation.Main
 import org.purboyndradev.rt_rw.features.navigation.StartDestinationData
@@ -27,41 +29,48 @@ fun SplashScreen(
     navHostController: NavHostController,
     startDestination: StartDestinationData? = null
 ) {
-
+    
     val splashViewModel = koinViewModel<SplashViewModel>()
-    val splashNavigationState =
-        splashViewModel.navigationState.collectAsStateWithLifecycle()
-
+    val splashNavigationState by
+    splashViewModel.navigationState.collectAsStateWithLifecycle()
+    val isLoading by splashViewModel.isLoading.collectAsStateWithLifecycle()
+    
     LaunchedEffect(Unit) {
         splashViewModel.refreshToken()
     }
-
-    LaunchedEffect(Unit) {
-        startDestination?.let {
-            splashViewModel.onUpdateNavigationState(
-                SplashNavigationState.NavigateToHome
-            )
-        }
-    }
-
-    LaunchedEffect(splashNavigationState.value) {
-        when (splashNavigationState.value) {
+    
+    LaunchedEffect(
+        splashNavigationState,
+        isLoading
+    
+    ) {
+        if (!isLoading) when (splashNavigationState) {
             is SplashNavigationState.NavigateToLogin -> {
                 navHostController.navigate(Login) {
                     popUpTo(0) { inclusive = true }
                 }
             }
-
+            
             is SplashNavigationState.NavigateToHome -> {
                 navHostController.navigate(Main) {
                     popUpTo(0) { inclusive = true }
                 }
             }
-
-            else -> Unit
+            
+            is SplashNavigationState.NavigateToActivity -> {
+                val itemId =
+                    (splashNavigationState as SplashNavigationState.NavigateToActivity).activityId
+                navHostController.navigate(ActivityDetail(itemId)) {
+                    popUpTo(0) { inclusive = true }
+                }
+            }
+            
+            else -> navHostController.navigate(Login) {
+                popUpTo(0) { inclusive = true }
+            }
         }
     }
-
+    
     Scaffold { paddingValues ->
         Column(
             modifier = Modifier.padding(paddingValues)

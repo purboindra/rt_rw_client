@@ -13,13 +13,14 @@ import androidx.navigation.NavHostController
 @Composable
 fun NewsScreen(
     modifier: Modifier = Modifier,
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    itemId: Int
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Hello News Screen")
+        Text("Hello News Screen: ${itemId}")
     }
 }

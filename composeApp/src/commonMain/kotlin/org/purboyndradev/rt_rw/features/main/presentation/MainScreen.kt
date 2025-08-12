@@ -92,7 +92,8 @@ fun MainScreen(navHostController: NavHostController) {
             }
             composable(route = News.ROUTE) {
                 NewsScreen(
-                    navHostController = navHostController
+                    navHostController = navHostController,
+                    itemId = 1
                 )
             }
             composable(route = Profile.ROUTE) {

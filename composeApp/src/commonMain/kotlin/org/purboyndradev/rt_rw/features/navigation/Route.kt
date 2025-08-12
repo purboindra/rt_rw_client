@@ -36,3 +36,6 @@ object Activity {
 
 @Serializable
 data class ActivityDetail(val id: String)
+
+@Serializable
+data class NewsDetail(val id: String)

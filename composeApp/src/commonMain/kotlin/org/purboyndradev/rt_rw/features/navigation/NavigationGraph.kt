@@ -13,11 +13,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import org.purboyndradev.rt_rw.AppContext
 import org.purboyndradev.rt_rw.features.activity.presentation.ActivityDetailScreen
 import org.purboyndradev.rt_rw.features.auth.presentation.LoginScreen
 import org.purboyndradev.rt_rw.features.auth.presentation.OTPScreen
 import org.purboyndradev.rt_rw.features.main.presentation.MainScreen
+import org.purboyndradev.rt_rw.features.news.presentation.NewsScreen
 import org.purboyndradev.rt_rw.features.splash.SplashScreen
 
 data class StartDestinationData(
@@ -26,15 +26,23 @@ data class StartDestinationData(
 )
 
 @Composable
-fun NavigationGraph(modifier: Modifier = Modifier, startDestination: StartDestinationData? = null) {
+fun NavigationGraph(
+    modifier: Modifier = Modifier,
+    startDestination: StartDestinationData? = null
+) {
     val navController = rememberNavController()
-
+    
     NavHost(
         navController = navController, startDestination = Splash,
         modifier = modifier
     ) {
         composable<Login> {
             LoginScreen(navHostController = navController)
+        }
+        composable<NewsDetail> { backStackEntry ->
+            val activityDetail = backStackEntry.toRoute<ActivityDetail>()
+            val id = activityDetail.id
+            NewsScreen(navHostController = navController, itemId = id.toInt())
         }
         composable<OTP> { backStackEntry ->
             val otpScreen = backStackEntry.toRoute<OTP>()
@@ -45,7 +53,7 @@ fun NavigationGraph(modifier: Modifier = Modifier, startDestination: StartDestin
             )
         }
         composable<Splash> {
-            SplashScreen(navHostController = navController)
+            SplashScreen(navHostController = navController, startDestination)
         }
         composable<Main> {
             MainScreen(navHostController = navController)
