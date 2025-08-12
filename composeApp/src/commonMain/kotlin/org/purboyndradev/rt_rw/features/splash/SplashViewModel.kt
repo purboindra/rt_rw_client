@@ -61,7 +61,7 @@ class SplashViewModel(
                             accessToken = result.data.accessToken,
                             refreshToken = result.data.refreshToken
                         )
-//                        checkAndExecutePendingNavigation(startDestination)
+                        checkAndExecutePendingNavigation(startDestination)
                     }
                     
                     is Result.Error -> {
@@ -78,6 +78,7 @@ class SplashViewModel(
             } finally {
                 _isLoading.value = false
                 startDestination?.let {
+                    println("startDestination: $startDestination")
                     checkAndExecutePendingNavigation(it)
                 }
             }

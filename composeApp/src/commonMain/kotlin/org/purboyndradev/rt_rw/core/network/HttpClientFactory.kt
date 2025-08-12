@@ -87,11 +87,6 @@ object HttpClientFactory {
                                     }
                                 }
                                 
-                                // Placeholder: In a real app, you'd call your API to refresh
-                                // For now, if we don't have a direct refresh mechanism here,
-                                // we might just return null or re-fetch from DataStore if another
-                                // part of the app could have refreshed it.
-                                // This simplistic refresh might not be robust enough for all cases.
                                 val currentAccessToken =
                                     appAuthRepository.accessTokenFlow.firstOrNull()
                                 val currentRefreshToken =
