@@ -13,16 +13,22 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import org.purboyndradev.rt_rw.AppContext
 import org.purboyndradev.rt_rw.features.activity.presentation.ActivityDetailScreen
 import org.purboyndradev.rt_rw.features.auth.presentation.LoginScreen
 import org.purboyndradev.rt_rw.features.auth.presentation.OTPScreen
 import org.purboyndradev.rt_rw.features.main.presentation.MainScreen
 import org.purboyndradev.rt_rw.features.splash.SplashScreen
 
+data class StartDestinationData(
+    val route: String,
+    val data: Any? = null
+)
+
 @Composable
-fun NavigationGraph(modifier: Modifier = Modifier) {
+fun NavigationGraph(modifier: Modifier = Modifier, startDestination: StartDestinationData? = null) {
     val navController = rememberNavController()
-    
+
     NavHost(
         navController = navController, startDestination = Splash,
         modifier = modifier
