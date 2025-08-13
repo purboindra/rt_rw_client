@@ -28,9 +28,7 @@ class MyFirebaseService : FirebaseMessagingService(), KoinComponent {
     
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        
-        print("New Token: $token")
-        
+        Log.d(TAG, "Refreshed token: $token")
         CoroutineScope(Dispatchers.IO).launch {
             authRepo.saveFCMToken(token)
         }
@@ -41,13 +39,9 @@ class MyFirebaseService : FirebaseMessagingService(), KoinComponent {
         
         Log.d(TAG, "From: ${remoteMessage.from}")
         
-        val navigationData = remoteMessage.data
+        val data = remoteMessage.data
         
-        if (navigationData.isNotEmpty()) {
-            Log.d(TAG, "Message data payload: ${remoteMessage.data}")
-        }
-        
-        navigationData?.let {
+        data.let {
             Log.d(TAG, "Message Notification Body: $it")
             sendNotification(it)
         }
@@ -56,7 +50,6 @@ class MyFirebaseService : FirebaseMessagingService(), KoinComponent {
     private fun sendNotification(
         data: Map<String, String>
     ) {
-        
         val title = data["title"] ?: ""
         val body = data["body"] ?: ""
         
