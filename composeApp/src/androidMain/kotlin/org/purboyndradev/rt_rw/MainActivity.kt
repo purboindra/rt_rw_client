@@ -13,6 +13,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.getKoin
+import org.purboyndradev.rt_rw.core.data.datastore.AppAuthRepository
 import org.purboyndradev.rt_rw.features.navigation.StartDestinationData
 
 class MainActivity : ComponentActivity() {
@@ -28,21 +34,36 @@ class MainActivity : ComponentActivity() {
     }
     
     override fun onCreate(savedInstanceState: Bundle?) {
-        
-        askNotificationPermission()
-        
-        FirebaseHelper.getTokenFCM { token -> println("FCM Token: $token") }
+        super.onCreate(savedInstanceState)
         
         enableEdgeToEdge()
-        super.onCreate(savedInstanceState)
+        askNotificationPermission()
+        
+        fetchFcmToken()
+        
         setContent {
             App(startDestination = getStartDestinationFromIntent(intent))
         }
     }
     
+    
     override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
         super.onNewIntent(intent, caller)
         handleNavigationFromNotification(intent)
+    }
+    
+    private fun fetchFcmToken() {
+        lifecycleScope.launch {
+            val appAuthRepository = getKoin().get<AppAuthRepository>()
+            val cachedFcmToken = appAuthRepository.fcmTokenFlow.firstOrNull()
+            if (cachedFcmToken.isNullOrEmpty()) {
+                FirebaseHelper.getTokenFCM { token ->
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        appAuthRepository.saveFCMToken(token)
+                    }
+                }
+            }
+        }
     }
     
     private fun askNotificationPermission() {
