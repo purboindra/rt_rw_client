@@ -11,17 +11,29 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import org.purboyndradev.rt_rw.MainActivity
 import org.purboyndradev.rt_rw.R
+import org.purboyndradev.rt_rw.core.data.datastore.AppAuthRepository
 
 private const val TAG = "MyFirebaseService"
 
-class MyFirebaseService : FirebaseMessagingService() {
+class MyFirebaseService : FirebaseMessagingService(), KoinComponent {
+    
+    private val authRepo: AppAuthRepository by inject()
     
     override fun onNewToken(token: String) {
         super.onNewToken(token)
         
         print("New Token: $token")
+        
+        CoroutineScope(Dispatchers.IO).launch {
+            authRepo.saveFCMToken(token)
+        }
     }
     
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
