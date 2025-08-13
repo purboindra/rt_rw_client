@@ -1,5 +1,4 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.konan.target.HostManager
 
 plugins {
@@ -18,7 +17,7 @@ kotlin {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11) }
     }
-
+    
     if (HostManager.hostIsMac) {
         listOf(
             iosX64(),
@@ -31,30 +30,30 @@ kotlin {
             }
         }
     }
-
+    
     sourceSets {
-
+        
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
-
+            
             /// FIREBASE
             implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.cloud.messaging)
             implementation(libs.firebase.messaging.directboot)
-
+            
             /// COROUTINE
             implementation(libs.kotlinx.coroutines.android)
-
+            
             /// KOIN
             implementation(libs.koin.android)
-
+            
             /// COIL
             implementation(libs.coil.network.okhttp)
-
+            
             /// KTOR
             implementation(libs.ktor.client.android)
-
+            
             /// ROOM
             implementation(libs.androidx.room.paging)
         }
@@ -67,7 +66,7 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtimeCompose)
-
+            
             /// KTOR
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.cio)
@@ -75,49 +74,44 @@ kotlin {
             implementation(libs.ktor.client.logging)
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.ktor.client.auth)
-
+            
             /// NAVIGATION
             implementation(libs.navigation.compose)
-
+            
             /// COROUTINES
             implementation(libs.kotlinx.coroutines.core)
-
+            
             /// KOIN
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.koin.compose.viewmodel.navigation)
-
+            
             /// COIL
             implementation(libs.coil.compose)
-
+            
             /// DATASTORE
             implementation(libs.datastore.preferences)
             implementation(libs.datastore)
-
+            
             /// ROOM
             implementation(libs.androidx.room.runtime)
-
+            
             /// COMPOSE ICONS
             implementation(libs.composeIcons.feather)
-
+            
             /// KOTLINX DATETIME
             implementation(libs.kotlinx.datetime)
         }
-
+        
         if (HostManager.hostIsMac) {
-            val iosMain by getting {
-                dependencies {
-                    implementation(libs.ktor.client.darwin)
-                }
-            }
-
             iosMain.dependencies {
                 implementation(libs.ktor.client.darwin)
+                
             }
         }
-
-
+        
+        
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
@@ -127,7 +121,7 @@ kotlin {
 android {
     namespace = "org.purboyndradev.rt_rw"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
-
+    
     defaultConfig {
         applicationId = "org.purboyndradev.rt_rw"
         minSdk = libs.versions.android.minSdk.get().toInt()
@@ -153,13 +147,13 @@ android {
 
 dependencies {
     add("kspAndroid", libs.androidx.room.compiler)
-
+    
     if (HostManager.hostIsMac) {
         add("kspIosArm64", libs.androidx.room.compiler)
         add("kspIosX64", libs.androidx.room.compiler)
         add("kspIosSimulatorArm64", libs.androidx.room.compiler)
     }
-
+    
     debugImplementation(compose.uiTooling)
 }
 
