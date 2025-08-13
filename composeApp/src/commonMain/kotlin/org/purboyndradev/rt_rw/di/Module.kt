@@ -14,7 +14,6 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 import org.purboyndradev.rt_rw.core.data.datastore.AppAuthRepository
-import org.purboyndradev.rt_rw.core.data.datastore.UserRepository
 import org.purboyndradev.rt_rw.core.data.remote.api.ActivityApi
 import org.purboyndradev.rt_rw.core.data.remote.api.AuthApi
 import org.purboyndradev.rt_rw.core.data.remote.impl.KtorActivityRemoteDatasource
