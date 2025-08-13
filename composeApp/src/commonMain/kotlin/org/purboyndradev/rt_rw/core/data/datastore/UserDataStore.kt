@@ -85,6 +85,12 @@ class AppAuthRepository(private val dataStore: DataStore<Preferences>) {
         }
     }
     
+    suspend fun saveFCMToken(fcmToken: String) {
+        dataStore.edit {
+            it[AuthKeys.FCM_TOKEN] = fcmToken
+        }
+    }
+    
     suspend fun saveUserId(userId: String) {
         dataStore.edit {
             it[AuthKeys.USER_ID] = userId
@@ -138,6 +144,16 @@ class AppAuthRepository(private val dataStore: DataStore<Preferences>) {
         }.map { preferences ->
             preferences[AuthKeys.REFRESH_TOKEN]
         }
+    
+    val fcmTokenFlow: Flow<String?> = dataStore.data.catch { exception ->
+        if (exception is IOException) {
+            emit(emptyPreferences())
+        } else {
+            throw exception
+        }
+    }.map {
+        preferences -> preferences[AuthKeys.FCM_TOKEN]
+    }
     
     suspend fun clearUserPrefs() {
         dataStore.edit { settings ->
