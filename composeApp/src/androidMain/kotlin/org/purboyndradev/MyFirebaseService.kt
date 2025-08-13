@@ -17,30 +17,30 @@ import org.purboyndradev.rt_rw.R
 private const val TAG = "MyFirebaseService"
 
 class MyFirebaseService : FirebaseMessagingService() {
-    
+
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        
+
         print("New Token: $token")
     }
-    
+
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
-        
+
         Log.d(TAG, "From: ${remoteMessage.from}")
-        
+
         val navigationData = remoteMessage.data
-        
+
         if (navigationData.isNotEmpty()) {
             Log.d(TAG, "Message data payload: ${remoteMessage.data}")
         }
-        
+
         remoteMessage.notification?.let {
             Log.d(TAG, "Message Notification Body: ${it.body}")
             sendNotification(it.body!!, navigationData)
         }
     }
-    
+
     private fun sendNotification(
         messageBody: String,
         data: Map<String, String>
@@ -51,7 +51,7 @@ class MyFirebaseService : FirebaseMessagingService() {
                 putExtra(key, value)
             }
         }
-        
+
         val requestCode = System.currentTimeMillis().toInt()
         val pendingIntent = PendingIntent.getActivity(
             this,
@@ -59,28 +59,30 @@ class MyFirebaseService : FirebaseMessagingService() {
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
-        
+
         val channelId = getString(R.string.default_notification_channel_id)
         val defaultSoundUri =
             RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        
+
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle("FCM Message")
             .setContentText(messageBody)
             .setAutoCancel(true)
             .setSound(defaultSoundUri)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setPriority(NotificationCompat.PRIORITY_HIGH).setVisibility(
+                NotificationCompat.VISIBILITY_PUBLIC
+            )
             .setDefaults(Notification.DEFAULT_ALL)
             .setContentIntent(pendingIntent)
-        
+
         notificationBuilder.setStyle(
             NotificationCompat.BigTextStyle().bigText(messageBody)
         )
-        
+
         val notificationManager =
             getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        
+
         // Since android Oreo notification channel is needed.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -89,12 +91,13 @@ class MyFirebaseService : FirebaseMessagingService() {
                 NotificationManager.IMPORTANCE_HIGH,
             ).apply {
                 enableVibration(true)
+                enableLights(true)
                 setShowBadge(true)
                 lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             }
             notificationManager.createNotificationChannel(channel)
         }
-        
+
         val notificationId = System.currentTimeMillis().toInt()
         notificationManager.notify(notificationId, notificationBuilder.build())
     }
