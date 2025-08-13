@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.purboyndradev.rt_rw.core.data.datastore.AppAuthRepository
-import org.purboyndradev.rt_rw.core.data.datastore.UserRepository
 import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.domain.usecases.SignInUseCase
 import org.purboyndradev.rt_rw.domain.usecases.VerifyOtpUseCase
@@ -22,7 +21,6 @@ data class OTPUiState(
 class AuthViewModel(
     private val signInUseCase: SignInUseCase,
     private val verifyOtpUseCase: VerifyOtpUseCase,
-    private val userRepository: UserRepository,
     private val appAuthRepository: AppAuthRepository
 ) : ViewModel() {
     

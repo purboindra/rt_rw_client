@@ -142,15 +142,11 @@ val sharedModule: Module = module {
     }
     
     single {
-        UserRepository(get())
-    }
-    
-    single {
         AppAuthRepository(get())
     }
     
     /// PROVIDE VIEW MODEL
-    viewModel { AuthViewModel(get(), get(), get(), get()) }
+    viewModel { AuthViewModel(get(), get(), get()) }
     viewModel { SplashViewModel(get(), get()) }
     viewModel { MainViewModel(get()) }
     viewModel { params ->

@@ -7,7 +7,6 @@ import androidx.datastore.core.okio.OkioStorage
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -77,41 +76,6 @@ class UserDataStore(
     }
 }
 
-/// TODO: MOVE TO USER REPOSITORY FILE
-class UserRepository(
-    private val userDataStore: UserDataStore,
-) {
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val currentUserData: Flow<UserDBModel?>
-        get() = userDataStore.user
-    
-    suspend fun saveUser(user: UserDBModel) {
-        println("Saving user: $user")
-        try {
-            userDataStore.addUser(user)
-        } catch (e: Exception) {
-            println("Failed to write userDataStore: ${e.message}, stackTrace: ${e.stackTraceToString()}")
-        }
-    }
-    
-    suspend fun clearUserData() {
-        userDataStore.removeUser()
-    }
-    
-    suspend fun updateUserAccessToken(
-        newAccessToken: String,
-        newRefreshToken: String
-    ) {
-        userDataStore.updateUser(
-            user = UserDBModel(
-                accessToken = newAccessToken,
-                refreshToken = newRefreshToken,
-            )
-        )
-    }
-}
-
-/// Testing
 class AppAuthRepository(private val dataStore: DataStore<Preferences>) {
     suspend fun saveTokens(accessToken: String, refreshToken: String) {
         dataStore.edit { tokens ->
