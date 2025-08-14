@@ -35,9 +35,18 @@ class MainActivity : ComponentActivity() {
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
         enableEdgeToEdge()
-        askNotificationPermission()
+        
+        if (NotificationOnboardingActivity.shouldShowOnboarding(this)) {
+            startActivity(
+                Intent(
+                    this,
+                    NotificationOnboardingActivity::class.java
+                )
+            )
+            finish()
+            return
+        }
         
         fetchFcmToken()
         
