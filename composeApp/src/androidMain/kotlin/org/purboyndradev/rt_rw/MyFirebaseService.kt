@@ -1,10 +1,11 @@
-package org.purboyndradev
+package org.purboyndradev.rt_rw
 
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
+import android.graphics.Color
 import android.media.RingtoneManager
 import android.os.Build
 import android.util.Log
@@ -16,8 +17,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.purboyndradev.rt_rw.MainActivity
-import org.purboyndradev.rt_rw.R
 import org.purboyndradev.rt_rw.core.data.datastore.AppAuthRepository
 
 private const val TAG = "MyFirebaseService"
@@ -71,6 +70,9 @@ class MyFirebaseService : FirebaseMessagingService(), KoinComponent {
         )
         
         val channelId = getString(R.string.default_notification_channel_id)
+        
+        createNotificationChannel(channelId)
+        
         val defaultSoundUri =
             RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         
@@ -79,36 +81,64 @@ class MyFirebaseService : FirebaseMessagingService(), KoinComponent {
             .setContentTitle(title)
             .setContentText(body)
             .setAutoCancel(true)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setDefaults(NotificationCompat.DEFAULT_ALL)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setSound(defaultSoundUri)
-            .setPriority(NotificationCompat.PRIORITY_HIGH).setVisibility(
-                NotificationCompat.VISIBILITY_PUBLIC
-            )
-            .setDefaults(Notification.DEFAULT_ALL)
             .setContentIntent(pendingIntent)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(body))
+            .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+            .setVibrate(longArrayOf(1000, 1000, 1000, 1000, 1000))
         
         notificationBuilder.setStyle(
             NotificationCompat.BigTextStyle().bigText(body)
-        )
+        ).setCategory(NotificationCompat.CATEGORY_MESSAGE)
+            .setVibrate(longArrayOf(1000, 1000, 1000, 1000, 1000))
         
         val notificationManager =
             getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         
-        // Since android Oreo notification channel is needed.
+        val notificationId = System.currentTimeMillis().toInt()
+        notificationManager.notify(notificationId, notificationBuilder.build())
+    }
+    
+    
+    private fun createNotificationChannel(channelId: String) {
+        
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            
+            val notificationManager =
+                getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            
+            val existingChannel =
+                notificationManager.getNotificationChannel(channelId)
+            if (existingChannel != null) {
+                notificationManager.deleteNotificationChannel(channelId)
+            }
+            
+            
             val channel = NotificationChannel(
                 channelId,
                 getString(R.string.default_notification_channel_name),
                 NotificationManager.IMPORTANCE_HIGH,
             ).apply {
-                enableVibration(true)
+                description = "Channel for FCM push notifications"
                 enableLights(true)
+                lightColor = Color.BLUE
+                enableVibration(true)
+                vibrationPattern = longArrayOf(1000, 1000, 1000, 1000, 1000)
                 setShowBadge(true)
                 lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             }
             notificationManager.createNotificationChannel(channel)
+            
+            Log.d(
+                "FCM",
+                "Channel created with importance: ${channel.importance}"
+            )
+            
         }
         
-        val notificationId = System.currentTimeMillis().toInt()
-        notificationManager.notify(notificationId, notificationBuilder.build())
     }
+    
 }
