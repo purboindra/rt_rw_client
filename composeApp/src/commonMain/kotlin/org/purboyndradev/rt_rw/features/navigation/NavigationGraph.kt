@@ -18,6 +18,7 @@ import org.purboyndradev.rt_rw.features.auth.presentation.LoginScreen
 import org.purboyndradev.rt_rw.features.auth.presentation.OTPScreen
 import org.purboyndradev.rt_rw.features.main.presentation.MainScreen
 import org.purboyndradev.rt_rw.features.news.presentation.NewsScreen
+import org.purboyndradev.rt_rw.features.notification.NotificationOnboardingScreen
 import org.purboyndradev.rt_rw.features.splash.SplashScreen
 
 data class StartDestinationData(
@@ -106,6 +107,9 @@ fun NavigationGraph(
             val activityDetail = backStackEntry.toRoute<ActivityDetail>()
             val id = activityDetail.id
             ActivityDetailScreen(id, navHostController = navController)
+        }
+        composable<NotificationPermissions> {
+            NotificationOnboardingScreen(navHostController = navController)
         }
     }
 }

@@ -39,3 +39,6 @@ data class ActivityDetail(val id: String)
 
 @Serializable
 data class NewsDetail(val id: String)
+
+@Serializable
+object NotificationPermissions

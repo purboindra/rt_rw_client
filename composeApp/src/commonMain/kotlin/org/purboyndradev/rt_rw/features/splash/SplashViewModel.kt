@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import org.purboyndradev.rt_rw.NotificationManager
 import org.purboyndradev.rt_rw.core.data.datastore.AppAuthRepository
 import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.domain.usecases.RefreshTokenUseCase
@@ -15,6 +16,7 @@ sealed class SplashNavigationState {
     data object Idle : SplashNavigationState()
     data object NavigateToLogin : SplashNavigationState()
     data object NavigateToHome : SplashNavigationState()
+    data object NavigateToNotificationPermission : SplashNavigationState()
     data class NavigateToActivity(val activityId: String) :
         SplashNavigationState()
 }
@@ -24,9 +26,8 @@ class SplashViewModel(
     private val appAuthRepository: AppAuthRepository,
 ) : ViewModel() {
     
-    private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)
     val isLoading = _isLoading.asStateFlow()
-    
     
     private val _navigationState =
         MutableStateFlow<SplashNavigationState>(SplashNavigationState.Idle)
@@ -36,8 +37,17 @@ class SplashViewModel(
         _navigationState.value = value
     }
     
+    init {
+        val granted = NotificationManager.hasGrantedNotificationPermission()
+        if (!granted) {
+            onUpdateNavigationState(SplashNavigationState.NavigateToNotificationPermission)
+            _isLoading.value = false
+        } else {
+            refreshToken()
+        }
+    }
+    
     fun refreshToken(startDestination: StartDestinationData? = null) {
-        _isLoading.value = true
         viewModelScope.launch {
             try {
                 val accessToken =

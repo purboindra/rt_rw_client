@@ -14,6 +14,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -23,117 +24,118 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import compose.icons.FeatherIcons
-import compose.icons.feathericons.Activity
 import compose.icons.feathericons.Bell
 import compose.icons.feathericons.Calendar
 
 @Composable
 fun NotificationOnboardingScreen(
-    onEnableNotifications: () -> Unit,
-    onSkip: () -> Unit
+    navHostController: NavHostController,
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Icon(
-            imageVector = FeatherIcons.Bell,
-            contentDescription = "Notifications",
-            modifier = Modifier
-                .size(120.dp)
-                .padding(bottom = 32.dp),
-            tint = MaterialTheme.colorScheme.primary
-        )
-        
-        Text(
-            text = "Stay Connected with Your Community",
-            style = MaterialTheme.typography.headlineMedium,
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-        
-        Text(
-            text = "Get instant notifications about important community activities, events, and announcements so you never miss what's happening in your neighborhood.",
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(bottom = 32.dp)
-        )
-        
+    Scaffold { paddingValues ->
         Column(
-            modifier = Modifier.padding(bottom = 48.dp)
-        ) {
-            BenefitItem(
-                icon = FeatherIcons.Activity,
-                title = "Community Events",
-                description = "Never miss gotong royong, meetings, and local activities"
-            )
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            BenefitItem(
-                icon = FeatherIcons.Bell,
-                title = "Important Announcements",
-                description = "Stay informed about neighborhood news and updates"
-            )
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            BenefitItem(
-                icon = FeatherIcons.Bell,
-                title = "Timely Reminders",
-                description = "Get notified about upcoming deadlines and schedules"
-            )
-        }
-        
-        Button(
-            onClick = onEnableNotifications,
             modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary
-            )
+                .fillMaxSize()
+                .padding(24.dp).padding(paddingValues),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+            Icon(
+                imageVector = FeatherIcons.Bell,
+                contentDescription = "Notifications",
+                modifier = Modifier
+                    .size(120.dp)
+                    .padding(bottom = 32.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
+            
+            Text(
+                text = "Stay Connected with Your Community",
+                style = MaterialTheme.typography.headlineMedium,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+            
+            Text(
+                text = "Get instant notifications about important community activities, events, and announcements so you never miss what's happening in your neighborhood.",
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(bottom = 32.dp)
+            )
+            
+            Column(
+                modifier = Modifier.padding(bottom = 48.dp)
             ) {
-                Icon(
-                    imageVector = FeatherIcons.Calendar,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp)
+                BenefitItem(
+                    icon = FeatherIcons.Calendar,
+                    title = "Community Events",
+                    description = "Never miss gotong royong, meetings, and local activities"
                 )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "Enable Notifications",
-                    style = MaterialTheme.typography.titleMedium
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                BenefitItem(
+                    icon = FeatherIcons.Bell,
+                    title = "Important Announcements",
+                    description = "Stay informed about neighborhood news and updates"
+                )
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                BenefitItem(
+                    icon = FeatherIcons.Bell,
+                    title = "Timely Reminders",
+                    description = "Get notified about upcoming deadlines and schedules"
                 )
             }
-        }
-        
-        TextButton(
-            onClick = onSkip,
-            modifier = Modifier.padding(top = 16.dp)
-        ) {
+            
+            Button(
+                onClick = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = FeatherIcons.Calendar,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Enable Notifications",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
+            }
+            
+            TextButton(
+                onClick = {},
+                modifier = Modifier.padding(top = 16.dp)
+            ) {
+                Text(
+                    text = "Maybe Later",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            
             Text(
-                text = "Maybe Later",
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                text = "You can change these settings anytime in the app settings",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(top = 24.dp)
             )
         }
-        
-        Text(
-            text = "You can change these settings anytime in the app settings",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 24.dp)
-        )
     }
 }
 
@@ -151,8 +153,8 @@ private fun BenefitItem(
             imageVector = icon,
             contentDescription = null,
             modifier = Modifier
-                .size(24.dp)
-                .padding(end = 16.dp),
+                .size(32.dp)
+                .padding(end = 12.dp),
             tint = MaterialTheme.colorScheme.primary
         )
         

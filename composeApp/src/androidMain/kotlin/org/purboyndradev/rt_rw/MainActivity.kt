@@ -37,17 +37,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         
-        if (NotificationOnboardingActivity.shouldShowOnboarding(this)) {
-            startActivity(
-                Intent(
-                    this,
-                    NotificationOnboardingActivity::class.java
-                )
-            )
-            finish()
-            return
-        }
-        
+        /// TODO: MOVE TO SPLASH SCREEN
         fetchFcmToken()
         
         setContent {

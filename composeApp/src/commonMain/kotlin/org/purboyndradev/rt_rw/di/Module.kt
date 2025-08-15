@@ -21,7 +21,6 @@ import org.purboyndradev.rt_rw.core.data.remote.impl.KtorAuthRemoteDatasource
 import org.purboyndradev.rt_rw.core.data.repository.ActivityRepositoryImpl
 import org.purboyndradev.rt_rw.core.data.repository.AuthRepositoryImpl
 import org.purboyndradev.rt_rw.core.network.HttpClientFactory
-import org.purboyndradev.rt_rw.database.createCurrentUserDataStore
 import org.purboyndradev.rt_rw.domain.repository.ActivityRepository
 import org.purboyndradev.rt_rw.domain.repository.AuthRepository
 import org.purboyndradev.rt_rw.domain.usecases.CreateActivityUseCase
@@ -131,9 +130,6 @@ val sharedModule: Module = module {
     }
     
     /// PROVIDE DATA STORE
-    single {
-        createCurrentUserDataStore()
-    }
     
     /// PROVIDE APP AUTH DATA STORE
     single {

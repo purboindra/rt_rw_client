@@ -22,6 +22,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.purboyndradev.rt_rw.features.navigation.ActivityDetail
 import org.purboyndradev.rt_rw.features.navigation.Login
 import org.purboyndradev.rt_rw.features.navigation.Main
+import org.purboyndradev.rt_rw.features.navigation.NotificationPermissions
 import org.purboyndradev.rt_rw.features.navigation.StartDestinationData
 
 @Composable
@@ -35,10 +36,6 @@ fun SplashScreen(
     splashViewModel.navigationState.collectAsStateWithLifecycle()
     val isLoading by splashViewModel.isLoading.collectAsStateWithLifecycle()
     
-    LaunchedEffect(Unit) {
-        splashViewModel.refreshToken()
-    }
-    
     LaunchedEffect(
         splashNavigationState,
         isLoading
@@ -48,6 +45,16 @@ fun SplashScreen(
             is SplashNavigationState.NavigateToLogin -> {
                 navHostController.navigate(Login) {
                     popUpTo(0) { inclusive = true }
+                }
+            }
+            
+            is SplashNavigationState.NavigateToNotificationPermission -> {
+                navHostController.navigate(
+                    NotificationPermissions
+                ) {
+                    popUpTo(0) {
+                        inclusive = true
+                    }
                 }
             }
             
