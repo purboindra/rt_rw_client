@@ -4,10 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import org.purboyndradev.rt_rw.NotificationManager
+import org.purboyndradev.rt_rw.NotificationService
 import org.purboyndradev.rt_rw.core.data.datastore.AppAuthRepository
+import org.purboyndradev.rt_rw.core.data.datastore.NotificationRepository
 import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.domain.usecases.RefreshTokenUseCase
 import org.purboyndradev.rt_rw.features.navigation.StartDestinationData
@@ -24,6 +26,7 @@ sealed class SplashNavigationState {
 class SplashViewModel(
     private val refreshTokenUseCase: RefreshTokenUseCase,
     private val appAuthRepository: AppAuthRepository,
+    private val notificationRepository: NotificationRepository
 ) : ViewModel() {
     
     private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)
@@ -33,19 +36,39 @@ class SplashViewModel(
         MutableStateFlow<SplashNavigationState>(SplashNavigationState.Idle)
     val navigationState = _navigationState.asStateFlow()
     
+    val deniedAtFlow = notificationRepository.deniedAtFlow
+    
     fun onUpdateNavigationState(value: SplashNavigationState) {
         _navigationState.value = value
     }
     
     init {
-        val granted = NotificationManager.hasGrantedNotificationPermission()
-        if (!granted) {
-            onUpdateNavigationState(SplashNavigationState.NavigateToNotificationPermission)
+        viewModelScope.launch {
+            val granted = NotificationService.hasGrantedNotificationPermission()
+            
+            if (granted) {
+                refreshToken()
+                _isLoading.value = false
+                return@launch
+            }
+
+            val deniedAt: Long? = deniedAtFlow.first()
+            
+            val shouldPrompt = when {
+                deniedAt == null -> true
+                else -> notificationRepository.hasAWeekPassedSinceNotificationPermissionDenied()
+            }
+            
+            if (shouldPrompt) {
+                onUpdateNavigationState(SplashNavigationState.NavigateToNotificationPermission)
+            } else {
+                refreshToken()
+            }
+            
             _isLoading.value = false
-        } else {
-            refreshToken()
         }
     }
+    
     
     fun refreshToken(startDestination: StartDestinationData? = null) {
         viewModelScope.launch {
@@ -67,16 +90,23 @@ class SplashViewModel(
                     refreshToken = refreshToken
                 )) {
                     is Result.Success -> {
+                        
+                        println("Success refreshing token: $result")
+                        
                         appAuthRepository.saveTokens(
                             accessToken = result.data.accessToken,
                             refreshToken = result.data.refreshToken
                         )
-                        checkAndExecutePendingNavigation(startDestination)
+                        if (startDestination != null) {
+                            checkAndExecutePendingNavigation(startDestination)
+                        } else {
+                            onUpdateNavigationState(SplashNavigationState.NavigateToHome)
+                        }
                     }
                     
                     is Result.Error -> {
-                        onUpdateNavigationState(SplashNavigationState.NavigateToLogin)
                         println("Error refreshing token: $result")
+                        onUpdateNavigationState(SplashNavigationState.NavigateToLogin)
                     }
                 }
             } catch (e: NullPointerException) {
@@ -95,22 +125,20 @@ class SplashViewModel(
         }
     }
     
-    private fun checkAndExecutePendingNavigation(startDestination: StartDestinationData? = null) {
+    private fun checkAndExecutePendingNavigation(startDestination: StartDestinationData) {
         
         println("checkAndExecutePendingNavigation startDestination: $startDestination")
         
-        if (startDestination != null) {
-            val splashNavigationState = when (startDestination.route) {
-                "activity" -> {
-                    val itemId = startDestination.data as String
-                    SplashNavigationState.NavigateToActivity(itemId)
-                }
-                
-                else -> {
-                    SplashNavigationState.NavigateToHome
-                }
+        val splashNavigationState = when (startDestination.route) {
+            "activity" -> {
+                val itemId = startDestination.data as String
+                SplashNavigationState.NavigateToActivity(itemId)
             }
-            onUpdateNavigationState(splashNavigationState)
+            
+            else -> {
+                SplashNavigationState.NavigateToHome
+            }
         }
+        onUpdateNavigationState(splashNavigationState)
     }
 }

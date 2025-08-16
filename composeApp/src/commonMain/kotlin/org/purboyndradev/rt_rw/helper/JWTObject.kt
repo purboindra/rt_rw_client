@@ -1,9 +1,10 @@
 package org.purboyndradev.rt_rw.helper
 
-import io.ktor.utils.io.charsets.Charsets
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import kotlin.io.encoding.Base64
 
 object JWTObject {
@@ -41,4 +42,15 @@ object JWTObject {
         }
     }
     
+    fun hasExpired(accessToken: String): Boolean {
+        val payload = decodeJwtPayload(accessToken)
+            ?: return true
+        
+        val exp = payload["exp"]?.jsonPrimitive?.contentOrNull
+            ?: return true
+        
+        println("Exp hasExpired: $exp")
+        
+        return false
+    }
 }

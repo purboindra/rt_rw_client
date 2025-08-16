@@ -109,7 +109,7 @@ fun NavigationGraph(
             ActivityDetailScreen(id, navHostController = navController)
         }
         composable<NotificationPermissions> {
-            NotificationOnboardingScreen(navHostController = navController)
+            NotificationOnboardingScreen(navHostController = navController,)
         }
     }
 }

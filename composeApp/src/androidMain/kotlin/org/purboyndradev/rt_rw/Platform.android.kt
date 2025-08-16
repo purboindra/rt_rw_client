@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.core.net.toUri
 
 class AndroidPlatform : Platform {
@@ -95,6 +96,19 @@ object AndroidContextProvider {
     fun getContext(): Context {
         return appContext
             ?: throw IllegalStateException("AndroidContextProvider not initialized")
+    }
+}
+
+object AndroidActivityProvider{
+    private var activity: ComponentActivity? = null
+    
+    fun initialize(activity: ComponentActivity) {
+        this.activity = activity
+    }
+    
+    fun getActivity(): ComponentActivity {
+        return activity
+            ?: throw IllegalStateException("AndroidActivityProvider not initialized")
     }
 }
 

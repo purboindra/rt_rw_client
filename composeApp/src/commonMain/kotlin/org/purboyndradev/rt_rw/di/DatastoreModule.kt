@@ -12,4 +12,8 @@ object AuthKeys {
     val FCM_TOKEN = stringPreferencesKey("fcm_token")
 }
 
+object NotificationKeys{
+    val NOTIF_DENIED_AT_MS = stringPreferencesKey("notif_denied_at_ms")
+}
+
 expect fun createDataStore(): DataStore<Preferences>

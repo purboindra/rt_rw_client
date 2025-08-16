@@ -39,7 +39,6 @@ fun SplashScreen(
     LaunchedEffect(
         splashNavigationState,
         isLoading
-    
     ) {
         if (!isLoading) when (splashNavigationState) {
             is SplashNavigationState.NavigateToLogin -> {

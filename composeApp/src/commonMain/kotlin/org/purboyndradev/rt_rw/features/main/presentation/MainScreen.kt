@@ -2,11 +2,15 @@ package org.purboyndradev.rt_rw.features.main.presentation
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -26,12 +30,16 @@ import org.purboyndradev.rt_rw.features.navigation.Profile
 import org.purboyndradev.rt_rw.features.news.presentation.NewsScreen
 import org.purboyndradev.rt_rw.features.profile.presentation.ProfileScreen
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(navHostController: NavHostController) {
     
     val mainViewModel = koinViewModel<MainViewModel>()
     val activityState =
         mainViewModel.activitiesState.collectAsStateWithLifecycle()
+    val loadingState by mainViewModel.loadingState.collectAsStateWithLifecycle()
+    
+    val pullToRefreshState = rememberPullToRefreshState()
     
     val bottomNavigationController = rememberNavController()
     val currentDestination =
@@ -74,32 +82,39 @@ fun MainScreen(navHostController: NavHostController) {
             }
         }
     ) { innerPadding ->
-        NavHost(
-            navController = bottomNavigationController,
-            startDestination = currentDestination,
-            modifier = Modifier.padding(innerPadding).fillMaxSize()
-        ) {
-            composable(route = Home.ROUTE) {
-                HomeScreen(
-                    navHostController = navHostController,
-                    activityState = activityState.value
-                )
-            }
-            composable(route = Activity.ROUTE) {
-                ActivityScreen(
-                    navHostController = navHostController
-                )
-            }
-            composable(route = News.ROUTE) {
-                NewsScreen(
-                    navHostController = navHostController,
-                    itemId = 1
-                )
-            }
-            composable(route = Profile.ROUTE) {
-                ProfileScreen(
-                    navHostController = navHostController,
-                )
+        PullToRefreshBox(
+            isRefreshing = loadingState,
+            onRefresh = { mainViewModel.onRefresh() },
+            state = pullToRefreshState,
+            
+            ) {
+            NavHost(
+                navController = bottomNavigationController,
+                startDestination = currentDestination,
+                modifier = Modifier.padding(innerPadding).fillMaxSize()
+            ) {
+                composable(route = Home.ROUTE) {
+                    HomeScreen(
+                        navHostController = navHostController,
+                        activityState = activityState.value
+                    )
+                }
+                composable(route = Activity.ROUTE) {
+                    ActivityScreen(
+                        navHostController = navHostController
+                    )
+                }
+                composable(route = News.ROUTE) {
+                    NewsScreen(
+                        navHostController = navHostController,
+                        itemId = 1
+                    )
+                }
+                composable(route = Profile.ROUTE) {
+                    ProfileScreen(
+                        navHostController = navHostController,
+                    )
+                }
             }
         }
     }

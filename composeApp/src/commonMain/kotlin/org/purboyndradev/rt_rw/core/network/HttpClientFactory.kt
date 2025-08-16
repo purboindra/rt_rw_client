@@ -15,19 +15,27 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import io.ktor.http.encodedPath
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
 import org.purboyndradev.rt_rw.core.data.datastore.AppAuthRepository
 import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.domain.usecases.RefreshTokenUseCase
 
 object HttpClientFactory {
+    
     fun create(
         engine: HttpClientEngine,
         appAuthRepository: AppAuthRepository,
         refreshTokenUseCase: RefreshTokenUseCase
     ): HttpClient {
+        
+        val tokenRefresher =
+            TokenRefresher(refreshTokenUseCase, appAuthRepository)
+        
         return HttpClient(engine) {
             install(ContentNegotiation) {
                 json(json = Json {
@@ -53,63 +61,27 @@ object HttpClientFactory {
                         val refreshToken =
                             appAuthRepository.refreshTokenFlow.firstOrNull()
                         
-                        if (accessToken != null) {
-                            BearerTokens(accessToken, refreshToken ?: "")
+                        println("Ktor loadTokens: $accessToken, $refreshToken")
+                        
+                        if (!accessToken.isNullOrBlank() && !refreshToken.isNullOrBlank()) {
+                            BearerTokens(accessToken, refreshToken)
                         } else {
                             null
                         }
                     }
                     
                     refreshTokens {
-                        val oldRefreshToken =
-                            this.oldTokens?.refreshToken
-                        if (oldRefreshToken != null) {
-                            println("Ktor Auth: Attempting to refresh token...")
-                            try {
-                                val responseRefresh =
-                                    refreshTokenUseCase.invoke(oldRefreshToken)
-                                
-                                when (responseRefresh) {
-                                    is Result.Success -> {
-                                        val newTokens = responseRefresh.data
-                                        appAuthRepository.saveTokens(
-                                            newTokens.accessToken,
-                                            newTokens.refreshToken
-                                        )
-                                        BearerTokens(
-                                            newTokens.accessToken,
-                                            newTokens.refreshToken
-                                        )
-                                    }
-                                    
-                                    is Result.Error -> {
-                                        null
-                                    }
-                                }
-                                
-                                val currentAccessToken =
-                                    appAuthRepository.accessTokenFlow.firstOrNull()
-                                val currentRefreshToken =
-                                    appAuthRepository.refreshTokenFlow.firstOrNull()
-                                if (currentAccessToken != null && currentRefreshToken != null) {
-                                    BearerTokens(
-                                        currentAccessToken,
-                                        currentRefreshToken
-                                    )
-                                } else {
-                                    null
-                                }
-                            } catch (e: Exception) {
-                                println("Ktor Auth: Refresh token failed: $e")
-                                null
-                            }
-                        } else {
-                            null
-                        }
+                        
+                        println("Ktor refreshTokens invoke: ${oldTokens?.accessToken}, ${oldTokens?.refreshToken}")
+                        
+                        tokenRefresher.refresh(oldTokens)
                     }
+                    
                     sendWithoutRequest { request ->
-                        request.url.encodedPathSegments.contains("auth/sign-in") ||
-                                request.url.encodedPathSegments.contains("auth/otp/verify")
+                        val p = request.url.encodedPath
+                        p.contains("/auth/sign-in") ||
+                                p.contains("/auth/otp/verify") ||
+                                p.contains("/auth/refresh")
                     }
                 }
             }
@@ -118,4 +90,39 @@ object HttpClientFactory {
             }
         }
     }
+}
+
+
+/// FUN FOR HANDLE REFRESH TOKEN
+
+
+class TokenRefresher(
+    private val refreshTokenUseCase: RefreshTokenUseCase,
+    private val appAuthRepository: AppAuthRepository
+) {
+    private val mutex = Mutex()
+    
+    suspend fun refresh(oldTokens: BearerTokens?): BearerTokens? =
+        mutex.withLock {
+            val oldRefresh = oldTokens?.refreshToken ?: return null
+            
+            val curAccess = appAuthRepository.accessTokenFlow.firstOrNull()
+            val curRefresh = appAuthRepository.refreshTokenFlow.firstOrNull()
+            if (!curAccess.isNullOrBlank() && !curRefresh.isNullOrBlank() && curRefresh != oldRefresh) {
+                return BearerTokens(curAccess, curRefresh)
+            }
+            
+            return when (val res = refreshTokenUseCase.invoke(oldRefresh)) {
+                is Result.Success -> {
+                    val newTokens = res.data
+                    appAuthRepository.saveTokens(
+                        newTokens.accessToken,
+                        newTokens.refreshToken
+                    )
+                    BearerTokens(newTokens.accessToken, newTokens.refreshToken)
+                }
+                
+                is Result.Error -> null
+            }
+        }
 }

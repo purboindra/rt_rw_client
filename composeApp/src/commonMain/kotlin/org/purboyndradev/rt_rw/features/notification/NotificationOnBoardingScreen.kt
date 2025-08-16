@@ -18,21 +18,66 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Bell
 import compose.icons.feathericons.Calendar
+import org.koin.compose.viewmodel.koinViewModel
+import org.purboyndradev.rt_rw.NotificationService
+import org.purboyndradev.rt_rw.features.auth.presentation.AuthViewModel
+import org.purboyndradev.rt_rw.features.navigation.Login
+import org.purboyndradev.rt_rw.features.navigation.Main
 
 @Composable
 fun NotificationOnboardingScreen(
     navHostController: NavHostController,
 ) {
+    val notificationViewModel = koinViewModel<NotificationViewModel>()
+    val authViewModel = koinViewModel<AuthViewModel>()
+    val permissionState by notificationViewModel.notificationPermissionState.collectAsStateWithLifecycle()
+    
+    val requestNotification =
+        NotificationService.rememberRequestNotificationPermissionLauncher { granted ->
+            if (granted) {
+                navHostController.navigate(Main) {
+                    popUpTo(0) {
+                        inclusive = true
+                    }
+                }
+            } else {
+                notificationViewModel.onUpdatePermissionState(NotificationState.PermissionDenied)
+            }
+        }
+    
+    LaunchedEffect(permissionState) {
+        if (permissionState == NotificationState.PermissionDenied) {
+            notificationViewModel.markNotificationPermissionGranted()
+            val hasAuthenticated = authViewModel.hasAuthenticated()
+            if (!hasAuthenticated) {
+                navHostController.navigate(Login) {
+                    popUpTo(0) {
+                        inclusive = true
+                    }
+                }
+            } else {
+                navHostController.navigate(Main) {
+                    popUpTo(0) {
+                        inclusive = true
+                    }
+                }
+            }
+        }
+    }
+    
     Scaffold { paddingValues ->
         Column(
             modifier = Modifier
@@ -93,7 +138,9 @@ fun NotificationOnboardingScreen(
             }
             
             Button(
-                onClick = {},
+                onClick = {
+                    requestNotification()
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -119,7 +166,11 @@ fun NotificationOnboardingScreen(
             }
             
             TextButton(
-                onClick = {},
+                onClick = {
+                    notificationViewModel.onUpdatePermissionState(
+                        NotificationState.PermissionDenied
+                    )
+                },
                 modifier = Modifier.padding(top = 16.dp)
             ) {
                 Text(

@@ -41,6 +41,11 @@ fun LoginScreen(navHostController: NavHostController) {
     val openAlertDialog =
         authViewModel.openAlertDialog.collectAsStateWithLifecycle()
     
+    LaunchedEffect(Unit){
+        val result = authViewModel.hasAuthenticated()
+        println("Has Authenticated: $result")
+    }
+    
     LaunchedEffect(authState.value) {
         /// MEAN: User already verify their phone
         if (authState.value.success && authState.value.code == null) {
@@ -102,23 +107,11 @@ fun LoginScreen(navHostController: NavHostController) {
             ElevatedButton(
                 onClick = {
                     authViewModel.signIn()
-//                    navHostController.navigate(Main)
                 },
                 enabled = !isLoadingState.value
             ) {
                 Text(
                     if (isLoadingState.value) "Loading..." else "Send OTP",
-                    style = MaterialTheme.typography.labelMedium
-                )
-            }
-            ElevatedButton(
-                onClick = {
-                    authViewModel.testDataStore()
-                },
-                enabled = !isLoadingState.value
-            ) {
-                Text(
-                    "Test Datastore",
                     style = MaterialTheme.typography.labelMedium
                 )
             }

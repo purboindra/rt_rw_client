@@ -14,6 +14,7 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 import org.purboyndradev.rt_rw.core.data.datastore.AppAuthRepository
+import org.purboyndradev.rt_rw.core.data.datastore.NotificationRepository
 import org.purboyndradev.rt_rw.core.data.remote.api.ActivityApi
 import org.purboyndradev.rt_rw.core.data.remote.api.AuthApi
 import org.purboyndradev.rt_rw.core.data.remote.impl.KtorActivityRemoteDatasource
@@ -35,6 +36,7 @@ import org.purboyndradev.rt_rw.domain.usecases.VerifyOtpUseCase
 import org.purboyndradev.rt_rw.features.activity.presentation.ActivityViewModel
 import org.purboyndradev.rt_rw.features.auth.presentation.AuthViewModel
 import org.purboyndradev.rt_rw.features.main.presentation.MainViewModel
+import org.purboyndradev.rt_rw.features.notification.NotificationViewModel
 import org.purboyndradev.rt_rw.features.splash.SplashViewModel
 import org.purboyndradev.rt_rw.helper.BASE_URL
 
@@ -52,7 +54,7 @@ val sharedModule: Module = module {
     
     
     /// PROVIDE HTTP CLIENT FACTORY
-     val authHttpClient = named("AuthHttpClient")
+    val authHttpClient = named("AuthHttpClient")
     single<HttpClient>(qualifier = authHttpClient) {
         HttpClient(get()) {
             install(ContentNegotiation) {
@@ -96,6 +98,9 @@ val sharedModule: Module = module {
     }
     
     /// PROVIDE USE CASE
+    single {
+        NotificationRepository(get())
+    }
     
     /// AUTH USE CASE
     single {
@@ -142,8 +147,9 @@ val sharedModule: Module = module {
     
     /// PROVIDE VIEW MODEL
     viewModel { AuthViewModel(get(), get(), get()) }
-    viewModel { SplashViewModel(get(), get()) }
+    viewModel { SplashViewModel(get(), get(), get()) }
     viewModel { MainViewModel(get()) }
+    viewModel { NotificationViewModel(get()) }
     viewModel { params ->
         ActivityViewModel(get(), get(), get(), get(), get(), get())
     }
