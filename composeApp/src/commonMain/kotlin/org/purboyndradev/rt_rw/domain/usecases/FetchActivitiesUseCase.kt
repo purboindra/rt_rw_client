@@ -11,7 +11,7 @@ class FetchActivitiesUseCase(private val activityRepository: ActivityRepository)
         return when (val result = activityRepository.fetchAllActivities()) {
             is Result.Success -> {
                 val data = result.data.data
-                if (data == null) return Result.Error(AppError.Remote.InvalidResponse)
+                if (data == null) return Result.Error(AppError.Remote.NotFound)
                 var activities: List<ActivityModel> = emptyList()
                 data.forEach {
                     activities = activities + it.toActivityModel()

@@ -12,7 +12,8 @@ class FetchActivityByIdUseCase(private val activityRepository: ActivityRepositor
             is Result.Success -> {
                 val data = result.data.data
                 
-                if (data == null) return Result.Error(AppError.Remote.InvalidResponse)
+                if (data == null) return Result.Error(AppError.Remote.NotFound)
+                
                 Result.Success(data.toActivityDetailModel())
             }
             
