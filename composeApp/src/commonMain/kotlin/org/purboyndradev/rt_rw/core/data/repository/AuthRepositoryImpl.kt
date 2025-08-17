@@ -3,6 +3,7 @@ package org.purboyndradev.rt_rw.core.data.repository
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
 import org.purboyndradev.rt_rw.core.data.datastore.AppAuthRepository
+import org.purboyndradev.rt_rw.core.data.datastore.AuthTokenStore
 import org.purboyndradev.rt_rw.core.data.dto.RefreshTokenDto
 import org.purboyndradev.rt_rw.core.data.dto.ResponseDto
 import org.purboyndradev.rt_rw.core.data.dto.SignInDto
@@ -16,7 +17,8 @@ import org.purboyndradev.rt_rw.helper.JWTObject
 
 class AuthRepositoryImpl(
     private val api: AuthApi,
-    private val appAuthRepository: AppAuthRepository
+    private val appAuthRepository: AppAuthRepository,
+    private val tokenStore: AuthTokenStore,
 ) : AuthRepository {
     override suspend fun signIn(phoneNumber: String): Result<ResponseDto<SignInDto>, AppError> {
         return api.signIn(phoneNumber).mapBoth(
@@ -110,10 +112,18 @@ class AuthRepositoryImpl(
     }
     
     override suspend fun refreshToken(
-        refreshToken: String
-    ): Result<ResponseDto<RefreshTokenDto>, AppError> {
+        refreshToken: String,
+        
+        ): Result<ResponseDto<RefreshTokenDto>, AppError> {
         return api.refreshToken(refreshToken).mapBoth(
             onSuccess = {
+                
+                val data = it.data
+                
+                data?.let { token ->
+                    tokenStore.setTokens(token.accessToken, token.refreshToken)
+                }
+                
                 Result.Success(it)
             },
             onFailure = {
