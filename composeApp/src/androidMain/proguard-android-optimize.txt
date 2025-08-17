@@ -1,0 +1,43 @@
+
+-keepattributes *Annotation*, Signature, InnerClasses, EnclosingMethod
+-keep @androidx.annotation.Keep class * { *; }
+-keepclasseswithmembers class * { @androidx.annotation.Keep *; }
+
+-keepclassmembers class * implements android.os.Parcelable {
+    public static final android.os.Parcelable$Creator CREATOR;
+}
+
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+
+-keep class kotlin.Metadata { *; }
+-dontwarn kotlin.**
+-dontwarn kotlinx.coroutines.**
+
+-keep class kotlinx.serialization.** { *; }
+-keepclassmembers class ** {
+    @kotlinx.serialization.Serializable *;
+}
+-keep class **$$serializer { *; }
+-keepclassmembers class ** {
+    static ** Companion;
+}
+
+-keep class io.ktor.** { *; }
+-dontwarn io.ktor.**
+-keep class okhttp3.** { *; }
+-keep class okio.** { *; }
+-dontwarn okhttp3.**
+-dontwarn okio.**
+
+-keep class org.koin.** { *; }
+-dontwarn org.koin.**
+
+-keep class androidx.datastore.** { *; }
+-dontwarn androidx.datastore.**
+
+-keep class com.google.firebase.** { *; }
+-keep class com.google.android.gms.** { *; }
+-dontwarn com.google.firebase.**
+
