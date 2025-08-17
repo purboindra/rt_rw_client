@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 import org.purboyndradev.rt_rw.NotificationService
 import org.purboyndradev.rt_rw.core.data.datastore.AppAuthRepository
 import org.purboyndradev.rt_rw.core.data.datastore.NotificationRepository
@@ -15,6 +16,7 @@ import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.domain.usecases.RefreshTokenUseCase
 import org.purboyndradev.rt_rw.features.navigation.StartDestinationData
 import org.purboyndradev.rt_rw.helper.JWTObject
+import kotlin.coroutines.cancellation.CancellationException
 
 sealed class SplashNavigationState {
     data object Idle : SplashNavigationState()
@@ -30,6 +32,8 @@ class SplashViewModel(
     private val appAuthRepository: AppAuthRepository,
     private val notificationRepository: NotificationRepository
 ) : ViewModel() {
+    
+    private val refreshMutex = Mutex()
     
     private val _isLoading: MutableStateFlow<Boolean> = MutableStateFlow(true)
     val isLoading = _isLoading.asStateFlow()
@@ -89,60 +93,62 @@ class SplashViewModel(
             ?.get("exp")?.toString()?.toLongOrNull()
             ?: return false
         
+        println("Exp token: $expSeconds")
+        
         val nowSeconds = getTimeMillis() / 1000
+        
+        println("Now token: $nowSeconds, Diff: ${expSeconds - nowSeconds}, Still valid: ${expSeconds > nowSeconds}")
+        
         return expSeconds > nowSeconds
     }
     
     
-    fun refreshToken(startDestination: StartDestinationData? = null) {
-        viewModelScope.launch {
-            try {
-                
-                if (!hasAuthenticated()) {
-                    onUpdateNavigationState(SplashNavigationState.NavigateToLogin)
-                    return@launch
-                }
-                
-                val refreshToken =
-                    appAuthRepository.refreshTokenFlow.firstOrNull()
-                
-                when (val result = refreshTokenUseCase(
-                    refreshToken = refreshToken ?: ""
-                )) {
-                    is Result.Success -> {
-                        
-                        println("Success refreshing token: $result")
-                        
-                        appAuthRepository.saveTokens(
-                            accessToken = result.data.accessToken,
-                            refreshToken = result.data.refreshToken
-                        )
-                        
-                        if (startDestination != null) {
-                            checkAndExecutePendingNavigation(startDestination)
-                        } else {
-                            onUpdateNavigationState(SplashNavigationState.NavigateToHome)
-                        }
-                    }
+    suspend fun refreshToken(startDestination: StartDestinationData? = null) {
+        try {
+            if (!hasAuthenticated()) {
+                onUpdateNavigationState(SplashNavigationState.NavigateToLogin)
+                return
+            }
+            
+            val refreshToken =
+                appAuthRepository.refreshTokenFlow.firstOrNull()
+            
+            val result = refreshTokenUseCase(
+                refreshToken = refreshToken ?: ""
+            )
+            
+            when (result) {
+                is Result.Success -> {
                     
-                    is Result.Error -> {
-                        println("Error refreshing token: $result")
-                        onUpdateNavigationState(SplashNavigationState.NavigateToLogin)
+                    println("Success refreshing token: $result")
+                    
+                    appAuthRepository.saveTokens(
+                        accessToken = result.data.accessToken,
+                        refreshToken = result.data.refreshToken
+                    )
+                    
+                    _isLoading.value = false
+                    
+                    if (startDestination != null) {
+                        checkAndExecutePendingNavigation(startDestination)
+                    } else {
+                        onUpdateNavigationState(SplashNavigationState.NavigateToHome)
                     }
                 }
-            } catch (e: NullPointerException) {
-                println("Error refresh splash NullPointerException: $e")
-                onUpdateNavigationState(SplashNavigationState.NavigateToLogin)
-            } catch (e: Exception) {
-                println("Error refresh splash: $e")
-                onUpdateNavigationState(SplashNavigationState.NavigateToLogin)
-            } finally {
-                _isLoading.value = false
-                startDestination?.let {
-                    println("startDestination: $startDestination")
-                    checkAndExecutePendingNavigation(it)
+                
+                is Result.Error -> {
+                    println("Error refreshing token: $result")
+                    onUpdateNavigationState(SplashNavigationState.NavigateToLogin)
                 }
             }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: NullPointerException) {
+            println("Error refresh splash NullPointerException: $e")
+            onUpdateNavigationState(SplashNavigationState.NavigateToLogin)
+        } catch (e: Exception) {
+            println("Error refresh splash: $e")
+            onUpdateNavigationState(SplashNavigationState.NavigateToLogin)
         }
     }
     
