@@ -11,6 +11,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -19,6 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.purboyndradev.rt_rw.features.activity.presentation.ActivityScreen
 import org.purboyndradev.rt_rw.features.components.BottomNavItem
@@ -40,6 +42,8 @@ fun MainScreen(navHostController: NavHostController) {
     val loadingState by mainViewModel.loadingState.collectAsStateWithLifecycle()
     
     val pullToRefreshState = rememberPullToRefreshState()
+    
+    val scope = rememberCoroutineScope()
     
     val bottomNavigationController = rememberNavController()
     val currentDestination =
@@ -84,7 +88,11 @@ fun MainScreen(navHostController: NavHostController) {
     ) { innerPadding ->
         PullToRefreshBox(
             isRefreshing = loadingState,
-            onRefresh = { mainViewModel.onRefresh() },
+            onRefresh = {
+                scope.launch {
+                    mainViewModel.onInit()
+                }
+            },
             state = pullToRefreshState,
             
             ) {
