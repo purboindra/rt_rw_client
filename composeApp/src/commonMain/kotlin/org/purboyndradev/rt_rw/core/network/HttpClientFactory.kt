@@ -71,15 +71,16 @@ object HttpClientFactory {
                             }
                     }
                     refreshTokens {
-                        val newT = tokenRefresher.refresh(oldTokens)
-                        if (newT != null) tokenStore.memory.value = newT
-                        newT
+                        val responseRefresh = tokenRefresher.refresh(oldTokens)
+                        if (responseRefresh != null) tokenStore.memory.value =
+                            responseRefresh
+                        responseRefresh
                     }
                     sendWithoutRequest { req ->
                         val p = req.url.encodedPath
                         p.contains("/auth/sign-in") ||
                                 p.contains("/auth/otp/verify") ||
-                                p.contains("/auth/refresh-token") // <-- be precise
+                                p.contains("/auth/refresh-token")
                     }
                 }
             }
