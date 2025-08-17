@@ -14,14 +14,14 @@ import org.purboyndradev.rt_rw.core.data.remote.params.CreateActivityParams
 import org.purboyndradev.rt_rw.core.data.remote.params.JoinActivityParams
 import org.purboyndradev.rt_rw.core.data.remote.params.PaginationParams
 import org.purboyndradev.rt_rw.core.data.remote.params.QueryParams
-import org.purboyndradev.rt_rw.core.domain.DataError
+import org.purboyndradev.rt_rw.core.domain.AppError
 import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.core.network.safeCall
 import org.purboyndradev.rt_rw.helper.BASE_URL
 
 class KtorActivityRemoteDatasource(private val httpClient: HttpClient) :
     ActivityApi {
-    override suspend fun createActivity(params: CreateActivityParams): Result<ResponseDto<Unit>, DataError.Remote> {
+    override suspend fun createActivity(params: CreateActivityParams): Result<ResponseDto<Unit>, AppError> {
         return safeCall {
             httpClient.post("$BASE_URL/activities") {
                 setBody(params)
@@ -32,7 +32,7 @@ class KtorActivityRemoteDatasource(private val httpClient: HttpClient) :
     override suspend fun fetchAllActivities(
         paginationParams: PaginationParams?,
         queryParams: QueryParams?
-    ): Result<ResponseDto<List<ActivityDto>>, DataError.Remote> {
+    ): Result<ResponseDto<List<ActivityDto>>, AppError> {
         return safeCall {
             httpClient.get("$BASE_URL/activities") {
                 url {
@@ -48,13 +48,13 @@ class KtorActivityRemoteDatasource(private val httpClient: HttpClient) :
         }
     }
     
-    override suspend fun fetchActivityById(id: String): Result<ResponseDto<ActivityDetailDto>, DataError.Remote> {
+    override suspend fun fetchActivityById(id: String): Result<ResponseDto<ActivityDetailDto>, AppError> {
         return safeCall {
             httpClient.get("$BASE_URL/activities/${id}")
         }
     }
     
-    override suspend fun deleteActivity(id: String): Result<ResponseDto<Unit>, DataError.Remote> {
+    override suspend fun deleteActivity(id: String): Result<ResponseDto<Unit>, AppError> {
         return safeCall {
             httpClient.delete("$BASE_URL/activities/${id}")
         }
@@ -63,7 +63,7 @@ class KtorActivityRemoteDatasource(private val httpClient: HttpClient) :
     override suspend fun editActivity(
         id: String,
         params: CreateActivityParams
-    ): Result<ResponseDto<Unit>, DataError.Remote> {
+    ): Result<ResponseDto<Unit>, AppError> {
         return safeCall {
             httpClient.put("$BASE_URL/activities/${id}") {
                 setBody(params)
@@ -71,11 +71,11 @@ class KtorActivityRemoteDatasource(private val httpClient: HttpClient) :
         }
     }
     
-    override suspend fun joinActivity(params:JoinActivityParams): Result<ResponseDto<Unit>, DataError.Remote> {
+    override suspend fun joinActivity(params: JoinActivityParams): Result<ResponseDto<Unit>, AppError> {
         return safeCall {
             httpClient.post("${BASE_URL}/activities/join") {
                 setBody(
-                   params
+                    params
                 )
             }
         }

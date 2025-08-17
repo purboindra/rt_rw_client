@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.purboyndradev.rt_rw.core.data.remote.mapper.toRes
 import org.purboyndradev.rt_rw.core.data.remote.params.JoinActivityParams
-import org.purboyndradev.rt_rw.core.domain.ActivityError
 import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.domain.usecases.CreateActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.DeleteActivityUseCase
@@ -55,13 +55,8 @@ class ActivityViewModel(
                 }
                 
                 is Result.Error -> {
-                    val error = result.error
                     _activitiesState.value = _activitiesState.value.copy(
-                        error = when (error) {
-                            is ActivityError.InvalidResponse -> "Invalid Response"
-                            is ActivityError.Server -> "Internal Server Error"
-                            else -> "Unknown Error"
-                        }
+                        error = result.error.toRes()
                     )
                 }
             }
@@ -91,11 +86,7 @@ class ActivityViewModel(
                 is Result.Error -> {
                     val error = result.error
                     _activitiesState.value = _activitiesState.value.copy(
-                        error = when (error) {
-                            is ActivityError.InvalidResponse -> "Invalid Response"
-                            is ActivityError.Server -> "Internal Server Error"
-                            else -> "Unknown Error"
-                        }
+                        error = error.toRes()
                     )
                 }
             }
@@ -129,11 +120,7 @@ class ActivityViewModel(
                     val error = result.error
                     _joinActivityState.value = _joinActivityState.value.copy(
                         success = false,
-                        error = when (error) {
-                            is ActivityError.InvalidResponse -> "Invalid Response"
-                            is ActivityError.Server -> "Internal Server Error"
-                            else -> "Unknown Error"
-                        }
+                        error = error.toRes()
                     )
                 }
             }

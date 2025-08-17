@@ -13,9 +13,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -33,23 +36,32 @@ fun LoginScreen(navHostController: NavHostController) {
     
     val authViewModel = koinViewModel<AuthViewModel>()
     
+    val snackbarHostState = remember { SnackbarHostState() }
+    
     val phoneNumberState =
         authViewModel.phoneNumberState.collectAsStateWithLifecycle()
     val isLoadingState =
         authViewModel.isLoadingState.collectAsStateWithLifecycle()
-    val authState = authViewModel.signInState.collectAsStateWithLifecycle()
+    val authState = authViewModel.loginState.collectAsStateWithLifecycle()
     val openAlertDialog =
         authViewModel.openAlertDialog.collectAsStateWithLifecycle()
     
-    LaunchedEffect(Unit){
+    LaunchedEffect(Unit) {
         val result = authViewModel.hasAuthenticated()
         println("Has Authenticated: $result")
     }
     
     LaunchedEffect(authState.value) {
+        
+        println("Auth State Login Screen: $authState")
+        
         /// MEAN: User already verify their phone
         if (authState.value.success && authState.value.code == null) {
             navHostController.navigate(Main)
+        } else if (authState.value.error != null) {
+            snackbarHostState.showSnackbar(
+                "${authState.value.error}"
+            )
         }
     }
     
@@ -71,7 +83,11 @@ fun LoginScreen(navHostController: NavHostController) {
         }
     }
     
-    Scaffold { paddingValues ->
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(snackbarHostState)
+        }
+    ) { paddingValues ->
         Column(
             modifier = Modifier.fillMaxSize().padding(paddingValues)
                 .padding(horizontal = 32.dp),

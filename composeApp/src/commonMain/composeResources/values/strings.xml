@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="err_no_internet">No internet connection. Please check your network.</string>
+    <string name="err_too_many_requests">Too many requests. Please try again later.</string>
+    <string name="err_unauthorized">You’re not authorized. Please sign in again.</string>
+    <string name="err_not_found">We couldn’t find what you’re looking for.</string>
+    <string name="err_request_timeout">Request timed out. Please try again.</string>
+    <string name="err_serialization">We couldn’t read the server response.</string>
+    <string name="err_timeout">The operation timed out. Please try again.</string>
+
+    <string name="err_invalid_otp">That code looks invalid. Please try again.</string>
+    <string name="err_network">A network error occurred. Please try again.</string>
+    <string name="err_invalid_response">Unexpected server response. Please try again.</string>
+    <string name="err_invalid_jwt">Your session has expired or is invalid. Please sign in again.</string>
+
+    <string name="err_http_code">Server error (%1$d).</string>
+    <string name="err_http_code_message">Server error (%1$d): %2$s</string>
+
+    <string name="err_remote_unknown">Something went wrong. Please try again.</string>
+    <string name="err_remote_unknown_with_message">Something went wrong: %1$s</string>
+
+    <string name="err_disk_full">Device storage is full. Free up some space and try again.</string>
+    <string name="err_insufficient_funds">Insufficient funds.</string>
+    <string name="err_local_unknown">Something went wrong on this device.</string>
+    <string name="err_local_unknown_with_message">Something went wrong on this device: %1$s</string>
+
+</resources>

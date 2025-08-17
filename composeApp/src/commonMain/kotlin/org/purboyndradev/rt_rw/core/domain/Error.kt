@@ -1,3 +1,5 @@
-package org.purboyndradev.rt_rw.core.domain
-
-interface Error
+//package org.purboyndradev.rt_rw.core.domain
+//
+//interface Error
+//
+//interface AppError

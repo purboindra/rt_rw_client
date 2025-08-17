@@ -75,6 +75,8 @@ class SplashViewModel(
         val accessToken = appAuthRepository.accessTokenFlow.firstOrNull()
         val refreshToken = appAuthRepository.refreshTokenFlow.firstOrNull()
         
+        println("Access Token: $accessToken, Refresh Token: $refreshToken")
+        
         if (accessToken.isNullOrBlank() || refreshToken.isNullOrBlank()) {
             return false
         }
@@ -95,21 +97,17 @@ class SplashViewModel(
     fun refreshToken(startDestination: StartDestinationData? = null) {
         viewModelScope.launch {
             try {
-                val accessToken =
-                    appAuthRepository.accessTokenFlow.firstOrNull()
-                val refreshToken =
-                    appAuthRepository.refreshTokenFlow.firstOrNull()
                 
-                println("Access Token: $accessToken, Refresh Token: $refreshToken")
-                
-                // If no user data, navigate to login
-                if (accessToken == null || refreshToken == null) {
+                if (!hasAuthenticated()) {
                     onUpdateNavigationState(SplashNavigationState.NavigateToLogin)
                     return@launch
                 }
                 
+                val refreshToken =
+                    appAuthRepository.refreshTokenFlow.firstOrNull()
+                
                 when (val result = refreshTokenUseCase(
-                    refreshToken = refreshToken
+                    refreshToken = refreshToken ?: ""
                 )) {
                     is Result.Success -> {
                         
@@ -119,6 +117,7 @@ class SplashViewModel(
                             accessToken = result.data.accessToken,
                             refreshToken = result.data.refreshToken
                         )
+                        
                         if (startDestination != null) {
                             checkAndExecutePendingNavigation(startDestination)
                         } else {

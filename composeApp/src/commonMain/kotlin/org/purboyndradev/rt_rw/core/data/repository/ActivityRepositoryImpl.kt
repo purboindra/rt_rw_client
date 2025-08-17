@@ -8,7 +8,7 @@ import org.purboyndradev.rt_rw.core.data.remote.params.CreateActivityParams
 import org.purboyndradev.rt_rw.core.data.remote.params.JoinActivityParams
 import org.purboyndradev.rt_rw.core.data.remote.params.PaginationParams
 import org.purboyndradev.rt_rw.core.data.remote.params.QueryParams
-import org.purboyndradev.rt_rw.core.domain.DataError
+import org.purboyndradev.rt_rw.core.domain.AppError
 import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.core.domain.mapBoth
 import org.purboyndradev.rt_rw.domain.repository.ActivityRepository
@@ -16,7 +16,7 @@ import org.purboyndradev.rt_rw.domain.repository.ActivityRepository
 class ActivityRepositoryImpl(
     private val activityApi: ActivityApi
 ) : ActivityRepository {
-    override suspend fun createActivity(params: CreateActivityParams): Result<ResponseDto<Unit>, DataError.Remote> {
+    override suspend fun createActivity(params: CreateActivityParams): Result<ResponseDto<Unit>, AppError> {
         return activityApi.createActivity(
             params
         ).mapBoth(
@@ -32,7 +32,7 @@ class ActivityRepositoryImpl(
     override suspend fun fetchAllActivities(
         paginationParams: PaginationParams?,
         queryParams: QueryParams?
-    ): Result<ResponseDto<List<ActivityDto>>, DataError.Remote> {
+    ): Result<ResponseDto<List<ActivityDto>>, AppError> {
         return activityApi.fetchAllActivities(
             paginationParams, queryParams
         ).mapBoth(
@@ -46,7 +46,7 @@ class ActivityRepositoryImpl(
     }
     
     override suspend
-    fun fetchActivityById(id: String): Result<ResponseDto<ActivityDetailDto>, DataError.Remote> {
+    fun fetchActivityById(id: String): Result<ResponseDto<ActivityDetailDto>, AppError> {
         return activityApi.fetchActivityById(id).mapBoth(
             onSuccess = { data -> Result.Success(data) },
             onFailure = { error -> Result.Error(error) }
@@ -54,7 +54,7 @@ class ActivityRepositoryImpl(
     }
     
     override suspend
-    fun deleteActivity(id: String): Result<ResponseDto<Unit>, DataError.Remote> {
+    fun deleteActivity(id: String): Result<ResponseDto<Unit>, AppError> {
         return activityApi.deleteActivity(id).mapBoth(
             onSuccess = { data -> Result.Success(data) },
             onFailure = { error -> Result.Error(error) }
@@ -65,14 +65,14 @@ class ActivityRepositoryImpl(
     fun editActivity(
         id: String,
         params: CreateActivityParams
-    ): Result<ResponseDto<Unit>, DataError.Remote> {
+    ): Result<ResponseDto<Unit>, AppError> {
         return activityApi.editActivity(id, params).mapBoth(
             onSuccess = { data -> Result.Success(data) },
             onFailure = { error -> Result.Error(error) }
         )
     }
     
-    override suspend fun joinActivity(params: JoinActivityParams): Result<ResponseDto<Unit>, DataError.Remote> {
+    override suspend fun joinActivity(params: JoinActivityParams): Result<ResponseDto<Unit>, AppError> {
         return activityApi.joinActivity(params).mapBoth(
             onSuccess = { data -> Result.Success(data) },
             onFailure = { error -> Result.Error(error) }

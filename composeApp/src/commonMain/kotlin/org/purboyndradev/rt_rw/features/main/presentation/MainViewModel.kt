@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import org.purboyndradev.rt_rw.core.domain.ActivityError
+import org.purboyndradev.rt_rw.core.data.remote.mapper.toRes
 import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.domain.usecases.FetchActivitiesUseCase
 import org.purboyndradev.rt_rw.features.activity.presentation.ActivityState
@@ -45,6 +45,7 @@ class MainViewModel(
             )
             
             val result = fetchActivitiesUseCase.invoke()
+            
             when (result) {
                 is Result.Success -> {
                     val activities = result.data
@@ -56,14 +57,11 @@ class MainViewModel(
                 is Result.Error -> {
                     val error = result.error
                     _activitiesState.value = _activitiesState.value.copy(
-                        error = when (error) {
-                            is ActivityError.InvalidResponse -> "Invalid Response"
-                            is ActivityError.Server -> "Internal Server Error"
-                            else -> "Unknown Error"
-                        }
+                        error = error.toRes()
                     )
                 }
             }
+            
             _activitiesState.value = _activitiesState.value.copy(
                 loading = false
             )

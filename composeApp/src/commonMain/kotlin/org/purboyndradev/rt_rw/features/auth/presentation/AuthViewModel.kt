@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.purboyndradev.rt_rw.core.data.datastore.AppAuthRepository
+import org.purboyndradev.rt_rw.core.data.remote.mapper.toRes
 import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.domain.usecases.SignInUseCase
 import org.purboyndradev.rt_rw.domain.usecases.VerifyOtpUseCase
@@ -29,9 +30,9 @@ class AuthViewModel(
     private val appAuthRepository: AppAuthRepository
 ) : ViewModel() {
     
-    private val _signInState: MutableStateFlow<AuthState> =
+    private val _loginState: MutableStateFlow<AuthState> =
         MutableStateFlow(AuthState())
-    val signInState = _signInState.asStateFlow()
+    val loginState = _loginState.asStateFlow()
     
     private val _verifyOtpState: MutableStateFlow<AuthState> =
         MutableStateFlow(AuthState())
@@ -113,7 +114,7 @@ class AuthViewModel(
                     val code = data.code
                     
                     if (code == null) {
-                        _signInState.value = _signInState.value.copy(
+                        _loginState.value = _loginState.value.copy(
                             success = true
                         )
                         return@launch
@@ -121,7 +122,7 @@ class AuthViewModel(
                     
                     if (code == "USER_NOT_VERIFIED") {
                         redirectUrl?.let {
-                            _signInState.update {
+                            _loginState.update {
                                 it.copy(
                                     redirectUrl = redirectUrl,
                                     success = true
@@ -134,9 +135,9 @@ class AuthViewModel(
                 
                 is Result.Error -> {
                     println("Error: $result")
-                    _signInState.update {
+                    _loginState.update {
                         it.copy(
-                            error = ""
+                            error = result.error.toRes()
                         )
                     }
                 }
