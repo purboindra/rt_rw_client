@@ -14,6 +14,7 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 import org.purboyndradev.rt_rw.core.data.datastore.AppAuthRepository
+import org.purboyndradev.rt_rw.core.data.datastore.AuthTokenStore
 import org.purboyndradev.rt_rw.core.data.datastore.NotificationRepository
 import org.purboyndradev.rt_rw.core.data.remote.api.ActivityApi
 import org.purboyndradev.rt_rw.core.data.remote.api.AuthApi
@@ -22,6 +23,7 @@ import org.purboyndradev.rt_rw.core.data.remote.impl.KtorAuthRemoteDatasource
 import org.purboyndradev.rt_rw.core.data.repository.ActivityRepositoryImpl
 import org.purboyndradev.rt_rw.core.data.repository.AuthRepositoryImpl
 import org.purboyndradev.rt_rw.core.network.HttpClientFactory
+import org.purboyndradev.rt_rw.core.network.TokenRefresher
 import org.purboyndradev.rt_rw.domain.repository.ActivityRepository
 import org.purboyndradev.rt_rw.domain.repository.AuthRepository
 import org.purboyndradev.rt_rw.domain.usecases.CreateActivityUseCase
@@ -52,7 +54,6 @@ expect val platformModule: Module
 
 val sharedModule: Module = module {
     
-    
     /// PROVIDE HTTP CLIENT FACTORY
     val authHttpClient = named("AuthHttpClient")
     single<HttpClient>(qualifier = authHttpClient) {
@@ -71,7 +72,7 @@ val sharedModule: Module = module {
     }
     
     single<HttpClient> {
-        HttpClientFactory.create(get(), get(), get())
+        HttpClientFactory.create(get(), get(), get(), get())
     }
     
     single<String>(qualifier = named("baseUrl")) { BASE_URL }
@@ -143,6 +144,14 @@ val sharedModule: Module = module {
     
     single {
         AppAuthRepository(get())
+    }
+    
+    single {
+        AuthTokenStore(get())
+    }
+    
+    single {
+        TokenRefresher(get(), get())
     }
     
     /// PROVIDE VIEW MODEL

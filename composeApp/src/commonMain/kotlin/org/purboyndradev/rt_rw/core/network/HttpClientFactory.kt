@@ -22,19 +22,17 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
 import org.purboyndradev.rt_rw.core.data.datastore.AppAuthRepository
+import org.purboyndradev.rt_rw.core.data.datastore.AuthTokenStore
 import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.domain.usecases.RefreshTokenUseCase
 
 object HttpClientFactory {
-    
     fun create(
         engine: HttpClientEngine,
         appAuthRepository: AppAuthRepository,
-        refreshTokenUseCase: RefreshTokenUseCase
+        tokenRefresher: TokenRefresher,
+        tokenStore: AuthTokenStore
     ): HttpClient {
-        
-        val tokenRefresher =
-            TokenRefresher(refreshTokenUseCase, appAuthRepository)
         
         return HttpClient(engine) {
             install(ContentNegotiation) {
@@ -56,35 +54,36 @@ object HttpClientFactory {
             install(Auth) {
                 bearer {
                     loadTokens {
-                        val accessToken =
-                            appAuthRepository.accessTokenFlow.firstOrNull()
-                        val refreshToken =
-                            appAuthRepository.refreshTokenFlow.firstOrNull()
-                        
-                        println("Ktor loadTokens: $accessToken, $refreshToken")
-                        
-                        if (!accessToken.isNullOrBlank() && !refreshToken.isNullOrBlank()) {
-                            BearerTokens(accessToken, refreshToken)
-                        } else {
-                            null
-                        }
+                        tokenStore.memory.value
+                            ?: run {
+                                val accessToken =
+                                    appAuthRepository.accessTokenFlow.firstOrNull()
+                                val refreshToken =
+                                    appAuthRepository.refreshTokenFlow.firstOrNull()
+                                if (!accessToken.isNullOrBlank() && !refreshToken.isNullOrBlank()) {
+                                    val t = BearerTokens(
+                                        accessToken = accessToken,
+                                        refreshToken
+                                    )
+                                    tokenStore.memory.value = t
+                                    t
+                                } else null
+                            }
                     }
-                    
                     refreshTokens {
-                        
-                        println("Ktor refreshTokens invoke: ${oldTokens?.accessToken}, ${oldTokens?.refreshToken}")
-                        
-                        tokenRefresher.refresh(oldTokens)
+                        val newT = tokenRefresher.refresh(oldTokens)
+                        if (newT != null) tokenStore.memory.value = newT
+                        newT
                     }
-                    
-                    sendWithoutRequest { request ->
-                        val p = request.url.encodedPath
+                    sendWithoutRequest { req ->
+                        val p = req.url.encodedPath
                         p.contains("/auth/sign-in") ||
                                 p.contains("/auth/otp/verify") ||
-                                p.contains("/auth/refresh")
+                                p.contains("/auth/refresh-token") // <-- be precise
                     }
                 }
             }
+            
             defaultRequest {
                 contentType(ContentType.Application.Json)
             }
@@ -94,8 +93,6 @@ object HttpClientFactory {
 
 
 /// FUN FOR HANDLE REFRESH TOKEN
-
-
 class TokenRefresher(
     private val refreshTokenUseCase: RefreshTokenUseCase,
     private val appAuthRepository: AppAuthRepository
