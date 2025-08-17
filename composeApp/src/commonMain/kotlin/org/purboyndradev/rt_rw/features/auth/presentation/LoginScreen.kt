@@ -18,9 +18,11 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -38,44 +40,48 @@ fun LoginScreen(navHostController: NavHostController) {
     
     val snackbarHostState = remember { SnackbarHostState() }
     
-    val phoneNumberState =
-        authViewModel.phoneNumberState.collectAsStateWithLifecycle()
-    val isLoadingState =
-        authViewModel.isLoadingState.collectAsStateWithLifecycle()
-    val authState = authViewModel.loginState.collectAsStateWithLifecycle()
-    val openAlertDialog =
-        authViewModel.openAlertDialog.collectAsStateWithLifecycle()
+    val isLoadingState by
+    authViewModel.isLoadingState.collectAsStateWithLifecycle()
+    val authState by authViewModel.loginState.collectAsStateWithLifecycle()
+    val openAlertDialog by
+    authViewModel.openAlertDialog.collectAsStateWithLifecycle()
+    val phoneNumberState by authViewModel.phoneNumberState.collectAsStateWithLifecycle()
+    
+    
+    val isPhoneNumberValid =
+        phoneNumberState.error == null && phoneNumberState.value.isNotBlank()
+    
     
     LaunchedEffect(Unit) {
         val result = authViewModel.hasAuthenticated()
         println("Has Authenticated: $result")
     }
     
-    LaunchedEffect(authState.value) {
+    LaunchedEffect(authState) {
         
         println("Auth State Login Screen: $authState")
         
         /// MEAN: User already verify their phone
-        if (authState.value.success && authState.value.code == null) {
+        if (authState.success && authState.code == null) {
             navHostController.navigate(Main)
-        } else if (authState.value.error != null) {
+        } else if (authState.error != null) {
             snackbarHostState.showSnackbar(
-                "${authState.value.error}"
+                "${authState.error}"
             )
         }
     }
     
     when {
-        openAlertDialog.value -> {
+        openAlertDialog -> {
             OpenTelegramDialog(
-                onDismissRequest = { authViewModel.onOpenAlertDialogChange(!openAlertDialog.value) },
+                onDismissRequest = { authViewModel.onOpenAlertDialogChange(!openAlertDialog) },
                 onConfirmation = {
-                    val redirectUrl = authState.value.redirectUrl
+                    val redirectUrl = authState.redirectUrl
                     redirectUrl?.let {
                         TelegramLauncher.open(it)
                     }
-                    authViewModel.onOpenAlertDialogChange(!openAlertDialog.value)
-                    navHostController.navigate(OTP(phoneNumber = authViewModel.phoneNumberState.value))
+                    authViewModel.onOpenAlertDialogChange(!openAlertDialog)
+                    navHostController.navigate(OTP(phoneNumber = phoneNumberState.value))
                 },
                 dialogTitle = "Verify akun kamu!",
                 dialogText = "Akun kamu belum terverifikasi di system. Silahkan klik tombol di bawah ini untuk membuka aplikasi Telegram",
@@ -104,6 +110,16 @@ fun LoginScreen(navHostController: NavHostController) {
                 onValueChange = { text ->
                     authViewModel.onUpdatePhoneNumber(text)
                 },
+                isError = phoneNumberState.touched && phoneNumberState.error != null,
+                supportingText = {
+                    if (phoneNumberState.touched && phoneNumberState.error != null) {
+                        Text(
+                            text = phoneNumberState.error!!,
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.labelMedium,
+                        )
+                    }
+                },
                 label = {
                     Text(
                         "Phone Number",
@@ -117,17 +133,22 @@ fun LoginScreen(navHostController: NavHostController) {
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                     unfocusedBorderColor = MaterialTheme.colorScheme.outline,
                 ),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
+                    .onFocusChanged { focusState ->
+                        if (!focusState.isFocused && !phoneNumberState.touched) {
+                            authViewModel.validatePhoneNumber(phoneNumberState.value)
+                        }
+                    },
             )
             Spacer(modifier = Modifier.height(10.dp))
             ElevatedButton(
                 onClick = {
                     authViewModel.signIn()
                 },
-                enabled = !isLoadingState.value
+                enabled = !isLoadingState
             ) {
                 Text(
-                    if (isLoadingState.value) "Loading..." else "Send OTP",
+                    if (isLoadingState) "Loading..." else "Send OTP",
                     style = MaterialTheme.typography.labelMedium
                 )
             }

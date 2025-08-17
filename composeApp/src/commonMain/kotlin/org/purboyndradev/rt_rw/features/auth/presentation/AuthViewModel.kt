@@ -16,7 +16,9 @@ import org.purboyndradev.rt_rw.core.data.remote.mapper.toRes
 import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.domain.usecases.SignInUseCase
 import org.purboyndradev.rt_rw.domain.usecases.VerifyOtpUseCase
+import org.purboyndradev.rt_rw.helper.FieldState
 import org.purboyndradev.rt_rw.helper.JWTObject
+import org.purboyndradev.rt_rw.helper.Validators
 
 data class OTPUiState(
     val otpLength: Int = 6,
@@ -42,10 +44,6 @@ class AuthViewModel(
         MutableStateFlow(OTPUiState())
     val otpUiState = _otpUiState.asStateFlow()
     
-    private val _phoneNumberState: MutableStateFlow<String> =
-        MutableStateFlow("")
-    val phoneNumberState = _phoneNumberState.asStateFlow()
-    
     private val _isLoadingState: MutableStateFlow<Boolean> =
         MutableStateFlow(false)
     val isLoadingState = _isLoadingState.asStateFlow()
@@ -53,6 +51,10 @@ class AuthViewModel(
     private val _openAlertDialog: MutableStateFlow<Boolean> =
         MutableStateFlow(false)
     val openAlertDialog = _openAlertDialog.asStateFlow()
+    
+    private val _phoneNumberState: MutableStateFlow<FieldState> =
+        MutableStateFlow(FieldState())
+    val phoneNumberState = _phoneNumberState.asStateFlow()
     
     val accessToken: Flow<String?> = appAuthRepository.fcmTokenFlow.stateIn(
         viewModelScope,
@@ -77,9 +79,25 @@ class AuthViewModel(
         }
     }
     
+    fun validatePhoneNumber(value: String): String? =
+        Validators.required(
+            value,
+            "Phone Number"
+        ) ?: Validators.minLength(value, 13, "Phone Number")
+    
     fun onUpdatePhoneNumber(phoneNumber: String) {
         _phoneNumberState.update {
-            phoneNumber
+            it.copy(
+                value = phoneNumber,
+                error = if (it.touched) Validators.required(
+                    phoneNumber,
+                    "Phone Number"
+                ) ?: Validators.minLength(
+                    phoneNumber,
+                    13,
+                    "Phone Number"
+                ) else null
+            )
         }
     }
     
@@ -103,8 +121,23 @@ class AuthViewModel(
     
     fun signIn() {
         _isLoadingState.value = true
+        
+        val phoneNumberError =
+            validatePhoneNumber(_phoneNumberState.value.value)
+        
+        if (phoneNumberError != null) {
+            _phoneNumberState.update {
+                it.copy(
+                    error = phoneNumberError,
+                    touched = true
+                )
+            }
+            _isLoadingState.value = false
+            return
+        }
+        
         viewModelScope.launch {
-            val result = signInUseCase(_phoneNumberState.value)
+            val result = signInUseCase(_phoneNumberState.value.value)
             when (result) {
                 is Result.Success -> {
                     
@@ -155,7 +188,7 @@ class AuthViewModel(
         
         viewModelScope.launch {
             val result = verifyOtpUseCase(
-                phoneNumber = _phoneNumberState.value,
+                phoneNumber = _phoneNumberState.value.value,
                 otp = otp,
             )
             
