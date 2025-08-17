@@ -83,7 +83,7 @@ class AuthViewModel(
         Validators.required(
             value,
             "Phone Number"
-        ) ?: Validators.minLength(value, 13, "Phone Number")
+        ) ?: Validators.minLength(value, 11, "Phone Number")
     
     fun onUpdatePhoneNumber(phoneNumber: String) {
         _phoneNumberState.update {
@@ -94,7 +94,7 @@ class AuthViewModel(
                     "Phone Number"
                 ) ?: Validators.minLength(
                     phoneNumber,
-                    13,
+                    11,
                     "Phone Number"
                 ) else null
             )
@@ -130,6 +130,8 @@ class AuthViewModel(
     
     fun signIn() {
         _isLoadingState.value = true
+        
+        println("Phone Number: ${_phoneNumberState.value.value}")
         
         onResetErrorState()
         
