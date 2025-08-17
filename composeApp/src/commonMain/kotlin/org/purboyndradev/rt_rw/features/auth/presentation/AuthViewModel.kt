@@ -118,9 +118,20 @@ class AuthViewModel(
         return expSeconds > nowSeconds
     }
     
+    fun onResetErrorState() {
+        _loginState.value = _loginState.value.copy(
+            error = null
+        )
+        
+        _verifyOtpState.value = _verifyOtpState.value.copy(
+            error = null
+        )
+    }
     
     fun signIn() {
         _isLoadingState.value = true
+        
+        onResetErrorState()
         
         val phoneNumberError =
             validatePhoneNumber(_phoneNumberState.value.value)
