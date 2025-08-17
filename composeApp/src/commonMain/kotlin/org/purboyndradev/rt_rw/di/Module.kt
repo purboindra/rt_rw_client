@@ -156,7 +156,7 @@ val sharedModule: Module = module {
     
     /// PROVIDE VIEW MODEL
     viewModel { AuthViewModel(get(), get(), get()) }
-    viewModel { SplashViewModel(get(), get(), get(), get()) }
+    viewModel { SplashViewModel(get(), get(), get()) }
     viewModel { MainViewModel(get()) }
     viewModel { NotificationViewModel(get()) }
     viewModel { params ->
