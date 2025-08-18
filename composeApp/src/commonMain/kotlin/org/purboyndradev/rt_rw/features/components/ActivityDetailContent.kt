@@ -34,6 +34,10 @@ fun ActivityDetailContent(
     val activityViewModel = koinViewModel<ActivityViewModel>()
     val joinActivityState by activityViewModel.joinActivityState.collectAsStateWithLifecycle()
     
+    val isLoading = joinActivityState.loading
+    val isSuccess = joinActivityState.success
+    val error = joinActivityState.error
+    
     val date = DateHelper.convertEpochToDate(activity.date)
     
     Column(modifier = modifier.fillMaxWidth()) {
@@ -59,9 +63,13 @@ fun ActivityDetailContent(
                     onClick = {
                         activityViewModel.joinActivity(activity.id)
                     },
+                    enabled = !isLoading,
                     modifier = modifier.fillMaxWidth()
                 ) {
-                    Text("Join", style = MaterialTheme.typography.labelMedium)
+                    Text(
+                        if (isLoading) "Loading..." else "Join",
+                        style = MaterialTheme.typography.labelMedium
+                    )
                 }
             }
         }

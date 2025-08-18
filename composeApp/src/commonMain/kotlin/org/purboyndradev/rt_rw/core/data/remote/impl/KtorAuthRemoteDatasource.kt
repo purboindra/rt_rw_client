@@ -13,42 +13,48 @@ import org.purboyndradev.rt_rw.core.data.remote.params.SignInParams
 import org.purboyndradev.rt_rw.core.data.remote.params.VerifyOtpParams
 import org.purboyndradev.rt_rw.core.domain.AppError
 import org.purboyndradev.rt_rw.core.domain.Result
-import org.purboyndradev.rt_rw.core.network.safeCall
+import org.purboyndradev.rt_rw.core.network.safeCallWrapped
 import org.purboyndradev.rt_rw.helper.BASE_URL
 
 
 class KtorAuthRemoteDatasource(private val httpClient: HttpClient) :
     AuthApi {
     override suspend fun signIn(phoneNumber: String): Result<ResponseDto<SignInDto>, AppError> {
-        return safeCall {
-            httpClient.post("$BASE_URL/auth/sign-in") {
-                setBody(SignInParams(phoneNumber))
+        return safeCallWrapped(
+            call = {
+                httpClient.post("$BASE_URL/auth/sign-in") {
+                    setBody(SignInParams(phoneNumber))
+                }
             }
-        }
+        )
     }
     
     override suspend fun verifyOtp(
         phoneNumber: String,
         otp: String
     ): Result<ResponseDto<VerifyOtpDto>, AppError> {
-        return safeCall {
-            httpClient.post("${BASE_URL}/auth/otp/verify") {
-                setBody(VerifyOtpParams(phone = phoneNumber, otp))
+        return safeCallWrapped(
+            call = {
+                httpClient.post("${BASE_URL}/auth/otp/verify") {
+                    setBody(VerifyOtpParams(phone = phoneNumber, otp))
+                }
             }
-        }
+        )
     }
     
     override suspend fun refreshToken(
         refreshToken: String
     ): Result<ResponseDto<RefreshTokenDto>, AppError> {
-        return safeCall {
-            httpClient.post("$BASE_URL/auth/refresh-token") {
-                setBody(
-                    RefreshTokenParams(
-                        refreshToken
+        return safeCallWrapped(
+            call = {
+                httpClient.post("$BASE_URL/auth/refresh-token") {
+                    setBody(
+                        RefreshTokenParams(
+                            refreshToken
+                        )
                     )
-                )
+                }
             }
-        }
+        )
     }
 }

@@ -1,35 +1,62 @@
 package org.purboyndradev.rt_rw.core.network
 
 import io.ktor.client.call.body
-import io.ktor.client.network.sockets.SocketTimeoutException
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.client.statement.request
-import io.ktor.util.network.UnresolvedAddressException
-import kotlinx.coroutines.ensureActive
-import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import org.purboyndradev.rt_rw.core.domain.AppError
 import org.purboyndradev.rt_rw.core.domain.Result
-import kotlin.coroutines.coroutineContext
 
-suspend inline fun <reified T> safeCall(execute: () -> HttpResponse): Result<T, AppError.Remote> {
-    val response = try {
-        execute()
-    } catch (e: SocketTimeoutException) {
-        e.printStackTrace()
-        return Result.Error(AppError.Remote.Timeout)
-    } catch (e: UnresolvedAddressException) {
-        e.printStackTrace()
-        return Result.Error(AppError.Remote.NoInternet)
-    } catch (e: SerializationException) {
-        e.printStackTrace()
-        return Result.Error(AppError.Remote.Serialization)
-    } catch (e: Exception) {
-        e.printStackTrace()
-        coroutineContext.ensureActive()
-        return Result.Error(AppError.Remote.Unknown(e, message = e.message))
+private val errJson = Json { ignoreUnknownKeys = true; isLenient = true }
+
+
+fun mapHttpError(status: Int, bodyText: String): AppError.Remote {
+    val json =
+        runCatching { errJson.parseToJsonElement(bodyText).jsonObject }.getOrNull()
+    val serverMessage = json?.get("message")?.jsonPrimitive?.contentOrNull
+    val msg = serverMessage?.takeIf { it.isNotBlank() } ?: "HTTP $status"
+    
+    return when (status) {
+        401 -> AppError.Remote.Unauthorized
+        403 -> AppError.Remote.Http(403, msg, bodyText)
+        404 -> AppError.Remote.NotFound
+        408 -> AppError.Remote.RequestTimeout
+        429 -> AppError.Remote.TooManyRequests
+        in 500..599 -> AppError.Remote.Http(status, msg, bodyText)
+        400 -> AppError.Remote.Http(400, msg, bodyText)
+        else -> AppError.Remote.Unknown(message = msg)
     }
-    return responseToResult(response)
+}
+
+suspend inline fun <reified T : Any> safeCallWrapped(
+    noinline call: suspend () -> HttpResponse,
+    json: Json = Json { ignoreUnknownKeys = true; isLenient = true }
+): Result<T, AppError.Remote> {
+    val resp = try {
+        call()
+    } catch (t: Throwable) {
+        return Result.Error(AppError.Remote.Network)
+    }
+    
+    val status = resp.status.value
+    val text = resp.bodyAsText()
+    
+    println("Raw Response Body: $text, status_code: $status")
+    
+    return if (status in 200..299) {
+        runCatching {
+            val dto = json.decodeFromString<T>(text)
+            Result.Success(dto)
+        }.getOrElse {
+            Result.Error(AppError.Remote.Serialization)
+        }
+    } else {
+        Result.Error(mapHttpError(status, text))
+    }
 }
 
 
@@ -61,5 +88,4 @@ suspend inline fun <reified T> responseToResult(response: HttpResponse): Result<
         
         else -> Result.Error(AppError.Remote.Unknown(message = "HTTP $status"))
     }
-    
 }

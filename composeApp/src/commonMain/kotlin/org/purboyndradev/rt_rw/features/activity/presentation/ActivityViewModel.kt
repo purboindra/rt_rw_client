@@ -99,8 +99,12 @@ class ActivityViewModel(
     
     fun joinActivity(id: String) {
         viewModelScope.launch {
+            
+            
             _joinActivityState.value = _joinActivityState.value.copy(
-                loading = true
+                loading = true,
+                success = false,
+                error = null
             )
             
             val params = JoinActivityParams(
