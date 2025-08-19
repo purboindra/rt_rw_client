@@ -71,7 +71,7 @@ class SplashViewModel(
         }
     }
     
-    suspend fun hasAuthenticated(val accessToken: String): Boolean {
+    fun hasAuthenticated(val accessToken: String): Boolean {
         return accessToken.isBlank()
     }
     
@@ -91,7 +91,6 @@ class SplashViewModel(
         
         return expSeconds > nowSeconds
     }
-    
     
     private suspend fun refreshToken(): Boolean = refreshMutex.withLock {
         
