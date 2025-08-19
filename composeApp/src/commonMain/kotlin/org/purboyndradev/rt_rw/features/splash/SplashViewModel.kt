@@ -71,19 +71,14 @@ class SplashViewModel(
         }
     }
     
-    suspend fun hasAuthenticated(): Boolean {
-        val accessToken = appAuthRepository.accessTokenFlow.firstOrNull()
-        val refreshToken = appAuthRepository.refreshTokenFlow.firstOrNull()
-        
-        println("Access Token: $accessToken, Refresh Token: $refreshToken")
-        
-        if (accessToken.isNullOrBlank() || refreshToken.isNullOrBlank()) {
-            return false
-        }
-        
+    suspend fun hasAuthenticated(val accessToken: String): Boolean {
+        return accessToken.isBlank()
+    }
+    
+    suspend fun hasTokenExpired(val accessToken: String): Boolean {
         val payload = JWTObject.decodeJwtPayload(accessToken)
         
-        println("Payload hasAuthenticated: $payload")
+        println("Payload hasTokenExpired: $payload")
         
         val expSeconds =
             payload?.get("exp")?.toString()?.toLongOrNull() ?: return false
@@ -102,15 +97,15 @@ class SplashViewModel(
         
         val refreshToken =
             appAuthRepository.refreshTokenFlow.firstOrNull().orEmpty()
+        val accessToken =
+            appAuthRepository.accessTokenFlow.firstOrNull().orEmpty()
         
-        val hasAuthentication = hasAuthenticated()
+        val hasAuthenticated = hasAuthenticated(accessToken)
+        val hasTokenExpired = hasTokenExpired(accessToken)
         
         /// MEAN USER NOT LOGGED IN YET
-        if (!hasAuthentication && refreshToken.isBlank()) {
+        if (!hasAuthenticated) {
             return false
-            /// MEAN USER LOGGED IN & TOKEN VALID
-        } else if (hasAuthentication) {
-            return true
         }
         
         when (val res = refreshTokenUseCase(refreshToken)) {
