@@ -75,7 +75,7 @@ class SplashViewModel(
         return accessToken.isBlank()
     }
     
-    suspend fun hasTokenExpired(val accessToken: String): Boolean {
+    fun hasTokenExpired(val accessToken: String): Boolean {
         val payload = JWTObject.decodeJwtPayload(accessToken)
         
         println("Payload hasTokenExpired: $payload")
