@@ -14,6 +14,7 @@ import org.purboyndradev.rt_rw.domain.usecases.EditActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchActivitiesUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchActivityByIdUseCase
 import org.purboyndradev.rt_rw.domain.usecases.JoinActivityUseCase
+import org.purboyndradev.rt_rw.helper.MessageSnackbarType
 
 class ActivityViewModel(
     private val createActivityUseCase: CreateActivityUseCase,
@@ -37,6 +38,16 @@ class ActivityViewModel(
             JoinActivityState()
         )
     val joinActivityState = _joinActivityState.asStateFlow()
+    
+    private val _snackbarType: MutableStateFlow<MessageSnackbarType> =
+        MutableStateFlow(
+            MessageSnackbarType.INFO
+        )
+    val snackbarType = _snackbarType.asStateFlow()
+    
+    fun onChangeSnackbarType(type: MessageSnackbarType) {
+        _snackbarType.value = type
+    }
     
     fun fetchActivityDetail(id: String) {
         viewModelScope.launch {
@@ -64,7 +75,6 @@ class ActivityViewModel(
             _activitiesState.value = _activitiesState.value.copy(
                 loading = false
             )
-            
         }
     }
     
@@ -100,7 +110,6 @@ class ActivityViewModel(
     fun joinActivity(id: String) {
         viewModelScope.launch {
             
-            
             _joinActivityState.value = _joinActivityState.value.copy(
                 loading = true,
                 success = false,
@@ -115,6 +124,7 @@ class ActivityViewModel(
             
             when (result) {
                 is Result.Success -> {
+                    onChangeSnackbarType(MessageSnackbarType.SUCCESS)
                     _joinActivityState.value = _joinActivityState.value.copy(
                         success = true
                     )
@@ -122,6 +132,7 @@ class ActivityViewModel(
                 
                 is Result.Error -> {
                     val error = result.error
+                    onChangeSnackbarType(MessageSnackbarType.ERROR)
                     _joinActivityState.value = _joinActivityState.value.copy(
                         success = false,
                         error = error.toRes()
