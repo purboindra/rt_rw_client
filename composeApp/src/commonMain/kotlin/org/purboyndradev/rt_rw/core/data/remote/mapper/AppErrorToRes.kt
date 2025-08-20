@@ -35,11 +35,12 @@ suspend fun AppError.toRes(): String = when (this) {
             is AppError.Remote.Network -> getString(Res.string.err_no_internet)
             
             is AppError.Remote.Http ->
-                if (message.isNullOrBlank())
+                if (body.isNullOrBlank() && message.isNullOrBlank())
                     getString(Res.string.err_http_code)
                 else
-                    getString(
+                    message ?: getString(
                         Res.string.err_http_code_message,
+                        listOf(code, body)
                     )
             
             is AppError.Remote.Unknown ->
