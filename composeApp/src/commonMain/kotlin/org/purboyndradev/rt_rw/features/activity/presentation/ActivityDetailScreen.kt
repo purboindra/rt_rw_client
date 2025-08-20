@@ -40,9 +40,12 @@ fun ActivityDetailScreen(id: String, navHostController: NavHostController) {
     activityViewModel.activitiesState.collectAsStateWithLifecycle()
     val joinActivityState by activityViewModel.joinActivityState.collectAsStateWithLifecycle()
     val snackbarTypeState by activityViewModel.snackbarType.collectAsStateWithLifecycle()
+    val hasJoinActivity by activityViewModel.hasJoinedActivity.collectAsStateWithLifecycle()
     
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+    
+    val isLoadingJoinActivity = joinActivityState.loading
     
     fun showStyledSnackbar(
         snackbarHostState: SnackbarHostState,
@@ -115,7 +118,11 @@ fun ActivityDetailScreen(id: String, navHostController: NavHostController) {
                     } else {
                         ActivityDetailContent(
                             activityState.activity!!,
-                            activityViewModel = activityViewModel
+                            hasJoinActivity = hasJoinActivity,
+                            isLoadingJoinActivity = isLoadingJoinActivity,
+                            onJoinActivity = {
+                                activityViewModel.joinActivity(id)
+                            }
                         )
                     }
                 }

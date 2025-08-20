@@ -13,29 +13,21 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.purboyndradev.rt_rw.core.domain.model.ActivityDetailModel
-import org.purboyndradev.rt_rw.features.activity.presentation.ActivityViewModel
 import org.purboyndradev.rt_rw.helper.DateHelper
-
 
 @Composable
 fun ActivityDetailContent(
     activity: ActivityDetailModel,
     modifier: Modifier = Modifier,
-    activityViewModel: ActivityViewModel
+    isLoadingJoinActivity: Boolean = false,
+    onJoinActivity: () -> Unit,
+    hasJoinActivity: Boolean = false,
 ) {
-    
-    val joinActivityState by activityViewModel.joinActivityState.collectAsStateWithLifecycle()
-    
-    val isLoading = joinActivityState.loading
-    val isSuccess = joinActivityState.success
-    val error = joinActivityState.error
     
     val date = DateHelper.convertEpochToDate(activity.date)
     
@@ -56,17 +48,16 @@ fun ActivityDetailContent(
                     )
                 )
             }
+            
             Spacer(modifier = modifier.width(8.dp))
-            Box(modifier = modifier.width(112.dp)) {
+            if (!hasJoinActivity) Box(modifier = modifier.width(112.dp)) {
                 ElevatedButton(
-                    onClick = {
-                        activityViewModel.joinActivity(activity.id)
-                    },
-                    enabled = !isLoading,
+                    onClick = onJoinActivity,
+                    enabled = !isLoadingJoinActivity,
                     modifier = modifier.fillMaxWidth()
                 ) {
                     Text(
-                        if (isLoading) "Loading..." else "Join",
+                        if (isLoadingJoinActivity) "Loading..." else "Join",
                         style = MaterialTheme.typography.labelMedium
                     )
                 }
