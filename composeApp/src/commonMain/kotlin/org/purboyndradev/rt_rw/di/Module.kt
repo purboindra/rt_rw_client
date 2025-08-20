@@ -160,6 +160,6 @@ val sharedModule: Module = module {
     viewModel { MainViewModel(get()) }
     viewModel { NotificationViewModel(get()) }
     viewModel { params ->
-        ActivityViewModel(get(), get(), get(), get(), get(), get())
+        ActivityViewModel(get(), get(), get(), get(), get(), get(), get())
     }
 }
