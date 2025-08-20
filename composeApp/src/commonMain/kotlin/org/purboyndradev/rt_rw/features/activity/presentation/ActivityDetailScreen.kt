@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -20,11 +21,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import org.purboyndradev.rt_rw.features.components.ActivityDetailContent
 import org.purboyndradev.rt_rw.features.components.CommentInputActivity
+import org.purboyndradev.rt_rw.features.components.CustomSnackbar
+import org.purboyndradev.rt_rw.helper.MessageSnackbarType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,9 +39,26 @@ fun ActivityDetailScreen(id: String, navHostController: NavHostController) {
     val activityState by
     activityViewModel.activitiesState.collectAsStateWithLifecycle()
     val joinActivityState by activityViewModel.joinActivityState.collectAsStateWithLifecycle()
+    val snackbarTypeState by activityViewModel.snackbarType.collectAsStateWithLifecycle()
     
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+    
+    fun showStyledSnackbar(
+        snackbarHostState: SnackbarHostState,
+        scope: CoroutineScope,
+        message: String,
+        type: MessageSnackbarType
+    ) {
+        scope.launch {
+            snackbarHostState.currentSnackbarData?.dismiss()
+            snackbarHostState.showSnackbar(
+                message = message,
+                actionLabel = type.name,
+                duration = if (snackbarTypeState == MessageSnackbarType.SUCCESS) SnackbarDuration.Short else SnackbarDuration.Long
+            )
+        }
+    }
     
     LaunchedEffect(Unit) {
         activityViewModel.fetchActivityDetail(id)
@@ -46,9 +67,12 @@ fun ActivityDetailScreen(id: String, navHostController: NavHostController) {
     LaunchedEffect(joinActivityState.error) {
         joinActivityState.error?.let {
             val errorMessage = joinActivityState.error
-            scope.launch {
-                snackbarHostState.showSnackbar(errorMessage ?: "Unknown Error")
-            }
+            showStyledSnackbar(
+                snackbarHostState,
+                scope,
+                message = errorMessage ?: "Unknown Error",
+                snackbarTypeState
+            )
         }
     }
     
@@ -62,7 +86,12 @@ fun ActivityDetailScreen(id: String, navHostController: NavHostController) {
             )
         },
         snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
+            SnackbarHost(snackbarHostState) { data ->
+                CustomSnackbar(
+                    snackbarData = data,
+                    messageType = snackbarTypeState
+                )
+            }
         },
     ) { innerPadding ->
         LazyColumn(
