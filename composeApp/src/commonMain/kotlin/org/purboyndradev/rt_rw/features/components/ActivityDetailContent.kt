@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import org.koin.compose.viewmodel.koinViewModel
 import org.purboyndradev.rt_rw.core.domain.model.ActivityDetailModel
 import org.purboyndradev.rt_rw.features.activity.presentation.ActivityViewModel
 import org.purboyndradev.rt_rw.helper.DateHelper
@@ -28,10 +27,10 @@ import org.purboyndradev.rt_rw.helper.DateHelper
 @Composable
 fun ActivityDetailContent(
     activity: ActivityDetailModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    activityViewModel: ActivityViewModel
 ) {
     
-    val activityViewModel = koinViewModel<ActivityViewModel>()
     val joinActivityState by activityViewModel.joinActivityState.collectAsStateWithLifecycle()
     
     val isLoading = joinActivityState.loading

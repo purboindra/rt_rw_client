@@ -113,7 +113,10 @@ fun ActivityDetailScreen(id: String, navHostController: NavHostController) {
                     ) {
                         Text(activityState.error ?: "Unknown Error")
                     } else {
-                        ActivityDetailContent(activityState.activity!!)
+                        ActivityDetailContent(
+                            activityState.activity!!,
+                            activityViewModel = activityViewModel
+                        )
                     }
                 }
             }
