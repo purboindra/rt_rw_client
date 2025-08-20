@@ -71,14 +71,14 @@ class SplashViewModel(
         }
     }
     
-    fun hasAuthenticated(val accessToken: String): Boolean {
-        return accessToken.isBlank()
+    fun hasAuthenticated(accessToken: String): Boolean {
+        return accessToken.isNotBlank()
     }
     
-    fun hasTokenExpired(val accessToken: String): Boolean {
+    fun hasTokenValid(accessToken: String): Boolean {
         val payload = JWTObject.decodeJwtPayload(accessToken)
         
-        println("Payload hasTokenExpired: $payload")
+        println("Payload hasTokenValid: $payload")
         
         val expSeconds =
             payload?.get("exp")?.toString()?.toLongOrNull() ?: return false
@@ -100,11 +100,15 @@ class SplashViewModel(
             appAuthRepository.accessTokenFlow.firstOrNull().orEmpty()
         
         val hasAuthenticated = hasAuthenticated(accessToken)
-        val hasTokenExpired = hasTokenExpired(accessToken)
+        val hasTokenValid = hasTokenValid(accessToken)
         
         /// MEAN USER NOT LOGGED IN YET
         if (!hasAuthenticated) {
             return false
+        }
+        
+        if (hasTokenValid) {
+            return true
         }
         
         when (val res = refreshTokenUseCase(refreshToken)) {
@@ -114,7 +118,6 @@ class SplashViewModel(
                 )
                 true
             }
-            
             is Result.Error -> false
         }
     }
