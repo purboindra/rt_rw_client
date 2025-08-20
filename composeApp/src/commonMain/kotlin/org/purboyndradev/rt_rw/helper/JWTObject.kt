@@ -41,6 +41,11 @@ object JWTObject {
         }
     }
     
+    fun getUserId(accessToken: String): String? {
+        val payload = decodeJwtPayload(accessToken)
+        return payload?.get("userId")?.toString()
+    }
+    
     
     fun hasTokenValid(accessToken: String): Boolean {
         val payload = decodeJwtPayload(accessToken)
