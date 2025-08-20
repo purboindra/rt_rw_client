@@ -2,7 +2,6 @@ package org.purboyndradev.rt_rw.features.splash
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.ktor.util.date.getTimeMillis
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
@@ -75,23 +74,6 @@ class SplashViewModel(
         return accessToken.isNotBlank()
     }
     
-    fun hasTokenValid(accessToken: String): Boolean {
-        val payload = JWTObject.decodeJwtPayload(accessToken)
-        
-        println("Payload hasTokenValid: $payload")
-        
-        val expSeconds =
-            payload?.get("exp")?.toString()?.toLongOrNull() ?: return false
-        
-        println("Exp token: $expSeconds")
-        
-        val nowSeconds = getTimeMillis() / 1000
-        
-        println("Now token: $nowSeconds, Diff: ${expSeconds - nowSeconds}, Still valid: ${expSeconds > nowSeconds}")
-        
-        return expSeconds > nowSeconds
-    }
-    
     private suspend fun refreshToken(): Boolean = refreshMutex.withLock {
         
         val refreshToken =
@@ -100,7 +82,7 @@ class SplashViewModel(
             appAuthRepository.accessTokenFlow.firstOrNull().orEmpty()
         
         val hasAuthenticated = hasAuthenticated(accessToken)
-        val hasTokenValid = hasTokenValid(accessToken)
+        val hasTokenValid = JWTObject.hasTokenValid(accessToken)
         
         /// MEAN USER NOT LOGGED IN YET
         if (!hasAuthenticated) {
@@ -118,6 +100,7 @@ class SplashViewModel(
                 )
                 true
             }
+            
             is Result.Error -> false
         }
     }
