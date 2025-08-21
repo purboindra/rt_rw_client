@@ -11,11 +11,16 @@ import org.purboyndradev.rt_rw.helper.JWTObject
 class SignInUseCase(private val authRepository: AuthRepository) {
     suspend operator fun invoke(phoneNumber: String): Result<AuthTokenInfo, AppError> {
         return when (val result = authRepository.signIn(phoneNumber)) {
-            is Result.Error -> Result.Error(AppError.Remote.InvalidResponse)
+            is Result.Error -> Result.Error(result.error)
             is Result.Success -> {
                 val user = result.data.data
                 
-                if (user == null) return Result.Error(AppError.Remote.InvalidResponse)
+                if (user == null) return Result.Error(
+                    AppError.Remote.Http(
+                        401,
+                        result.data.message
+                    )
+                )
                 
                 val code = result.data.code
                 val isNotVerified = code == "USER_NOT_VERIFIED"

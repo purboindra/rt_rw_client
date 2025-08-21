@@ -23,7 +23,7 @@ fun mapHttpError(status: Int, bodyText: String): AppError.Remote {
     return when (status) {
         401 -> AppError.Remote.Unauthorized
         403 -> AppError.Remote.Http(403, msg, bodyText)
-        404 -> AppError.Remote.NotFound
+        404 -> AppError.Remote.Http(404, msg, bodyText)
         408 -> AppError.Remote.RequestTimeout
         429 -> AppError.Remote.TooManyRequests
         in 500..599 -> AppError.Remote.Http(status, msg, bodyText)

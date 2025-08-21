@@ -171,7 +171,8 @@ class AuthViewModel(
                             _loginState.update {
                                 it.copy(
                                     redirectUrl = redirectUrl,
-                                    success = true
+                                    success = true,
+                                    code = code
                                 )
                             }
                         }
