@@ -16,11 +16,15 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.encodedPath
+import io.ktor.http.takeFrom
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
+import org.purboyndradev.rt_rw.AppConfig
+import org.purboyndradev.rt_rw.AppConfigProvider
+import org.purboyndradev.rt_rw.PlatformConfig
 import org.purboyndradev.rt_rw.core.data.datastore.AppAuthRepository
 import org.purboyndradev.rt_rw.core.data.datastore.AuthTokenStore
 import org.purboyndradev.rt_rw.core.domain.Result
@@ -31,9 +35,9 @@ object HttpClientFactory {
         engine: HttpClientEngine,
         appAuthRepository: AppAuthRepository,
         tokenRefresher: TokenRefresher,
-        tokenStore: AuthTokenStore
+        tokenStore: AuthTokenStore,
+        config: AppConfig = AppConfigProvider,
     ): HttpClient {
-        
         return HttpClient(engine) {
             install(ContentNegotiation) {
                 json(json = Json {
@@ -86,6 +90,7 @@ object HttpClientFactory {
             }
             
             defaultRequest {
+                url{takeFrom(PlatformConfig.baseUrl)}
                 contentType(ContentType.Application.Json)
             }
         }
