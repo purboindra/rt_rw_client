@@ -22,8 +22,6 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
-import org.purboyndradev.rt_rw.AppConfig
-import org.purboyndradev.rt_rw.AppConfigProvider
 import org.purboyndradev.rt_rw.PlatformConfig
 import org.purboyndradev.rt_rw.core.data.datastore.AppAuthRepository
 import org.purboyndradev.rt_rw.core.data.datastore.AuthTokenStore
@@ -36,7 +34,6 @@ object HttpClientFactory {
         appAuthRepository: AppAuthRepository,
         tokenRefresher: TokenRefresher,
         tokenStore: AuthTokenStore,
-        config: AppConfig = AppConfigProvider,
     ): HttpClient {
         return HttpClient(engine) {
             install(ContentNegotiation) {
