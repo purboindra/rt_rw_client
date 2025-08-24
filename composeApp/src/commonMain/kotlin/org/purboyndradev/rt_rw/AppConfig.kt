@@ -9,7 +9,10 @@ interface AppConfig {
     val environment: Environment
 }
 
-expect object PlatformConfig : AppConfig
+expect object PlatformConfig : AppConfig {
+    override val baseUrl: String
+    override val environment: Environment
+}
 
 object AppConfigProvider : AppConfig {
     @Volatile
