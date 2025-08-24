@@ -1,3 +1,5 @@
+
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.konan.target.HostManager
 
@@ -10,6 +12,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.buildKonfig)
 }
 
 kotlin {
@@ -118,14 +121,44 @@ kotlin {
     }
 }
 
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath(libs.buildkonfig.gradle.plugin)
+        classpath(libs.kotlin.gradle.plugin)
+    }
+}
+
+buildkonfig {
+    packageName = "org.purboyndradev.rt_rw.config"
+    
+    defaultConfigs {
+        buildConfigField(STRING, "BASE_URL", "https://rtrwbackend-production.up.railway.app/api/v1")
+        buildConfigField(STRING, "ENVIRONMENT", "RELEASE")
+    }
+    
+    targetConfigs {
+        create("android") {
+            buildConfigField(STRING, "BASE_URL", "https://rtrwbackend-production.up.railway.app/api/v1")
+            buildConfigField(STRING, "ENVIRONMENT", "DEBUG")
+        }
+        create("ios") {
+            buildConfigField(STRING, "BASE_URL", "https://rtrwbackend-production.up.railway.app/api/v1")
+            buildConfigField(STRING, "ENVIRONMENT", "DEBUG")
+        }
+    }
+}
+
 android {
     namespace = "org.purboyndradev.rt_rw"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-    
+    compileSdk = 35
+    buildFeatures { buildConfig = true }
     defaultConfig {
         applicationId = "org.purboyndradev.rt_rw"
         minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
     }
@@ -135,6 +168,15 @@ android {
         }
     }
     buildTypes {
+        getByName("debug") {
+            buildConfigField("String", "BASE_URL", "\"https://rtrwbackend-production.up.railway.app/api/v1\"")
+            buildConfigField("String", "ENVIRONMENT", "\"DEBUG\"")
+        }
+        create("staging") {
+            initWith(getByName("debug"))
+            buildConfigField("String", "BASE_URL", "\"https://rtrwbackend-production.up.railway.app/api/v1\"")
+            buildConfigField("String", "ENVIRONMENT", "\"STAGING\"")
+        }
         getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true
@@ -142,6 +184,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            initWith(getByName("release"))
+            buildConfigField("String", "BASE_URL", "\"https://rtrwbackend-production.up.railway.app/api/v1\"")
+            buildConfigField("String", "ENVIRONMENT", "\"RELEASE\"")
         }
     }
     compileOptions {
