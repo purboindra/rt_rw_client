@@ -3,6 +3,7 @@ package org.purboyndradev.rt_rw.core.data.remote.impl
 import io.ktor.client.HttpClient
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.http.appendPathSegments
 import org.purboyndradev.rt_rw.core.data.dto.RefreshTokenDto
 import org.purboyndradev.rt_rw.core.data.dto.ResponseDto
 import org.purboyndradev.rt_rw.core.data.dto.SignInDto
@@ -14,7 +15,6 @@ import org.purboyndradev.rt_rw.core.data.remote.params.VerifyOtpParams
 import org.purboyndradev.rt_rw.core.domain.AppError
 import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.core.network.safeCallWrapped
-import org.purboyndradev.rt_rw.helper.BASE_URL
 
 
 class KtorAuthRemoteDatasource(private val httpClient: HttpClient) :
@@ -22,7 +22,10 @@ class KtorAuthRemoteDatasource(private val httpClient: HttpClient) :
     override suspend fun signIn(phoneNumber: String): Result<ResponseDto<SignInDto>, AppError> {
         return safeCallWrapped(
             call = {
-                httpClient.post("$BASE_URL/auth/sign-in") {
+                httpClient.post {
+                    url {
+                        appendPathSegments("/auth/sign-in")
+                    }
                     setBody(SignInParams(phoneNumber))
                 }
             }
@@ -35,7 +38,10 @@ class KtorAuthRemoteDatasource(private val httpClient: HttpClient) :
     ): Result<ResponseDto<VerifyOtpDto>, AppError> {
         return safeCallWrapped(
             call = {
-                httpClient.post("${BASE_URL}/auth/otp/verify") {
+                httpClient.post {
+                    url {
+                        appendPathSegments("/auth/otp/verify")
+                    }
                     setBody(VerifyOtpParams(phone = phoneNumber, otp))
                 }
             }
@@ -47,7 +53,10 @@ class KtorAuthRemoteDatasource(private val httpClient: HttpClient) :
     ): Result<ResponseDto<RefreshTokenDto>, AppError> {
         return safeCallWrapped(
             call = {
-                httpClient.post("$BASE_URL/auth/refresh-token") {
+                httpClient.post {
+                    url {
+                        appendPathSegments("/auth/refresh-token")
+                    }
                     setBody(
                         RefreshTokenParams(
                             refreshToken

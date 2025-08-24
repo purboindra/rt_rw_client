@@ -6,6 +6,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
+import io.ktor.http.appendPathSegments
 import org.purboyndradev.rt_rw.core.data.dto.ActivityDetailDto
 import org.purboyndradev.rt_rw.core.data.dto.ActivityDto
 import org.purboyndradev.rt_rw.core.data.dto.ResponseDto
@@ -17,14 +18,16 @@ import org.purboyndradev.rt_rw.core.data.remote.params.QueryParams
 import org.purboyndradev.rt_rw.core.domain.AppError
 import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.core.network.safeCallWrapped
-import org.purboyndradev.rt_rw.helper.BASE_URL
 
 class KtorActivityRemoteDatasource(private val httpClient: HttpClient) :
     ActivityApi {
     override suspend fun createActivity(params: CreateActivityParams): Result<ResponseDto<Unit>, AppError> {
         return safeCallWrapped(
             call = {
-                httpClient.post("$BASE_URL/activities") {
+                httpClient.post {
+                    url {
+                        appendPathSegments("/activities")
+                    }
                     setBody(params)
                 }
             }
@@ -37,8 +40,9 @@ class KtorActivityRemoteDatasource(private val httpClient: HttpClient) :
     ): Result<ResponseDto<List<ActivityDto>>, AppError> {
         return safeCallWrapped(
             call = {
-                httpClient.get("$BASE_URL/activities") {
+                httpClient.get {
                     url {
+                        appendPathSegments("/activities")
                         paginationParams?.let {
                             parameters.append("page", it.page.toString())
                             parameters.append("limit", it.limit.toString())
@@ -55,7 +59,11 @@ class KtorActivityRemoteDatasource(private val httpClient: HttpClient) :
     override suspend fun fetchActivityById(id: String): Result<ResponseDto<ActivityDetailDto>, AppError> {
         return safeCallWrapped(
             call = {
-                httpClient.get("$BASE_URL/activities/${id}")
+                httpClient.get {
+                    url {
+                        appendPathSegments("/activities/$id")
+                    }
+                }
             }
         )
     }
@@ -63,7 +71,11 @@ class KtorActivityRemoteDatasource(private val httpClient: HttpClient) :
     override suspend fun deleteActivity(id: String): Result<ResponseDto<Unit>, AppError> {
         return safeCallWrapped(
             call = {
-                httpClient.delete("$BASE_URL/activities/${id}")
+                httpClient.delete {
+                    url {
+                        appendPathSegments("/activities/$id")
+                    }
+                }
             }
         )
     }
@@ -74,7 +86,10 @@ class KtorActivityRemoteDatasource(private val httpClient: HttpClient) :
     ): Result<ResponseDto<Unit>, AppError> {
         return safeCallWrapped(
             call = {
-                httpClient.put("$BASE_URL/activities/${id}") {
+                httpClient.put {
+                    url {
+                        appendPathSegments("/activities/$id")
+                    }
                     setBody(params)
                 }
             }
@@ -84,7 +99,10 @@ class KtorActivityRemoteDatasource(private val httpClient: HttpClient) :
     override suspend fun joinActivity(params: JoinActivityParams): Result<ResponseDto<Unit>, AppError> {
         return safeCallWrapped(
             call = {
-                httpClient.post("${BASE_URL}/activities/join") {
+                httpClient.post {
+                    url {
+                        appendPathSegments("/activities/join")
+                    }
                     setBody(
                         params
                     )
