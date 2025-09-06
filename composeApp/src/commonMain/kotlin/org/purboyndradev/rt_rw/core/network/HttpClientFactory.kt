@@ -25,6 +25,7 @@ import org.purboyndradev.rt_rw.core.data.datastore.AppAuthRepository
 import org.purboyndradev.rt_rw.core.data.datastore.AuthTokenStore
 import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.domain.usecases.RefreshTokenUseCase
+import co.touchlab.kermit.Logger as KermitLogger
 
 object HttpClientFactory {
     fun create(
@@ -34,7 +35,7 @@ object HttpClientFactory {
         tokenStore: AuthTokenStore,
         
         ): HttpClient {
-        val client =  HttpClient(engine) {
+        val client = HttpClient(engine) {
             install(ContentNegotiation) {
                 json(json = Json {
                     ignoreUnknownKeys = true
@@ -103,10 +104,22 @@ class TokenRefresher(
     
     suspend fun refresh(oldTokens: BearerTokens?): BearerTokens? =
         mutex.withLock {
+            
+            KermitLogger.w("TokenRefresher") {
+                "Refresh token"
+                "Old tokens: $oldTokens"
+            }
+            
             val oldRefresh = oldTokens?.refreshToken ?: return null
             
             val curAccess = appAuthRepository.accessTokenFlow.firstOrNull()
             val curRefresh = appAuthRepository.refreshTokenFlow.firstOrNull()
+            
+            KermitLogger.w("TokenRefresher") {
+                "Current tokens"
+                "Access token: $curAccess, refresh token: $curRefresh"
+            }
+            
             if (!curAccess.isNullOrBlank() && !curRefresh.isNullOrBlank() && curRefresh != oldRefresh) {
                 return BearerTokens(curAccess, curRefresh)
             }
@@ -118,10 +131,21 @@ class TokenRefresher(
                         newTokens.accessToken,
                         newTokens.refreshToken
                     )
+                    
+                    KermitLogger.w("TokenRefresher") {
+                        "New tokens"
+                        "Access token: ${newTokens.accessToken}, refresh token: ${newTokens.refreshToken}"
+                    }
+                    
                     BearerTokens(newTokens.accessToken, newTokens.refreshToken)
                 }
                 
-                is Result.Error -> null
+                is Result.Error -> {
+                    KermitLogger.e(
+                        "Error tokenRefresher: ${res.error}"
+                    )
+                    null
+                }
             }
         }
 }

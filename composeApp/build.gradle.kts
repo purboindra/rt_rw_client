@@ -104,6 +104,9 @@ kotlin {
             
             /// KOTLINX DATETIME
             implementation(libs.kotlinx.datetime)
+            
+            /// KERMIT
+            implementation(libs.kermit)
         }
         
         if (HostManager.hostIsMac) {
@@ -112,7 +115,6 @@ kotlin {
                 
             }
         }
-        
         
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -137,8 +139,9 @@ buildkonfig {
         buildConfigField(
             STRING,
             "BASE_URL",
-            "https://rtrwbackend-production.up.railway.app"
-        )
+//            "https://rtrwbackend-production.up.railway.app"
+            "http://192.168.1.2:3000"
+            )
         
         buildConfigField(
             STRING,
