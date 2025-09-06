@@ -16,7 +16,6 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.encodedPath
-import io.ktor.http.takeFrom
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.sync.Mutex
@@ -34,8 +33,9 @@ object HttpClientFactory {
         appAuthRepository: AppAuthRepository,
         tokenRefresher: TokenRefresher,
         tokenStore: AuthTokenStore,
-    ): HttpClient {
-        return HttpClient(engine) {
+        
+        ): HttpClient {
+        val client =  HttpClient(engine) {
             install(ContentNegotiation) {
                 json(json = Json {
                     ignoreUnknownKeys = true
@@ -85,12 +85,12 @@ object HttpClientFactory {
                     }
                 }
             }
-            
             defaultRequest {
-                url{takeFrom(PlatformConfig.baseUrl)}
+                url(PlatformConfig.baseUrl)
                 contentType(ContentType.Application.Json)
             }
         }
+        return client
     }
 }
 

@@ -13,6 +13,7 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
+import org.purboyndradev.rt_rw.PlatformConfig
 import org.purboyndradev.rt_rw.core.data.datastore.AppAuthRepository
 import org.purboyndradev.rt_rw.core.data.datastore.AuthTokenStore
 import org.purboyndradev.rt_rw.core.data.datastore.NotificationRepository
@@ -40,7 +41,6 @@ import org.purboyndradev.rt_rw.features.auth.presentation.AuthViewModel
 import org.purboyndradev.rt_rw.features.main.presentation.MainViewModel
 import org.purboyndradev.rt_rw.features.notification.NotificationViewModel
 import org.purboyndradev.rt_rw.features.splash.SplashViewModel
-import org.purboyndradev.rt_rw.helper.BASE_URL
 
 fun initKoin(config: KoinAppDeclaration? = null) = startKoin {
     config?.invoke(this)
@@ -66,6 +66,7 @@ val sharedModule: Module = module {
                 })
             }
             defaultRequest {
+                url(PlatformConfig.baseUrl)
                 contentType(ContentType.Application.Json)
             }
         }
@@ -74,8 +75,6 @@ val sharedModule: Module = module {
     single<HttpClient> {
         HttpClientFactory.create(get(), get(), get(), get())
     }
-    
-    single<String>(qualifier = named("baseUrl")) { BASE_URL }
     
     /// PROVIDE OBJECT KEYS DATASTORE
     single<AuthKeys> {

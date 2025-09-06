@@ -26,7 +26,7 @@ class KtorActivityRemoteDatasource(private val httpClient: HttpClient) :
             call = {
                 httpClient.post {
                     url {
-                        appendPathSegments("/activities")
+                        appendPathSegments("api/v1/activities")
                     }
                     setBody(params)
                 }
@@ -42,7 +42,7 @@ class KtorActivityRemoteDatasource(private val httpClient: HttpClient) :
             call = {
                 httpClient.get {
                     url {
-                        appendPathSegments("/activities")
+                        appendPathSegments("api/v1/activities")
                         paginationParams?.let {
                             parameters.append("page", it.page.toString())
                             parameters.append("limit", it.limit.toString())
@@ -61,7 +61,7 @@ class KtorActivityRemoteDatasource(private val httpClient: HttpClient) :
             call = {
                 httpClient.get {
                     url {
-                        appendPathSegments("/activities/$id")
+                        appendPathSegments("api/v1/activities/$id")
                     }
                 }
             }
@@ -73,7 +73,7 @@ class KtorActivityRemoteDatasource(private val httpClient: HttpClient) :
             call = {
                 httpClient.delete {
                     url {
-                        appendPathSegments("/activities/$id")
+                        appendPathSegments("api/v1/activities/$id")
                     }
                 }
             }
@@ -88,7 +88,7 @@ class KtorActivityRemoteDatasource(private val httpClient: HttpClient) :
             call = {
                 httpClient.put {
                     url {
-                        appendPathSegments("/activities/$id")
+                        appendPathSegments("api/v1/activities/$id")
                     }
                     setBody(params)
                 }

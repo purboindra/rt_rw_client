@@ -47,16 +47,6 @@ fun LoginScreen(navHostController: NavHostController) {
     authViewModel.openAlertDialog.collectAsStateWithLifecycle()
     val phoneNumberState by authViewModel.phoneNumberState.collectAsStateWithLifecycle()
     
-    
-    val isPhoneNumberValid =
-        phoneNumberState.error == null && phoneNumberState.value.isNotBlank()
-    
-    
-    LaunchedEffect(Unit) {
-        val result = authViewModel.hasAuthenticated()
-        println("Has Authenticated: $result")
-    }
-    
     LaunchedEffect(authState) {
         
         println("Auth State Login Screen: $authState")

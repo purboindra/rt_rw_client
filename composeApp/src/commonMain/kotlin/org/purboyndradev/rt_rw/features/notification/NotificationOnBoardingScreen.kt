@@ -48,19 +48,16 @@ fun NotificationOnboardingScreen(
     val requestNotification =
         NotificationService.rememberRequestNotificationPermissionLauncher { granted ->
             if (granted) {
-                navHostController.navigate(Main) {
-                    popUpTo(0) {
-                        inclusive = true
-                    }
-                }
+                notificationViewModel.onUpdatePermissionState(NotificationState.PermissionGranted)
             } else {
                 notificationViewModel.onUpdatePermissionState(NotificationState.PermissionDenied)
             }
         }
     
     LaunchedEffect(permissionState) {
-        if (permissionState == NotificationState.PermissionDenied) {
-            notificationViewModel.markNotificationPermissionGranted()
+        notificationViewModel.markNotificationPermissionGranted()
+        
+        if (permissionState == NotificationState.PermissionDenied || permissionState == NotificationState.PermissionGranted) {
             val hasAuthenticated = authViewModel.hasAuthenticated()
             if (!hasAuthenticated) {
                 navHostController.navigate(Login) {

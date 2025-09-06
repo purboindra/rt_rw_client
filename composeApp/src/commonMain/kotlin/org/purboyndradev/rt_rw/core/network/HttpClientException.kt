@@ -39,13 +39,14 @@ suspend inline fun <reified T : Any> safeCallWrapped(
     val resp = try {
         call()
     } catch (t: Throwable) {
+        println("Throwable: $t")
         return Result.Error(AppError.Remote.Network)
     }
     
     val status = resp.status.value
     val text = resp.bodyAsText()
     
-    println("Raw Response Body: $text, status_code: $status")
+    println("Raw Response Body: $text, status_code: $status, url: ${resp.request.url}")
     
     return if (status in 200..299) {
         runCatching {
