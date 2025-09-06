@@ -209,10 +209,22 @@ class AuthViewModel(
             when (result) {
                 is Result.Success -> {
                     println("Success verify otp: ${result.data}")
+                    _verifyOtpState.update {
+                        it.copy(
+                            success = true,
+                        )
+                    }
+                    
                 }
                 
                 is Result.Error -> {
                     println("Error verify otp: ${result.error}")
+                    val error = result.error.toRes()
+                    _verifyOtpState.update {
+                        it.copy(
+                            error = error,
+                        )
+                    }
                 }
             }
             _isLoadingState.value = false
