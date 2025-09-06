@@ -101,7 +101,7 @@ class KtorActivityRemoteDatasource(private val httpClient: HttpClient) :
             call = {
                 httpClient.post {
                     url {
-                        appendPathSegments("/activities/join")
+                        appendPathSegments("api/v1/activities/join")
                     }
                     setBody(
                         params
