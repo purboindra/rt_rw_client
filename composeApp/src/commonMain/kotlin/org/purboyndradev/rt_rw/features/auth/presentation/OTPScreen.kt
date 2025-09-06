@@ -20,9 +20,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import org.koin.compose.viewmodel.koinViewModel
-import org.purboyndradev.rt_rw.features.navigation.Login
 import org.purboyndradev.rt_rw.features.navigation.Main
 
 @Composable
@@ -43,7 +43,7 @@ fun OTPScreen(navHostController: NavHostController, phoneNumber: String) {
             navHostController.navigate(
                 Main
             ) {
-                popUpTo(Login) {
+                popUpTo(navHostController.graph.findStartDestination().id) {
                     inclusive = true
                 }
             }
