@@ -91,6 +91,8 @@ kotlin {
             
             /// COIL
             implementation(libs.coil.compose)
+            implementation(libs.coil.network.ktor)
+            
             
             /// DATASTORE
             implementation(libs.datastore.preferences)
