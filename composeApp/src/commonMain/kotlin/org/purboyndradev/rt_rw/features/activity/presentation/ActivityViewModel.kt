@@ -63,7 +63,6 @@ class ActivityViewModel(
         _snackbarType.value = type
     }
     
-    
     suspend fun fetchActivityDetail(id: String) {
         
         val accessToken =

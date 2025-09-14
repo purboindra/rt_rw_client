@@ -64,30 +64,34 @@ fun ActivityCompose(
                     Box(
                         modifier = Modifier.wrapContentHeight()
                     ) {
-                        LazyRow(
-                        ) {
-                            items(activities) { activity ->
-                                Box(
-                                    modifier = Modifier.height(102.dp)
-                                        .width(184.dp)
-                                        .padding(horizontal = 5.dp).clip(
-                                            RoundedCornerShape(size = 16.dp)
-                                        ).background(
-                                            Color.LightGray.copy(
-                                                alpha = 0.35f
-                                            )
-                                        ).clickable {
-                                            onActivityTapped(activity.id)
-                                        },
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    AsyncImage(
-                                        model = activity.bannerImageUrl,
-                                        contentScale = ContentScale.Crop,
-                                        contentDescription = activity.title,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                    )
+                        if (activities.isEmpty()) {
+                            Text("No Activity")
+                        } else {
+                            LazyRow(
+                            ) {
+                                items(activities) { activity ->
+                                    Box(
+                                        modifier = Modifier.height(102.dp)
+                                            .width(184.dp)
+                                            .padding(horizontal = 5.dp).clip(
+                                                RoundedCornerShape(size = 16.dp)
+                                            ).background(
+                                                Color.LightGray.copy(
+                                                    alpha = 0.35f
+                                                )
+                                            ).clickable {
+                                                onActivityTapped(activity.id)
+                                            },
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        AsyncImage(
+                                            model = activity.bannerImageUrl,
+                                            contentScale = ContentScale.Crop,
+                                            contentDescription = activity.title,
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                        )
+                                    }
                                 }
                             }
                         }
