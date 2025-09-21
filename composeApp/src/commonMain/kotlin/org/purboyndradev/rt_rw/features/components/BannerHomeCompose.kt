@@ -89,7 +89,7 @@ fun BannerHomeCompose(
                     model = banner.imageUrl,
                     contentDescription = banner.title,
                     modifier = Modifier.fillMaxWidth().height(148.dp).fillMaxWidth(),
-                    contentScale = ContentScale.Fit,
+                    contentScale = ContentScale.FillWidth,
                 )
                 Text(
                     banner.title ?: "",
