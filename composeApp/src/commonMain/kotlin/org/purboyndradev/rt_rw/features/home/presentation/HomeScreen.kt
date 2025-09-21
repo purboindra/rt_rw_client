@@ -17,6 +17,7 @@ import org.purboyndradev.rt_rw.features.components.BannerReportCompose
 import org.purboyndradev.rt_rw.features.components.HeaderUserCompose
 import org.purboyndradev.rt_rw.features.components.NewsCompose
 import org.purboyndradev.rt_rw.features.components.UnRegisterEmailCompose
+import org.purboyndradev.rt_rw.features.main.presentation.BannerState
 import org.purboyndradev.rt_rw.features.navigation.ActivityDetail
 
 @Preview
@@ -24,7 +25,8 @@ import org.purboyndradev.rt_rw.features.navigation.ActivityDetail
 fun HomeScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
-    activityState: ActivityState
+    activityState: ActivityState,
+    bannerState: BannerState,
 ) {
     LazyColumn(
         modifier = modifier.padding(horizontal = 18.dp)
@@ -35,7 +37,10 @@ fun HomeScreen(
             )
             /// Banner
             BannerHomeCompose(
-                modifier = modifier.fillMaxWidth()
+                modifier = modifier.fillMaxWidth(),
+                isLoading = bannerState.loading,
+                banners = bannerState.banners,
+                error = bannerState.error,
             )
             Spacer(modifier = Modifier.height(22.dp))
             /// Banner Unregistered Email

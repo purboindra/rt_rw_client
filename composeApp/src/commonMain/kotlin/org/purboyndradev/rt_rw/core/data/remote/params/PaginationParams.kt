@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class PaginationParams(
-    val page: Int,
-    val limit: Int
+    val page: Int = 1,
+    val limit: Int = 25,
 )

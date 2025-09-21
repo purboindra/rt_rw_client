@@ -19,19 +19,24 @@ import org.purboyndradev.rt_rw.core.data.datastore.AuthTokenStore
 import org.purboyndradev.rt_rw.core.data.datastore.NotificationRepository
 import org.purboyndradev.rt_rw.core.data.remote.api.ActivityApi
 import org.purboyndradev.rt_rw.core.data.remote.api.AuthApi
+import org.purboyndradev.rt_rw.core.data.remote.api.BannerApi
 import org.purboyndradev.rt_rw.core.data.remote.impl.KtorActivityRemoteDatasource
 import org.purboyndradev.rt_rw.core.data.remote.impl.KtorAuthRemoteDatasource
+import org.purboyndradev.rt_rw.core.data.remote.impl.KtorBannerRemoteDatasource
 import org.purboyndradev.rt_rw.core.data.repository.ActivityRepositoryImpl
 import org.purboyndradev.rt_rw.core.data.repository.AuthRepositoryImpl
+import org.purboyndradev.rt_rw.core.data.repository.BannerRepositoryImpl
 import org.purboyndradev.rt_rw.core.network.HttpClientFactory
 import org.purboyndradev.rt_rw.core.network.TokenRefresher
 import org.purboyndradev.rt_rw.domain.repository.ActivityRepository
 import org.purboyndradev.rt_rw.domain.repository.AuthRepository
+import org.purboyndradev.rt_rw.domain.repository.BannerRepository
 import org.purboyndradev.rt_rw.domain.usecases.CreateActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.DeleteActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.EditActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchActivitiesUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchActivityByIdUseCase
+import org.purboyndradev.rt_rw.domain.usecases.FetchAllBannersUseCase
 import org.purboyndradev.rt_rw.domain.usecases.JoinActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.RefreshTokenUseCase
 import org.purboyndradev.rt_rw.domain.usecases.SignInUseCase
@@ -53,7 +58,7 @@ fun initKoin(config: KoinAppDeclaration? = null) = startKoin {
 expect val platformModule: Module
 
 val sharedModule: Module = module {
-    
+
     /// PROVIDE HTTP CLIENT FACTORY
     val authHttpClient = named("AuthHttpClient")
     single<HttpClient>(qualifier = authHttpClient) {
@@ -71,16 +76,16 @@ val sharedModule: Module = module {
             }
         }
     }
-    
+
     single<HttpClient> {
         HttpClientFactory.create(get(), get(), get(), get())
     }
-    
+
     /// PROVIDE OBJECT KEYS DATASTORE
     single<AuthKeys> {
         AuthKeys
     }
-    
+
     /// PROVIDE REMOTE DATA SOURCE
     single<AuthApi> {
         KtorAuthRemoteDatasource(get(qualifier = authHttpClient))
@@ -88,7 +93,10 @@ val sharedModule: Module = module {
     single<ActivityApi> {
         KtorActivityRemoteDatasource(get())
     }
-    
+    single<BannerApi> {
+        KtorBannerRemoteDatasource(get())
+    }
+
     /// PROVIDE REPOSITORY
     single<AuthRepository> {
         AuthRepositoryImpl(get(), get(), get())
@@ -96,12 +104,15 @@ val sharedModule: Module = module {
     single<ActivityRepository> {
         ActivityRepositoryImpl(get())
     }
-    
+    single<BannerRepository> {
+        BannerRepositoryImpl(get())
+    }
+
     /// PROVIDE USE CASE
     single {
         NotificationRepository(get())
     }
-    
+
     /// AUTH USE CASE
     single {
         VerifyOtpUseCase(get())
@@ -112,8 +123,8 @@ val sharedModule: Module = module {
     single {
         SignInUseCase(get())
     }
-    
-    
+
+
     /// ACTIVITY USE CASE
     single {
         CreateActivityUseCase(get())
@@ -133,30 +144,33 @@ val sharedModule: Module = module {
     single {
         JoinActivityUseCase(get())
     }
-    
-    /// PROVIDE DATA STORE
-    
+
+    /// BANNER USE CASE
+    single {
+        FetchAllBannersUseCase(get())
+    }
+
     /// PROVIDE APP AUTH DATA STORE
     single {
         createDataStore()
     }
-    
+
     single {
         AppAuthRepository(get())
     }
-    
+
     single {
         AuthTokenStore(get())
     }
-    
+
     single {
         TokenRefresher(get(), get())
     }
-    
+
     /// PROVIDE VIEW MODEL
     viewModel { AuthViewModel(get(), get(), get()) }
     viewModel { SplashViewModel(get(), get(), get()) }
-    viewModel { MainViewModel(get()) }
+    viewModel { MainViewModel(get(), get()) }
     viewModel { NotificationViewModel(get()) }
     viewModel { params ->
         ActivityViewModel(get(), get(), get(), get(), get(), get(), get())

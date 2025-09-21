@@ -35,21 +35,22 @@ import org.purboyndradev.rt_rw.features.profile.presentation.ProfileScreen
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(navHostController: NavHostController) {
-    
+
     val mainViewModel = koinViewModel<MainViewModel>()
-    val activityState =
+    val activityState by
         mainViewModel.activitiesState.collectAsStateWithLifecycle()
     val loadingState by mainViewModel.loadingState.collectAsStateWithLifecycle()
-    
+    val bannerState by mainViewModel.bannersState.collectAsStateWithLifecycle()
+
     val pullToRefreshState = rememberPullToRefreshState()
-    
+
     val scope = rememberCoroutineScope()
-    
+
     val bottomNavigationController = rememberNavController()
     val currentDestination =
         bottomNavigationController.currentBackStackEntryAsState().value?.destination?.route
             ?: Home.ROUTE
-    
+
     Scaffold(
         bottomBar = {
             NavigationBar(
@@ -58,7 +59,7 @@ fun MainScreen(navHostController: NavHostController) {
                 BottomNavItem.items.forEachIndexed { index, item ->
                     NavigationBarItem(
                         selected = currentDestination == item.route,
-                        
+
                         onClick = {
                             bottomNavigationController.navigate(
                                 item.route
@@ -94,7 +95,7 @@ fun MainScreen(navHostController: NavHostController) {
                 }
             },
             state = pullToRefreshState,
-            
+
             ) {
             NavHost(
                 navController = bottomNavigationController,
@@ -104,7 +105,8 @@ fun MainScreen(navHostController: NavHostController) {
                 composable(route = Home.ROUTE) {
                     HomeScreen(
                         navHostController = navHostController,
-                        activityState = activityState.value
+                        activityState = activityState,
+                        bannerState = bannerState,
                     )
                 }
                 composable(route = Activity.ROUTE) {
