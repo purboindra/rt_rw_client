@@ -20,23 +20,28 @@ import org.purboyndradev.rt_rw.core.data.datastore.NotificationRepository
 import org.purboyndradev.rt_rw.core.data.remote.api.ActivityApi
 import org.purboyndradev.rt_rw.core.data.remote.api.AuthApi
 import org.purboyndradev.rt_rw.core.data.remote.api.BannerApi
+import org.purboyndradev.rt_rw.core.data.remote.api.NewsApi
 import org.purboyndradev.rt_rw.core.data.remote.impl.KtorActivityRemoteDatasource
 import org.purboyndradev.rt_rw.core.data.remote.impl.KtorAuthRemoteDatasource
 import org.purboyndradev.rt_rw.core.data.remote.impl.KtorBannerRemoteDatasource
+import org.purboyndradev.rt_rw.core.data.remote.impl.KtorNewsRemoteDatasource
 import org.purboyndradev.rt_rw.core.data.repository.ActivityRepositoryImpl
 import org.purboyndradev.rt_rw.core.data.repository.AuthRepositoryImpl
 import org.purboyndradev.rt_rw.core.data.repository.BannerRepositoryImpl
+import org.purboyndradev.rt_rw.core.data.repository.NewsRepositoryImpl
 import org.purboyndradev.rt_rw.core.network.HttpClientFactory
 import org.purboyndradev.rt_rw.core.network.TokenRefresher
 import org.purboyndradev.rt_rw.domain.repository.ActivityRepository
 import org.purboyndradev.rt_rw.domain.repository.AuthRepository
 import org.purboyndradev.rt_rw.domain.repository.BannerRepository
+import org.purboyndradev.rt_rw.domain.repository.NewsRepository
 import org.purboyndradev.rt_rw.domain.usecases.CreateActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.DeleteActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.EditActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchActivitiesUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchActivityByIdUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchAllBannersUseCase
+import org.purboyndradev.rt_rw.domain.usecases.FetchAllNewsUseCase
 import org.purboyndradev.rt_rw.domain.usecases.JoinActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.RefreshTokenUseCase
 import org.purboyndradev.rt_rw.domain.usecases.SignInUseCase
@@ -96,6 +101,9 @@ val sharedModule: Module = module {
     single<BannerApi> {
         KtorBannerRemoteDatasource(get())
     }
+    single<NewsApi> {
+        KtorNewsRemoteDatasource(get())
+    }
 
     /// PROVIDE REPOSITORY
     single<AuthRepository> {
@@ -106,6 +114,9 @@ val sharedModule: Module = module {
     }
     single<BannerRepository> {
         BannerRepositoryImpl(get())
+    }
+    single<NewsRepository> {
+        NewsRepositoryImpl(get())
     }
 
     /// PROVIDE USE CASE
@@ -123,7 +134,6 @@ val sharedModule: Module = module {
     single {
         SignInUseCase(get())
     }
-
 
     /// ACTIVITY USE CASE
     single {
@@ -150,6 +160,11 @@ val sharedModule: Module = module {
         FetchAllBannersUseCase(get())
     }
 
+    /// NEWS USE CASE
+    single {
+        FetchAllNewsUseCase(get())
+    }
+
     /// PROVIDE APP AUTH DATA STORE
     single {
         createDataStore()
@@ -170,7 +185,7 @@ val sharedModule: Module = module {
     /// PROVIDE VIEW MODEL
     viewModel { AuthViewModel(get(), get(), get()) }
     viewModel { SplashViewModel(get(), get(), get()) }
-    viewModel { MainViewModel(get(), get()) }
+    viewModel { MainViewModel(get(), get(), get()) }
     viewModel { NotificationViewModel(get()) }
     viewModel { params ->
         ActivityViewModel(get(), get(), get(), get(), get(), get(), get())
