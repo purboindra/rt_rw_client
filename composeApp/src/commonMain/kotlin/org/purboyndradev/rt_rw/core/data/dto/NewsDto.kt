@@ -11,5 +11,5 @@ data class NewsDto(
     val description: String,
     val body: String,
     val rt: RTModel,
-    val user: UserModel
+    val author: UserModel
 )
