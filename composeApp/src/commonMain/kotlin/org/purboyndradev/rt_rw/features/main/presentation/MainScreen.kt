@@ -41,6 +41,7 @@ fun MainScreen(navHostController: NavHostController) {
         mainViewModel.activitiesState.collectAsStateWithLifecycle()
     val loadingState by mainViewModel.loadingState.collectAsStateWithLifecycle()
     val bannerState by mainViewModel.bannersState.collectAsStateWithLifecycle()
+    val newsState by mainViewModel.newsState.collectAsStateWithLifecycle()
 
     val pullToRefreshState = rememberPullToRefreshState()
 
@@ -107,6 +108,7 @@ fun MainScreen(navHostController: NavHostController) {
                         navHostController = navHostController,
                         activityState = activityState,
                         bannerState = bannerState,
+                        newsState = newsState,
                     )
                 }
                 composable(route = Activity.ROUTE) {

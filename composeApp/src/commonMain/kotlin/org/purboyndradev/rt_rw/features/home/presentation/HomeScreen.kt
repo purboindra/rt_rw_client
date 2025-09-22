@@ -18,6 +18,7 @@ import org.purboyndradev.rt_rw.features.components.HeaderUserCompose
 import org.purboyndradev.rt_rw.features.components.NewsCompose
 import org.purboyndradev.rt_rw.features.components.UnRegisterEmailCompose
 import org.purboyndradev.rt_rw.features.main.presentation.BannerState
+import org.purboyndradev.rt_rw.features.main.presentation.NewsState
 import org.purboyndradev.rt_rw.features.navigation.ActivityDetail
 
 @Preview
@@ -27,6 +28,7 @@ fun HomeScreen(
     navHostController: NavHostController,
     activityState: ActivityState,
     bannerState: BannerState,
+    newsState: NewsState,
 ) {
     LazyColumn(
         modifier = modifier.padding(horizontal = 18.dp)
@@ -64,7 +66,10 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(22.dp))
             /// Activity
             NewsCompose(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                news = newsState.news,
+                error = newsState.error,
+                isLoading = newsState.loading,
             )
         }
     }
