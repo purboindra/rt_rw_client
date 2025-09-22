@@ -11,11 +11,13 @@ import org.purboyndradev.rt_rw.core.data.remote.mapper.toRes
 import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.domain.usecases.FetchActivitiesUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchAllBannersUseCase
+import org.purboyndradev.rt_rw.domain.usecases.FetchAllNewsUseCase
 import org.purboyndradev.rt_rw.features.activity.presentation.ActivityState
 
 class MainViewModel(
     private val fetchActivitiesUseCase: FetchActivitiesUseCase,
     private val fetchAllBannersUseCase: FetchAllBannersUseCase,
+    private val fetchAllNewsUseCase: FetchAllNewsUseCase,
 ) : ViewModel(
 ) {
 
@@ -27,6 +29,9 @@ class MainViewModel(
         MutableStateFlow(ActivityState(activities = emptyList()))
     val activitiesState = _activitiesState.asStateFlow()
 
+    private val _newsState = MutableStateFlow(NewsState())
+    val newsState = _newsState.asStateFlow()
+
     private val _bannersState = MutableStateFlow(BannerState())
     val bannersState = _bannersState.asStateFlow()
 
@@ -34,6 +39,34 @@ class MainViewModel(
         viewModelScope.launch {
             onInit()
         }
+    }
+
+    suspend fun fetchAllNews() {
+        _newsState.value = _newsState.value.copy(
+            loading = true
+        )
+
+        val result = fetchAllNewsUseCase.invoke()
+
+        when (result) {
+            is Result.Success -> {
+                val news = result.data
+                _newsState.value = _newsState.value.copy(
+                    news
+                )
+            }
+
+            is Result.Error -> {
+                val error = result.error.toRes()
+                _newsState.value = _newsState.value.copy(
+                    error = error
+                )
+            }
+        }
+
+        _newsState.value = _newsState.value.copy(
+            loading = false
+        )
     }
 
     suspend fun fetchAllBanners() {
@@ -90,13 +123,15 @@ class MainViewModel(
     }
 
     suspend fun onInit() {
-        _loadingState.value = true
+//        _loadingState.value = true
         coroutineScope {
             val activitiesJob = async { fetchActivities() }
             val bannersJob = async { fetchAllBanners() }
+            val newsJob = async { fetchAllNews() }
             activitiesJob.await()
             bannersJob.await()
+            newsJob.await()
         }
-        _loadingState.value = false
+//        _loadingState.value = false
     }
 }
