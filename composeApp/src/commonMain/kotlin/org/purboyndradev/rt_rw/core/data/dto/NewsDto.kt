@@ -10,6 +10,7 @@ data class NewsDto(
     val title: String,
     val description: String,
     val body: String,
+    val createdAt: String,
     val rt: RTModel,
     val author: UserModel
 )

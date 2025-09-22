@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -64,9 +65,7 @@ fun HomeScreen(
             /// Banner Report Kejadian
             BannerReportCompose()
             Spacer(modifier = Modifier.height(22.dp))
-            /// Activity
             NewsCompose(
-                modifier = Modifier.fillMaxWidth(),
                 news = newsState.news,
                 error = newsState.error,
                 isLoading = newsState.loading,

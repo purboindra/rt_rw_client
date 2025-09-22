@@ -9,6 +9,7 @@ fun NewsDto.toNewsModel(): NewsModel {
         title = title,
         description = description,
         body = body,
+        createdAt = createdAt,
         rt = rt,
         author = author
     )
