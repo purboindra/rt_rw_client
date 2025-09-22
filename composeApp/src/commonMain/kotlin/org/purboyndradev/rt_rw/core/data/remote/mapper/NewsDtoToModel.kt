@@ -10,6 +10,6 @@ fun NewsDto.toNewsModel(): NewsModel {
         description = description,
         body = body,
         rt = rt,
-        user = user
+        author = author
     )
 }
