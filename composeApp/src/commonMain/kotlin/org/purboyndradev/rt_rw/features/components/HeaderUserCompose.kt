@@ -22,13 +22,13 @@ import compose.icons.FeatherIcons
 import compose.icons.feathericons.User
 
 @Composable
-fun HeaderUserCompose(modifier: Modifier = Modifier) {
+fun HeaderUserCompose(modifier: Modifier = Modifier, userName: String) {
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Top
     ) {
-        Text("Hello, Purboyndra", style = MaterialTheme.typography.titleMedium)
+        Text("Hello, $userName", style = MaterialTheme.typography.titleMedium)
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.height(42.dp).width(42.dp).clip(

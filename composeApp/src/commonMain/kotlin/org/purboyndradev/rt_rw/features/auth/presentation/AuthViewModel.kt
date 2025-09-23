@@ -56,7 +56,7 @@ class AuthViewModel(
         MutableStateFlow(FieldState())
     val phoneNumberState = _phoneNumberState.asStateFlow()
     
-    val accessToken: Flow<String?> = appAuthRepository.fcmTokenFlow.stateIn(
+    val accessToken: Flow<String?> = appAuthRepository.accessTokenFlow.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
         null

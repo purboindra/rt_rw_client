@@ -30,13 +30,15 @@ fun HomeScreen(
     activityState: ActivityState,
     bannerState: BannerState,
     newsState: NewsState,
+    userName: String,
 ) {
     LazyColumn(
         modifier = modifier.padding(horizontal = 18.dp)
     ) {
         item {
             HeaderUserCompose(
-                modifier
+                modifier,
+                userName
             )
             /// Banner
             BannerHomeCompose(

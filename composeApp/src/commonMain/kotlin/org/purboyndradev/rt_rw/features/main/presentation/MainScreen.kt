@@ -38,10 +38,11 @@ fun MainScreen(navHostController: NavHostController) {
 
     val mainViewModel = koinViewModel<MainViewModel>()
     val activityState by
-        mainViewModel.activitiesState.collectAsStateWithLifecycle()
+    mainViewModel.activitiesState.collectAsStateWithLifecycle()
     val loadingState by mainViewModel.loadingState.collectAsStateWithLifecycle()
     val bannerState by mainViewModel.bannersState.collectAsStateWithLifecycle()
     val newsState by mainViewModel.newsState.collectAsStateWithLifecycle()
+    val userName by mainViewModel.userNameFlow.collectAsStateWithLifecycle()
 
     val pullToRefreshState = rememberPullToRefreshState()
 
@@ -109,6 +110,7 @@ fun MainScreen(navHostController: NavHostController) {
                         activityState = activityState,
                         bannerState = bannerState,
                         newsState = newsState,
+                        userName = userName ?: ""
                     )
                 }
                 composable(route = Activity.ROUTE) {
