@@ -25,8 +25,18 @@ class DateHelper {
             char(' ')
             amPmMarker("AM", "PM")
         }
-        
-        
+
+        @OptIn(ExperimentalTime::class)
+        fun formatIsoToDate(
+            iso: String,
+            tz: TimeZone = TimeZone.currentSystemDefault()
+        ): String {
+            val instant = Instant.parse(iso)
+            val localDateTime = instant.toLocalDateTime(tz)
+            val formatted = localDateTime.format(customDateTimeFormatAmPm)
+            return formatted
+        }
+
         @OptIn(ExperimentalTime::class)
         fun convertEpochToDate(epochTime: Int): String {
             try {
@@ -36,11 +46,11 @@ class DateHelper {
                     } else {
                         epochTime.toLong()
                     }
-                
+
                 val instant = Instant.fromEpochMilliseconds(epochMillis)
                 val localDateTime =
                     instant.toLocalDateTime(TimeZone.currentSystemDefault())
-                
+
                 val formatted = localDateTime.format(customDateTimeFormatAmPm)
                 return formatted
             } catch (e: Exception) {
