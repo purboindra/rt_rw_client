@@ -59,51 +59,19 @@ fun NewsCompose(
                 Text("No News...", Modifier.align(Alignment.Center))
             } else {
                 LazyColumn(
-                    modifier = Modifier.fillMaxHeight(),
-                    userScrollEnabled = false
+                    modifier = Modifier.fillMaxHeight(), userScrollEnabled = false
                 ) {
                     itemsIndexed(
                         items = news,
-                        key = { _, newsItem -> "indexed-${newsItem.id}" }
-                    ) { index, newsItem ->
-                        Column(
-                            modifier = Modifier.padding(
-                                vertical = 8.dp
-                            )
-                        ) {
-                            Text(
-                                text = newsItem.title,
-                                style = MaterialTheme.typography.titleMedium.copy(
-                                    fontWeight = FontWeight.SemiBold,
-                                )
-                            )
-                            Text(
-                                text = newsItem.description,
-                                style = MaterialTheme.typography.labelMedium.copy(
-                                    color = Color.Gray,
-                                ),
-                            )
-                            Row(
-                                modifier = modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Spacer(
-                                    modifier = modifier.weight(1f)
-                                )
-                                Text(
-                                    text = newsItem.createdAt,
-                                    style = MaterialTheme.typography.labelSmall.copy(
-                                        color = Color.Gray,
-                                    ),
-                                )
-                            }
-                        }
+                        key = { _, newsItem -> "indexed-${newsItem.id}" }) { index, newsItem ->
+
+                        NewsContent(
+                            news = newsItem, modifier = modifier
+                        )
 
                         if (index < news.size - 1) {
                             HorizontalDivider(
-                                Modifier.padding(horizontal = 1.dp),
-                                1.dp,
-                                Color.LightGray
+                                Modifier.padding(horizontal = 1.dp), 1.dp, Color.LightGray
                             )
                         }
                     }
