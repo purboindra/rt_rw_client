@@ -38,7 +38,7 @@ class AuthRepositoryImpl(
                 println("Payload sign in: $payload")
                 
                 val username =
-                    payload["username"]?.jsonPrimitive?.contentOrNull ?: ""
+                    payload["name"]?.jsonPrimitive?.contentOrNull ?: ""
                 
                 val email = payload["email"]?.jsonPrimitive?.contentOrNull
                 
@@ -80,7 +80,7 @@ class AuthRepositoryImpl(
                     ?: return@mapBoth Result.Error(AppError.Remote.InvalidResponse)
                 
                 val username =
-                    payload["username"]?.jsonPrimitive?.contentOrNull ?: ""
+                    payload["name"]?.jsonPrimitive?.contentOrNull ?: ""
                 
                 val email = payload["email"]?.jsonPrimitive?.contentOrNull
                 
