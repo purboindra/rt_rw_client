@@ -26,104 +26,105 @@ class AuthRepositoryImpl(
                 val data = responseDto.data ?: return@mapBoth Result.Error(
                     AppError.Remote.InvalidResponse
                 )
-                
+
                 val code = responseDto.code
                 val isNotVerified = code == "USER_NOT_VERIFIED"
-                
+
                 if (isNotVerified) return Result.Success(responseDto)
-                
+
                 val payload = JWTObject.decodeJwtPayload(data.accessToken)
                     ?: return@mapBoth Result.Error(AppError.Remote.InvalidResponse)
-                
+
                 println("Payload sign in: $payload")
-                
+
+
                 val username =
                     payload["name"]?.jsonPrimitive?.contentOrNull ?: ""
-                
+
                 val email = payload["email"]?.jsonPrimitive?.contentOrNull
-                
-                val userId = payload["userId"]?.jsonPrimitive?.contentOrNull
-                
+
+                val userId = payload["user_id"]?.jsonPrimitive?.contentOrNull
+
                 val accessToken = data.accessToken
                 val refreshToken = data.refreshToken
-                
+
                 appAuthRepository.saveTokens(
                     accessToken,
                     refreshToken
                 )
-                
+
                 appAuthRepository.saveUsername(
                     username
                 )
-                
+
                 appAuthRepository.saveUserId(
                     userId ?: ""
                 )
-                
+
                 Result.Success(responseDto)
             },
             onFailure = { Result.Error(it) }
         )
     }
-    
+
     override suspend fun verifyOtp(
         phoneNumber: String,
         otp: String
     ): Result<ResponseDto<VerifyOtpDto>, AppError> {
         return api.verifyOtp(phoneNumber, otp).mapBoth(
             onSuccess = {
-                
+
                 val data = it.data
                     ?: return@mapBoth Result.Error(AppError.Remote.InvalidResponse)
-                
+
                 val payload = JWTObject.decodeJwtPayload(data.accessToken)
                     ?: return@mapBoth Result.Error(AppError.Remote.InvalidResponse)
-                
+
                 val username =
                     payload["name"]?.jsonPrimitive?.contentOrNull ?: ""
-                
+
                 val email = payload["email"]?.jsonPrimitive?.contentOrNull
-                
-                val userId = payload["userId"]?.jsonPrimitive?.contentOrNull
-                
+
+                val userId = payload["user_id"]?.jsonPrimitive?.contentOrNull
+
                 val accessToken = data.accessToken
                 val refreshToken = data.refreshToken
-                
+
                 appAuthRepository.saveTokens(
                     accessToken,
                     refreshToken
                 )
-                
+
                 appAuthRepository.saveUsername(
                     username
                 )
-                
+
                 appAuthRepository.saveUserId(
                     userId ?: ""
                 )
-                
+
                 Result.Success(it)
             },
             onFailure = {
                 Result.Error(it)
             }
         )
-        
+
     }
-    
+
     override suspend fun refreshToken(
         refreshToken: String,
-        
+
         ): Result<ResponseDto<RefreshTokenDto>, AppError> {
         return api.refreshToken(refreshToken).mapBoth(
             onSuccess = {
-                
+
                 val data = it.data
-                
+
                 data?.let { token ->
                     tokenStore.setTokens(token.accessToken, token.refreshToken)
                 }
-                
+
                 Result.Success(it)
             },
             onFailure = {
