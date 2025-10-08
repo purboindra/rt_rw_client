@@ -42,6 +42,7 @@ import org.purboyndradev.rt_rw.domain.usecases.FetchActivitiesUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchActivityByIdUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchAllBannersUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchAllNewsUseCase
+import org.purboyndradev.rt_rw.domain.usecases.FetchUsersActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.JoinActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.RefreshTokenUseCase
 import org.purboyndradev.rt_rw.domain.usecases.SignInUseCase
@@ -154,6 +155,9 @@ val sharedModule: Module = module {
     single {
         JoinActivityUseCase(get())
     }
+    single {
+        FetchUsersActivityUseCase(get())
+    }
 
     /// BANNER USE CASE
     single {
@@ -188,6 +192,6 @@ val sharedModule: Module = module {
     viewModel { MainViewModel(get(), get(), get(), get()) }
     viewModel { NotificationViewModel(get()) }
     viewModel { params ->
-        ActivityViewModel(get(), get(), get(), get(), get(), get(), get())
+        ActivityViewModel(get(), get(), get(), get(), get(), get(), get(), get())
     }
 }
