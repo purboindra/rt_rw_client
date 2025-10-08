@@ -18,6 +18,7 @@ import org.purboyndradev.rt_rw.domain.usecases.DeleteActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.EditActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchActivitiesUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchActivityByIdUseCase
+import org.purboyndradev.rt_rw.domain.usecases.FetchUsersActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.JoinActivityUseCase
 import org.purboyndradev.rt_rw.helper.JWTObject
 import org.purboyndradev.rt_rw.helper.MessageSnackbarType
@@ -32,6 +33,7 @@ class ActivityViewModel(
     private val editActivityUseCase: EditActivityUseCase,
     private val joinActivityUseCase: JoinActivityUseCase,
     private val appAuthRepository: AppAuthRepository,
+    private val fetchUsersActivity: FetchUsersActivityUseCase,
 ) : ViewModel() {
 
     private val _activitiesState: MutableStateFlow<ActivityState> =
@@ -41,6 +43,13 @@ class ActivityViewModel(
             )
         )
     val activitiesState = _activitiesState.asStateFlow()
+
+    private val _usersActivityState: MutableStateFlow<UsersActivityState> = MutableStateFlow(
+        UsersActivityState(
+            users = emptyList()
+        )
+    )
+    val usersActivityState = _usersActivityState.asStateFlow()
 
     val userIdFlow: Flow<String?> = appAuthRepository.userIdFlow.stateIn(
         viewModelScope,
@@ -72,6 +81,37 @@ class ActivityViewModel(
 
     fun onChangeSnackbarType(type: MessageSnackbarType) {
         _snackbarType.value = type
+    }
+
+    fun fetchUsersActivity(id: String) {
+        viewModelScope.launch {
+            _usersActivityState.value = _usersActivityState.value.copy(
+                isLoading = true
+            )
+
+            val result = fetchUsersActivity.invoke(id)
+
+            when (result) {
+                is Result.Success -> {
+                    val users = result.data;
+                    _usersActivityState.value = _usersActivityState.value.copy(
+                        users = users
+                    )
+                }
+
+                is Result.Error -> {
+                    val error = result.error.toRes()
+                    _usersActivityState.value = _usersActivityState.value.copy(
+                        error = error
+                    )
+                }
+            }
+
+            _usersActivityState.value = _usersActivityState.value.copy(
+                isLoading = false
+            )
+
+        }
     }
 
     fun fetchActivityDetail(id: String) {
