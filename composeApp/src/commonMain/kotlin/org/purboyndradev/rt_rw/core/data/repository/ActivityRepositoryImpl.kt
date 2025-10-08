@@ -3,6 +3,7 @@ package org.purboyndradev.rt_rw.core.data.repository
 import org.purboyndradev.rt_rw.core.data.dto.ActivityDetailDto
 import org.purboyndradev.rt_rw.core.data.dto.ActivityDto
 import org.purboyndradev.rt_rw.core.data.dto.ResponseDto
+import org.purboyndradev.rt_rw.core.data.dto.UsersActivityDto
 import org.purboyndradev.rt_rw.core.data.remote.api.ActivityApi
 import org.purboyndradev.rt_rw.core.data.remote.params.CreateActivityParams
 import org.purboyndradev.rt_rw.core.data.remote.params.JoinActivityParams
@@ -28,7 +29,7 @@ class ActivityRepositoryImpl(
             }
         )
     }
-    
+
     override suspend fun fetchAllActivities(
         paginationParams: PaginationParams?,
         queryParams: QueryParams?
@@ -44,7 +45,7 @@ class ActivityRepositoryImpl(
             }
         )
     }
-    
+
     override suspend
     fun fetchActivityById(id: String): Result<ResponseDto<ActivityDetailDto>, AppError> {
         return activityApi.fetchActivityById(id).mapBoth(
@@ -52,7 +53,7 @@ class ActivityRepositoryImpl(
             onFailure = { error -> Result.Error(error) }
         )
     }
-    
+
     override suspend
     fun deleteActivity(id: String): Result<ResponseDto<Unit>, AppError> {
         return activityApi.deleteActivity(id).mapBoth(
@@ -60,7 +61,7 @@ class ActivityRepositoryImpl(
             onFailure = { error -> Result.Error(error) }
         )
     }
-    
+
     override suspend
     fun editActivity(
         id: String,
@@ -71,11 +72,22 @@ class ActivityRepositoryImpl(
             onFailure = { error -> Result.Error(error) }
         )
     }
-    
+
     override suspend fun joinActivity(params: JoinActivityParams): Result<ResponseDto<Unit>, AppError> {
         return activityApi.joinActivity(params).mapBoth(
             onSuccess = { data -> Result.Success(data) },
             onFailure = { error -> Result.Error(error) }
+        )
+    }
+
+    override suspend fun fetchUsersActivity(id: String): Result<ResponseDto<List<UsersActivityDto>>, AppError> {
+        return activityApi.fetchUsersActivity(id).mapBoth(
+            onSuccess = { data ->
+                Result.Success(data)
+            },
+            onFailure = { error ->
+                Result.Error(error)
+            }
         )
     }
 }
