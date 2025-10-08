@@ -3,6 +3,7 @@ package org.purboyndradev.rt_rw.core.data.remote.api
 import org.purboyndradev.rt_rw.core.data.dto.ActivityDetailDto
 import org.purboyndradev.rt_rw.core.data.dto.ActivityDto
 import org.purboyndradev.rt_rw.core.data.dto.ResponseDto
+import org.purboyndradev.rt_rw.core.data.dto.UsersActivityDto
 import org.purboyndradev.rt_rw.core.data.remote.params.CreateActivityParams
 import org.purboyndradev.rt_rw.core.data.remote.params.JoinActivityParams
 import org.purboyndradev.rt_rw.core.data.remote.params.PaginationParams
@@ -16,13 +17,14 @@ interface ActivityApi {
         paginationParams: PaginationParams? = null,
         queryParams: QueryParams? = null
     ): Result<ResponseDto<List<ActivityDto>>, AppError>
-    
+
     suspend fun fetchActivityById(id: String): Result<ResponseDto<ActivityDetailDto>, AppError>
     suspend fun deleteActivity(id: String): Result<ResponseDto<Unit>, AppError>
     suspend fun editActivity(
         id: String,
         params: CreateActivityParams
     ): Result<ResponseDto<Unit>, AppError>
-    
+
     suspend fun joinActivity(params: JoinActivityParams): Result<ResponseDto<Unit>, AppError>
+    suspend fun fetchUsersActivity(id: String): Result<ResponseDto<List<UsersActivityDto>>, AppError>
 }
