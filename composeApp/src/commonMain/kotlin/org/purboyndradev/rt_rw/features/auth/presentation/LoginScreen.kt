@@ -35,22 +35,20 @@ import org.purboyndradev.rt_rw.features.navigation.OTP
 
 @Composable
 fun LoginScreen(navHostController: NavHostController) {
-    
+
     val authViewModel = koinViewModel<AuthViewModel>()
-    
+
     val snackbarHostState = remember { SnackbarHostState() }
-    
+
     val isLoadingState by
     authViewModel.isLoadingState.collectAsStateWithLifecycle()
     val authState by authViewModel.loginState.collectAsStateWithLifecycle()
     val openAlertDialog by
     authViewModel.openAlertDialog.collectAsStateWithLifecycle()
     val phoneNumberState by authViewModel.phoneNumberState.collectAsStateWithLifecycle()
-    
+    val hasAuthenticatedBefore by authViewModel.hasAuthenticatedBefore.collectAsStateWithLifecycle()
+
     LaunchedEffect(authState) {
-        
-        println("Auth State Login Screen: $authState")
-        
         /// MEAN: User already verify their phone
         if (authState.success && authState.code == null) {
             navHostController.navigate(Main)
@@ -60,7 +58,7 @@ fun LoginScreen(navHostController: NavHostController) {
             )
         }
     }
-    
+
     when {
         openAlertDialog -> {
             OpenTelegramDialog(
@@ -78,7 +76,7 @@ fun LoginScreen(navHostController: NavHostController) {
             )
         }
     }
-    
+
     Scaffold(
         snackbarHost = {
             SnackbarHost(snackbarHostState)
@@ -138,7 +136,7 @@ fun LoginScreen(navHostController: NavHostController) {
                 enabled = !isLoadingState
             ) {
                 Text(
-                    if (isLoadingState) "Loading..." else "Send OTP",
+                    if (isLoadingState) "Loading..." else if (hasAuthenticatedBefore) "Login" else "Send OTP",
                     style = MaterialTheme.typography.labelMedium
                 )
             }
