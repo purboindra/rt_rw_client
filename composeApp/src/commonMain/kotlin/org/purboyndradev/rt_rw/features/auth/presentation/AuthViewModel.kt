@@ -6,6 +6,7 @@ import io.ktor.util.date.getTimeMillis
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.stateIn
@@ -31,43 +32,49 @@ class AuthViewModel(
     private val verifyOtpUseCase: VerifyOtpUseCase,
     private val appAuthRepository: AppAuthRepository
 ) : ViewModel() {
-    
+
     private val _loginState: MutableStateFlow<AuthState> =
         MutableStateFlow(AuthState())
     val loginState = _loginState.asStateFlow()
-    
+
     private val _verifyOtpState: MutableStateFlow<AuthState> =
         MutableStateFlow(AuthState())
     val verifyOtpState = _verifyOtpState.asStateFlow()
-    
+
     private val _otpUiState: MutableStateFlow<OTPUiState> =
         MutableStateFlow(OTPUiState())
     val otpUiState = _otpUiState.asStateFlow()
-    
+
     private val _isLoadingState: MutableStateFlow<Boolean> =
         MutableStateFlow(false)
     val isLoadingState = _isLoadingState.asStateFlow()
-    
+
     private val _openAlertDialog: MutableStateFlow<Boolean> =
         MutableStateFlow(false)
     val openAlertDialog = _openAlertDialog.asStateFlow()
-    
+
     private val _phoneNumberState: MutableStateFlow<FieldState> =
         MutableStateFlow(FieldState())
     val phoneNumberState = _phoneNumberState.asStateFlow()
-    
+
     val accessToken: Flow<String?> = appAuthRepository.accessTokenFlow.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
         null
     )
-    
+
+    val hasAuthenticatedBefore: StateFlow<Boolean> = appAuthRepository.isAuthenticated.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        false
+    )
+
     fun onOpenAlertDialogChange(open: Boolean) {
         _openAlertDialog.update {
             open
         }
     }
-    
+
     fun updateOtpValue(index: Int, value: String) {
         val newOtpValues = _otpUiState.value.otpValues.toMutableList()
         newOtpValues[index] = value
@@ -78,13 +85,13 @@ class AuthViewModel(
             )
         }
     }
-    
+
     fun validatePhoneNumber(value: String): String? =
         Validators.required(
             value,
             "Phone Number"
         ) ?: Validators.minLength(value, 11, "Phone Number")
-    
+
     fun onUpdatePhoneNumber(phoneNumber: String) {
         _phoneNumberState.update {
             it.copy(
@@ -100,44 +107,42 @@ class AuthViewModel(
             )
         }
     }
-    
+
     suspend fun hasAuthenticated(): Boolean {
         val token = accessToken.firstOrNull()
-        
+
         if (token.isNullOrBlank()) return false
-        
+
         val payload = JWTObject.decodeJwtPayload(token)
-        
+
         println("Payload hasAuthenticated: $payload")
-        
+
         val expSeconds = payload
             ?.get("exp")?.toString()?.toLongOrNull()
             ?: return false
-        
+
         val nowSeconds = getTimeMillis() / 1000
         return expSeconds > nowSeconds
     }
-    
+
     fun onResetErrorState() {
         _loginState.value = _loginState.value.copy(
             error = null
         )
-        
+
         _verifyOtpState.value = _verifyOtpState.value.copy(
             error = null
         )
     }
-    
+
     fun signIn() {
         _isLoadingState.value = true
-        
-        println("Phone Number: ${_phoneNumberState.value.value}")
-        
+
         onResetErrorState()
-        
+
         val phoneNumberError =
             validatePhoneNumber(_phoneNumberState.value.value)
-        
+
         if (phoneNumberError != null) {
             _phoneNumberState.update {
                 it.copy(
@@ -148,24 +153,24 @@ class AuthViewModel(
             _isLoadingState.value = false
             return
         }
-        
+
         viewModelScope.launch {
             val result = signInUseCase(_phoneNumberState.value.value)
             when (result) {
                 is Result.Success -> {
-                    
+
                     val data = result.data
-                    
+
                     val redirectUrl = data.redirectUrl
                     val code = data.code
-                    
+
                     if (code == null) {
                         _loginState.value = _loginState.value.copy(
                             success = true
                         )
                         return@launch
                     }
-                    
+
                     if (code == "USER_NOT_VERIFIED") {
                         redirectUrl?.let {
                             _loginState.update {
@@ -179,9 +184,8 @@ class AuthViewModel(
                         onOpenAlertDialogChange(!_openAlertDialog.value)
                     }
                 }
-                
+
                 is Result.Error -> {
-                    println("Error: $result")
                     _loginState.update {
                         it.copy(
                             error = result.error.toRes()
@@ -192,20 +196,20 @@ class AuthViewModel(
             _isLoadingState.value = false
         }
     }
-    
+
     fun verifyOtp() {
         _isLoadingState.update {
             true
         }
-        
+
         val otp = _otpUiState.value.otpValues.joinToString("")
-        
+
         viewModelScope.launch {
             val result = verifyOtpUseCase(
                 phoneNumber = _phoneNumberState.value.value,
                 otp = otp,
             )
-            
+
             when (result) {
                 is Result.Success -> {
                     println("Success verify otp: ${result.data}")
@@ -214,9 +218,9 @@ class AuthViewModel(
                             success = true,
                         )
                     }
-                    
+
                 }
-                
+
                 is Result.Error -> {
                     println("Error verify otp: ${result.error}")
                     val error = result.error.toRes()
