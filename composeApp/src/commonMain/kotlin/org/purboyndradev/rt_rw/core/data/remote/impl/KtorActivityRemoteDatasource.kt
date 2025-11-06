@@ -24,92 +24,79 @@ import org.purboyndradev.rt_rw.core.network.safeCallWrapped
 
 class KtorActivityRemoteDatasource(private val httpClient: HttpClient) :
     ActivityApi {
-    override suspend fun createActivity(params: CreateActivityParams): Result<ResponseDto<Unit>, AppError> {
-        return safeCallWrapped {
-            httpClient.post {
-                url {
-                    appendPathSegments("api/v1/activities")
-                }
-                setBody(params)
-            }.body<ResponseDto<Unit>>()
-        }
+    override suspend fun createActivity(params: CreateActivityParams): ResponseDto<Unit> {
+        return httpClient.post {
+            url {
+                appendPathSegments("api/v1/activities")
+            }
+            setBody(params)
+        }.body<ResponseDto<Unit>>()
+
     }
 
     override suspend fun fetchAllActivities(
         paginationParams: PaginationParams?,
         queryParams: QueryParams?
-    ): Result<ResponseDto<List<ActivityDto>>, AppError> {
-        return safeCallWrapped {
-            httpClient.get {
-                url {
-                    appendPathSegments("api/v1/activities")
-                    paginationParams?.let {
-                        parameters.append("page", it.page.toString())
-                        parameters.append("limit", it.limit.toString())
-                    }
-                    queryParams?.let {
-                        parameters.append("query", it.query)
-                    }
+    ): ResponseDto<List<ActivityDto>> {
+        return httpClient.get {
+            url {
+                appendPathSegments("api/v1/activities")
+                paginationParams?.let {
+                    parameters.append("page", it.page.toString())
+                    parameters.append("limit", it.limit.toString())
                 }
-            }.body<ResponseDto<List<ActivityDto>>>()
-        }
+                queryParams?.let {
+                    parameters.append("query", it.query)
+                }
+            }
+        }.body<ResponseDto<List<ActivityDto>>>()
     }
 
-    override suspend fun fetchActivityById(id: String): Result<ResponseDto<ActivityDetailDto>, AppError> {
-        return safeCallWrapped {
-            httpClient.get {
-                url {
-                    appendPathSegments("api/v1/activities/$id")
-                }
-            }.body<ResponseDto<ActivityDetailDto>>()
-        }
+    override suspend fun fetchActivityById(id: String): ResponseDto<ActivityDetailDto> {
+        return httpClient.get {
+            url {
+                appendPathSegments("api/v1/activities/$id")
+            }
+        }.body<ResponseDto<ActivityDetailDto>>()
 
     }
 
-    override suspend fun deleteActivity(id: String): Result<ResponseDto<Unit>, AppError> {
-        return safeCallWrapped {
-            httpClient.delete {
-                url {
-                    appendPathSegments("api/v1/activities/$id")
-                }
-            }.body<ResponseDto<Unit>>()
-        }
+    override suspend fun deleteActivity(id: String): ResponseDto<Unit> {
+        return httpClient.delete {
+            url {
+                appendPathSegments("api/v1/activities/$id")
+            }
+        }.body<ResponseDto<Unit>>()
     }
 
     override suspend fun editActivity(
         id: String,
         params: CreateActivityParams
-    ): Result<ResponseDto<Unit>, AppError> {
-        return safeCallWrapped {
-            httpClient.put {
-                url {
-                    appendPathSegments("api/v1/activities/$id")
-                }
-                setBody(params)
-            }.body<ResponseDto<Unit>>()
-        }
+    ): ResponseDto<Unit> {
+        return httpClient.put {
+            url {
+                appendPathSegments("api/v1/activities/$id")
+            }
+            setBody(params)
+        }.body<ResponseDto<Unit>>()
     }
 
-    override suspend fun joinActivity(params: JoinActivityParams): Result<ResponseDto<Unit>, AppError> {
-        return safeCallWrapped {
-            httpClient.post {
-                url {
-                    appendPathSegments("api/v1/activities/join")
-                }
-                setBody(
-                    params
-                )
-            }.body<ResponseDto<Unit>>()
-        }
+    override suspend fun joinActivity(params: JoinActivityParams): ResponseDto<Unit> {
+        return httpClient.post {
+            url {
+                appendPathSegments("api/v1/activities/join")
+            }
+            setBody(
+                params
+            )
+        }.body<ResponseDto<Unit>>()
     }
 
-    override suspend fun fetchUsersActivity(id: String): Result<ResponseDto<List<UsersActivityDto>>, AppError> {
-        return safeCallWrapped {
-            httpClient.get {
-                url {
-                    appendPathSegments("api/v1/activities/${id}/users")
-                }
-            }.body<ResponseDto<List<UsersActivityDto>>>()
-        }
+    override suspend fun fetchUsersActivity(id: String): ResponseDto<List<UsersActivityDto>> {
+        return httpClient.get {
+            url {
+                appendPathSegments("api/v1/activities/${id}/users")
+            }
+        }.body<ResponseDto<List<UsersActivityDto>>>()
     }
 }

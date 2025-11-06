@@ -1,11 +1,16 @@
 package org.purboyndradev.rt_rw.di
 
 import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -52,21 +57,52 @@ import org.purboyndradev.rt_rw.features.auth.presentation.AuthViewModel
 import org.purboyndradev.rt_rw.features.main.presentation.MainViewModel
 import org.purboyndradev.rt_rw.features.notification.NotificationViewModel
 import org.purboyndradev.rt_rw.features.splash.SplashViewModel
+import co.touchlab.kermit.Logger as KermitLogger
 
-fun initKoin(config: KoinAppDeclaration? = null) = startKoin {
-    config?.invoke(this)
-    modules(
-        platformModule,
-        sharedModule
-    )
+fun initKoin(config: KoinAppDeclaration? = null) {
+    val app = startKoin {
+        config?.invoke(this)
+        modules(
+            platformModule,
+            sharedModule
+        )
+    }
+
+    val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    appScope.launch {
+        val appAuthRepository: AppAuthRepository = app.koin.get()
+        val tokenStore: AuthTokenStore = app.koin.get()
+        val tokenRefresher: TokenRefresher = app.koin.get()
+
+        val httpClient = HttpClientFactory.create(
+            engine = CIO.create(),
+            appAuthRepository = appAuthRepository,
+            tokenRefresher = tokenRefresher,
+            tokenStore = tokenStore
+        )
+
+        InitializedHttpClient.client = httpClient
+        KermitLogger.i("initKoin") { "Authenticated HttpClient has been asynchronously initialized." }
+    }
 }
 
 expect val platformModule: Module
 
+object InitializedHttpClient {
+    var client: HttpClient? = null
+}
+
 val sharedModule: Module = module {
 
+
     /// PROVIDE HTTP CLIENT FACTORY
+    val defaultHttpClient = named("DefaultHttpClient")
     val authHttpClient = named("AuthHttpClient")
+
+    single<HttpClient>(qualifier = defaultHttpClient) {
+        InitializedHttpClient.client ?: error("Authenticated HttpClient is not yet initialized.")
+    }
+
     single<HttpClient>(qualifier = authHttpClient) {
         HttpClient(get()) {
             install(ContentNegotiation) {
@@ -83,8 +119,21 @@ val sharedModule: Module = module {
         }
     }
 
-    single<HttpClient> {
-        HttpClientFactory.create(get(), get(), get(), get())
+    /// PROVIDE APP AUTH DATA STORE
+    single {
+        createDataStore()
+    }
+
+    single {
+        AppAuthRepository(get())
+    }
+
+    single {
+        AuthTokenStore(get())
+    }
+
+    single {
+        TokenRefresher(get(qualifier = authHttpClient), get())
     }
 
     /// PROVIDE OBJECT KEYS DATASTORE
@@ -97,13 +146,13 @@ val sharedModule: Module = module {
         KtorAuthRemoteDatasource(get(qualifier = authHttpClient))
     }
     single<ActivityApi> {
-        KtorActivityRemoteDatasource(get())
+        KtorActivityRemoteDatasource(get(qualifier = defaultHttpClient))
     }
     single<BannerApi> {
-        KtorBannerRemoteDatasource(get())
+        KtorBannerRemoteDatasource(get(qualifier = defaultHttpClient))
     }
     single<NewsApi> {
-        KtorNewsRemoteDatasource(get())
+        KtorNewsRemoteDatasource(get(qualifier = defaultHttpClient))
     }
 
     /// PROVIDE REPOSITORY
@@ -167,23 +216,6 @@ val sharedModule: Module = module {
     /// NEWS USE CASE
     single {
         FetchAllNewsUseCase(get())
-    }
-
-    /// PROVIDE APP AUTH DATA STORE
-    single {
-        createDataStore()
-    }
-
-    single {
-        AppAuthRepository(get())
-    }
-
-    single {
-        AuthTokenStore(get())
-    }
-
-    single {
-        TokenRefresher(get(), get())
     }
 
     /// PROVIDE VIEW MODEL

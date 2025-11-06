@@ -4,25 +4,20 @@ import org.purboyndradev.rt_rw.core.data.remote.mapper.toActivityModel
 import org.purboyndradev.rt_rw.core.domain.AppError
 import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.core.domain.model.ActivityModel
+import org.purboyndradev.rt_rw.core.network.mapKtorExceptionToAppError
 import org.purboyndradev.rt_rw.domain.repository.ActivityRepository
 
 class FetchActivitiesUseCase(private val activityRepository: ActivityRepository) {
     suspend operator fun invoke(): Result<List<ActivityModel>, AppError> {
-        return when (val result = activityRepository.fetchAllActivities()) {
-            is Result.Success -> {
-                val data = result.data.data
-                if (data == null) return Result.Error(AppError.Remote.NotFound)
-                var activities: List<ActivityModel> = emptyList()
-                data.forEach {
-                    activities = activities + it.toActivityModel()
-                }
-                Result.Success(activities)
+        return try {
+            val response = activityRepository.fetchAllActivities()
+            val data = response.data ?: return Result.Error(AppError.Remote.NotFound)
+            val activities = data.map {
+                it.toActivityModel()
             }
-            
-            is Result.Error -> {
-                val error = result.error
-                Result.Error(error)
-            }
+            Result.Success(activities)
+        } catch (e: Exception) {
+            Result.Error(mapKtorExceptionToAppError(e))
         }
     }
 }

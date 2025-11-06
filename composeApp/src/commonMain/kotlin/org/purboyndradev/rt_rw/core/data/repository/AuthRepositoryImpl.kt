@@ -20,116 +20,83 @@ class AuthRepositoryImpl(
     private val appAuthRepository: AppAuthRepository,
     private val tokenStore: AuthTokenStore,
 ) : AuthRepository {
-    override suspend fun signIn(phoneNumber: String): Result<ResponseDto<SignInDto>, AppError> {
-        return api.signIn(phoneNumber).mapBoth(
-            onSuccess = { responseDto ->
-                val data = responseDto.data ?: return@mapBoth Result.Error(
-                    AppError.Remote.InvalidResponse
-                )
+    override suspend fun signIn(phoneNumber: String): ResponseDto<SignInDto> {
 
-                val code = responseDto.code
-                val isNotVerified = code == "USER_NOT_VERIFIED"
+        val responseDto = api.signIn(phoneNumber)
 
-                if (isNotVerified) return Result.Success(responseDto)
+        val data = responseDto.data ?: return responseDto
 
-                val payload = JWTObject.decodeJwtPayload(data.accessToken)
-                    ?: return@mapBoth Result.Error(AppError.Remote.InvalidResponse)
+        val isNotVerified = responseDto.code === "USER_NOT_VERIFIED"
+        if (isNotVerified) {
+            return responseDto
+        }
 
-                println("Payload sign in: $payload")
+        val accessToken = data.accessToken
+        val refreshToken = data.refreshToken
+
+        val payload = JWTObject.decodeJwtPayload(accessToken)
+            ?: return responseDto
 
 
-                val username =
-                    payload["name"]?.jsonPrimitive?.contentOrNull ?: ""
-
-                val email = payload["email"]?.jsonPrimitive?.contentOrNull
-
-                val userId = payload["user_id"]?.jsonPrimitive?.contentOrNull
-
-                val accessToken = data.accessToken
-                val refreshToken = data.refreshToken
-
-                appAuthRepository.saveTokens(
-                    accessToken,
-                    refreshToken
-                )
-
-                appAuthRepository.saveUsername(
-                    username
-                )
-
-                appAuthRepository.saveUserId(
-                    userId ?: ""
-                )
-
-                Result.Success(responseDto)
-            },
-            onFailure = { Result.Error(it) }
-        )
+        val username = payload["name"]?.jsonPrimitive?.contentOrNull ?: ""
+        val userId = payload["user_id"]?.jsonPrimitive?.contentOrNull ?: ""
+        appAuthRepository.saveTokens(accessToken, refreshToken)
+        appAuthRepository.saveUsername(username)
+        appAuthRepository.saveUserId(userId)
+        tokenStore.setTokens(accessToken, refreshToken)
+        return responseDto
     }
 
     override suspend fun verifyOtp(
         phoneNumber: String,
         otp: String
-    ): Result<ResponseDto<VerifyOtpDto>, AppError> {
-        return api.verifyOtp(phoneNumber, otp).mapBoth(
-            onSuccess = {
+    ): ResponseDto<VerifyOtpDto> {
 
-                val data = it.data
-                    ?: return@mapBoth Result.Error(AppError.Remote.InvalidResponse)
+        val responseDto = api.verifyOtp(phoneNumber, otp)
 
-                val payload = JWTObject.decodeJwtPayload(data.accessToken)
-                    ?: return@mapBoth Result.Error(AppError.Remote.InvalidResponse)
+        val data = responseDto.data ?: return responseDto
 
-                val username =
-                    payload["name"]?.jsonPrimitive?.contentOrNull ?: ""
+        val payload = JWTObject.decodeJwtPayload(data.accessToken)
+            ?: return responseDto
 
-                val email = payload["email"]?.jsonPrimitive?.contentOrNull
+        val username =
+            payload["name"]?.jsonPrimitive?.contentOrNull ?: ""
 
-                val userId = payload["user_id"]?.jsonPrimitive?.contentOrNull
+        val userId = payload["user_id"]?.jsonPrimitive?.contentOrNull
 
-                val accessToken = data.accessToken
-                val refreshToken = data.refreshToken
+        val accessToken = data.accessToken
+        val refreshToken = data.refreshToken
 
-                appAuthRepository.saveTokens(
-                    accessToken,
-                    refreshToken
-                )
-
-                appAuthRepository.saveUsername(
-                    username
-                )
-
-                appAuthRepository.saveUserId(
-                    userId ?: ""
-                )
-
-                Result.Success(it)
-            },
-            onFailure = {
-                Result.Error(it)
-            }
+        appAuthRepository.saveTokens(
+            accessToken,
+            refreshToken
         )
 
+        appAuthRepository.saveUsername(
+            username
+        )
+
+        appAuthRepository.saveUserId(
+            userId ?: ""
+        )
+        return responseDto
     }
 
     override suspend fun refreshToken(
         refreshToken: String,
+    ): ResponseDto<RefreshTokenDto> {
 
-        ): Result<ResponseDto<RefreshTokenDto>, AppError> {
-        return api.refreshToken(refreshToken).mapBoth(
-            onSuccess = {
+        val responseDto = api.refreshToken(refreshToken)
+        val data = responseDto.data ?: return responseDto
+        val accessToken = data.accessToken
+        val newRefreshToken = data.refreshToken
 
-                val data = it.data
-
-                data?.let { token ->
-                    tokenStore.setTokens(token.accessToken, token.refreshToken)
-                }
-
-                Result.Success(it)
-            },
-            onFailure = {
-                Result.Error(it)
-            }
+        appAuthRepository.saveTokens(
+            accessToken,
+            newRefreshToken
         )
+
+        tokenStore.setTokens(accessToken, newRefreshToken)
+        return responseDto
     }
 }

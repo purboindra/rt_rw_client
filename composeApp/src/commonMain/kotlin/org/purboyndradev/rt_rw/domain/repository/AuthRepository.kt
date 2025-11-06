@@ -8,13 +8,13 @@ import org.purboyndradev.rt_rw.core.domain.AppError
 import org.purboyndradev.rt_rw.core.domain.Result
 
 interface AuthRepository {
-    suspend fun signIn(phoneNumber: String): Result<ResponseDto<SignInDto>, AppError>
+    suspend fun signIn(phoneNumber: String):ResponseDto<SignInDto>
     suspend fun verifyOtp(
         phoneNumber: String,
         otp: String
-    ): Result<ResponseDto<VerifyOtpDto>, AppError>
+    ): ResponseDto<VerifyOtpDto>
     
     suspend fun refreshToken(
         refreshToken: String
-    ): Result<ResponseDto<RefreshTokenDto>, AppError>
+    ): ResponseDto<RefreshTokenDto>
 }

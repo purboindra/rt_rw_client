@@ -11,5 +11,5 @@ interface BannerApi {
     suspend fun fetchAllBanners(
         paginationParams: PaginationParams? = null,
         queryParams: QueryParams? = null
-    ): Result<ResponseDto<List<BannerDto>>, AppError>
+    ): ResponseDto<List<BannerDto>>
 }

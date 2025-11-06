@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,10 +28,11 @@ fun ActivityDetailContent(
     isLoadingJoinActivity: Boolean = false,
     onJoinActivity: () -> Unit,
     hasJoinActivity: Boolean = false,
+    onRequestUsersDialog: () -> Unit,
 ) {
-    
+
     val date = DateHelper.convertEpochToDate(activity.date)
-    
+
     Column(modifier = modifier.fillMaxWidth()) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -48,7 +50,7 @@ fun ActivityDetailContent(
                     )
                 )
             }
-            
+
             Spacer(modifier = modifier.width(8.dp))
             if (!hasJoinActivity) Box(modifier = modifier.width(112.dp)) {
                 ElevatedButton(
@@ -63,7 +65,7 @@ fun ActivityDetailContent(
                 }
             }
         }
-        
+
         Spacer(modifier = modifier.height(24.dp))
         Text(
             activity.description,
@@ -80,13 +82,16 @@ fun ActivityDetailContent(
                     color = Color.Gray
                 )
             )
-            Text(
-                "Lihat Semua",
-                style = MaterialTheme.typography.labelSmall.copy(
-                    color = Color.Gray,
-                ),
-                modifier = modifier.clickable { }
-            )
+            TextButton(
+                onClick = onRequestUsersDialog,
+            ) {
+                Text(
+                    "Lihat Semua",
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        color = Color.Gray,
+                    ),
+                )
+            }
         }
         Text(activity.pic.name)
     }

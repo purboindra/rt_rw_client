@@ -15,6 +15,7 @@ plugins {
 }
 
 kotlin {
+
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11) }
@@ -142,7 +143,7 @@ buildkonfig {
             STRING,
             "BASE_URL",
 //            "https://rtrwbackend-production.up.railway.app"
-            "http://192.168.1.5:3000"
+            "http://192.168.1.4:3000"
             )
         
         buildConfigField(
@@ -157,7 +158,7 @@ buildkonfig {
             buildConfigField(
                 STRING,
                 "BASE_URL",
-                "http://192.168.1.5:3000"
+                "http://192.168.1.4:3000"
 //                "https://rtrwbackend-production.up.railway.app"
             )
             buildConfigField(STRING, "ENVIRONMENT", "DEBUG")

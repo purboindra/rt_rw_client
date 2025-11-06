@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -28,12 +29,13 @@ import org.koin.core.parameter.parametersOf
 import org.purboyndradev.rt_rw.features.components.ActivityDetailContent
 import org.purboyndradev.rt_rw.features.components.CommentInputActivity
 import org.purboyndradev.rt_rw.features.components.CustomSnackbar
+import org.purboyndradev.rt_rw.features.components.UserActivityDialog
 import org.purboyndradev.rt_rw.helper.MessageSnackbarType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ActivityDetailScreen(id: String, navHostController: NavHostController) {
-    
+
     val activityViewModel =
         koinViewModel<ActivityViewModel>(parameters = { parametersOf(id) })
     val activityState by
@@ -41,12 +43,14 @@ fun ActivityDetailScreen(id: String, navHostController: NavHostController) {
     val joinActivityState by activityViewModel.joinActivityState.collectAsStateWithLifecycle()
     val snackbarTypeState by activityViewModel.snackbarType.collectAsStateWithLifecycle()
     val hasJoinActivity by activityViewModel.hasJoinedActivity.collectAsStateWithLifecycle()
-    
+    val usersActivityState by activityViewModel.usersActivityState.collectAsStateWithLifecycle()
+
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-    
+    val openUsersDialog = remember { mutableStateOf(false) }
+
     val isLoadingJoinActivity = joinActivityState.loading
-    
+
     fun showStyledSnackbar(
         snackbarHostState: SnackbarHostState,
         scope: CoroutineScope,
@@ -62,11 +66,11 @@ fun ActivityDetailScreen(id: String, navHostController: NavHostController) {
             )
         }
     }
-    
+
     LaunchedEffect(Unit) {
         activityViewModel.fetchActivityDetail(id)
     }
-    
+
     LaunchedEffect(joinActivityState.error) {
         joinActivityState.error?.let {
             val errorMessage = joinActivityState.error
@@ -78,7 +82,24 @@ fun ActivityDetailScreen(id: String, navHostController: NavHostController) {
             )
         }
     }
-    
+
+    LaunchedEffect(openUsersDialog.value){
+        if(openUsersDialog.value) {
+            activityViewModel.fetchUsersActivity(id)
+        }
+    }
+
+    when {
+        openUsersDialog.value -> {
+            UserActivityDialog(
+                usersActivityState = usersActivityState,
+                onDismissRequest = {
+                    openUsersDialog.value = false
+                }
+            )
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBarCompose(navHostController, title = "Activity Detail")
@@ -109,7 +130,7 @@ fun ActivityDetailScreen(id: String, navHostController: NavHostController) {
                     ) {
                         CircularProgressIndicator()
                     }
-                    
+
                     false -> if (activityState.error != null || activityState.activity == null) Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
@@ -122,6 +143,9 @@ fun ActivityDetailScreen(id: String, navHostController: NavHostController) {
                             isLoadingJoinActivity = isLoadingJoinActivity,
                             onJoinActivity = {
                                 activityViewModel.joinActivity(id)
+                            },
+                            onRequestUsersDialog = {
+                                openUsersDialog.value = true
                             }
                         )
                     }

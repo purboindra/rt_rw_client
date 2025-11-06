@@ -12,24 +12,24 @@ import org.purboyndradev.rt_rw.core.domain.AppError
 import org.purboyndradev.rt_rw.core.domain.Result
 
 interface ActivityRepository {
-    suspend fun createActivity(params: CreateActivityParams): Result<ResponseDto<Unit>, AppError>
+    suspend fun createActivity(params: CreateActivityParams): ResponseDto<Unit>
     suspend fun fetchAllActivities(
         paginationParams: PaginationParams? = null,
         queryParams: QueryParams? = null
-    ): Result<ResponseDto<List<ActivityDto>>, AppError>
+    ): ResponseDto<List<ActivityDto>>
 
-    suspend fun fetchActivityById(id: String): Result<ResponseDto<ActivityDetailDto>, AppError>
-    suspend fun deleteActivity(id: String): Result<ResponseDto<Unit>, AppError>
+    suspend fun fetchActivityById(id: String): ResponseDto<ActivityDetailDto>
+    suspend fun deleteActivity(id: String): ResponseDto<Unit>
     suspend fun editActivity(
         id: String,
         params: CreateActivityParams
-    ): Result<ResponseDto<Unit>, AppError>
+    ): ResponseDto<Unit>
 
     suspend fun joinActivity(
         params: JoinActivityParams
-    ): Result<ResponseDto<Unit>, AppError>
+    ): ResponseDto<Unit>
 
     suspend fun fetchUsersActivity(
         id: String
-    ): Result<ResponseDto<List<UsersActivityDto>>, AppError>
+    ): ResponseDto<List<UsersActivityDto>>
 }

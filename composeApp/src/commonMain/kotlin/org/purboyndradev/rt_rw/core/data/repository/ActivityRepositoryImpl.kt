@@ -17,77 +17,44 @@ import org.purboyndradev.rt_rw.domain.repository.ActivityRepository
 class ActivityRepositoryImpl(
     private val activityApi: ActivityApi
 ) : ActivityRepository {
-    override suspend fun createActivity(params: CreateActivityParams): Result<ResponseDto<Unit>, AppError> {
+    override suspend fun createActivity(params: CreateActivityParams): ResponseDto<Unit> {
         return activityApi.createActivity(
             params
-        ).mapBoth(
-            onSuccess = { data ->
-                Result.Success(data)
-            },
-            onFailure = { error ->
-                Result.Error(error)
-            }
         )
     }
 
     override suspend fun fetchAllActivities(
         paginationParams: PaginationParams?,
         queryParams: QueryParams?
-    ): Result<ResponseDto<List<ActivityDto>>, AppError> {
+    ): ResponseDto<List<ActivityDto>> {
         return activityApi.fetchAllActivities(
             paginationParams, queryParams
-        ).mapBoth(
-            onSuccess = { data ->
-                Result.Success(data)
-            },
-            onFailure = { error ->
-                Result.Error(error)
-            }
         )
     }
 
     override suspend
-    fun fetchActivityById(id: String): Result<ResponseDto<ActivityDetailDto>, AppError> {
-        return activityApi.fetchActivityById(id).mapBoth(
-            onSuccess = { data -> Result.Success(data) },
-            onFailure = { error -> Result.Error(error) }
-        )
+    fun fetchActivityById(id: String): ResponseDto<ActivityDetailDto> {
+        return activityApi.fetchActivityById(id)
     }
 
     override suspend
-    fun deleteActivity(id: String): Result<ResponseDto<Unit>, AppError> {
-        return activityApi.deleteActivity(id).mapBoth(
-            onSuccess = { data -> Result.Success(data) },
-            onFailure = { error -> Result.Error(error) }
-        )
+    fun deleteActivity(id: String): ResponseDto<Unit> {
+        return activityApi.deleteActivity(id)
     }
 
     override suspend
     fun editActivity(
         id: String,
         params: CreateActivityParams
-    ): Result<ResponseDto<Unit>, AppError> {
-        return activityApi.editActivity(id, params).mapBoth(
-            onSuccess = { data -> Result.Success(data) },
-            onFailure = { error -> Result.Error(error) }
-        )
+    ): ResponseDto<Unit> {
+        return activityApi.editActivity(id, params)
     }
 
-    override suspend fun joinActivity(params: JoinActivityParams): Result<ResponseDto<Unit>, AppError> {
-        return activityApi.joinActivity(params).mapBoth(
-            onSuccess = { data -> Result.Success(data) },
-            onFailure = { error -> Result.Error(error) }
-        )
+    override suspend fun joinActivity(params: JoinActivityParams): ResponseDto<Unit> {
+        return activityApi.joinActivity(params)
     }
 
-    override suspend fun fetchUsersActivity(id: String): Result<ResponseDto<List<UsersActivityDto>>, AppError> {
-        return activityApi.fetchUsersActivity(id).mapBoth(
-            onSuccess = { data ->
-                Result.Success(data)
-            },
-            onFailure = { error ->
-                Result.Error(error)
-            }
-        )
+    override suspend fun fetchUsersActivity(id: String): ResponseDto<List<UsersActivityDto>> {
+        return activityApi.fetchUsersActivity(id)
     }
 }
