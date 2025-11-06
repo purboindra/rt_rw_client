@@ -6,6 +6,7 @@ import org.purboyndradev.rt_rw.core.data.remote.params.QueryParams
 import org.purboyndradev.rt_rw.core.domain.AppError
 import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.core.domain.model.NewsModel
+import org.purboyndradev.rt_rw.core.network.mapKtorExceptionToAppError
 import org.purboyndradev.rt_rw.domain.repository.NewsRepository
 
 class FetchAllNewsUseCase(private val newsRepository: NewsRepository) {
@@ -13,21 +14,17 @@ class FetchAllNewsUseCase(private val newsRepository: NewsRepository) {
         paginationParams: PaginationParams? = null,
         queryParams: QueryParams? = null
     ): Result<List<NewsModel>, AppError> {
-        return when (val result =
-            newsRepository.fetchAllNews(paginationParams, queryParams)) {
-            is Result.Success -> {
-                val data = result.data.data;
-                if (data == null) return Result.Error(AppError.Remote.NotFound)
-                val news = data.map {
-                    it.toNewsModel()
-                }
-                Result.Success(news)
+        return try {
+            val result = newsRepository.fetchAllNews(paginationParams, queryParams)
+            val data = result.data
+            if (data == null) return Result.Error(AppError.Remote.NotFound)
+            var news: List<NewsModel> = emptyList()
+            data.forEach {
+                news = news + it.toNewsModel()
             }
-
-            is Result.Error -> {
-                val error = result.error
-                Result.Error(error)
-            }
+            Result.Success(news)
+        } catch (e: Exception) {
+            Result.Error(mapKtorExceptionToAppError(e))
         }
     }
 }
