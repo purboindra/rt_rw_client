@@ -18,21 +18,19 @@ class KtorBannerRemoteDatasource(private val httpClient: HttpClient) :
     override suspend fun fetchAllBanners(
         paginationParams: PaginationParams?,
         queryParams: QueryParams?
-    ): Result<ResponseDto<List<BannerDto>>, AppError> {
-        return safeCallWrapped {
-            httpClient.get {
-                url {
-                    appendPathSegments("api", "v1", "banners")
-                    paginationParams?.let {
-                        parameters.append("page", it.page.toString())
-                        parameters.append("limit", it.limit.toString())
-                    }
-                    queryParams?.let {
-                        parameters.append("query", it.query)
-                    }
+    ): ResponseDto<List<BannerDto>> {
+        return httpClient.get {
+            url {
+                appendPathSegments("api", "v1", "banners")
+                paginationParams?.let {
+                    parameters.append("page", it.page.toString())
+                    parameters.append("limit", it.limit.toString())
                 }
-            }.body<ResponseDto<List<BannerDto>>>() // Deserialize to the expected type
-        }
+                queryParams?.let {
+                    parameters.append("query", it.query)
+                }
+            }
+        }.body<ResponseDto<List<BannerDto>>>()
     }
 }
 
