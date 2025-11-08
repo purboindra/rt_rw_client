@@ -1,6 +1,5 @@
 package org.purboyndradev.rt_rw.domain.usecases
 
-import org.purboyndradev.rt_rw.core.data.remote.mapper.toNewsModel
 import org.purboyndradev.rt_rw.core.data.remote.params.PaginationParams
 import org.purboyndradev.rt_rw.core.data.remote.params.QueryParams
 import org.purboyndradev.rt_rw.core.domain.AppError
@@ -15,14 +14,8 @@ class FetchAllNewsUseCase(private val newsRepository: NewsRepository) {
         queryParams: QueryParams? = null
     ): Result<List<NewsModel>, AppError> {
         return try {
-            val result = newsRepository.fetchAllNews(paginationParams, queryParams)
-            val data = result.data
-            if (data == null) return Result.Error(AppError.Remote.NotFound)
-            var news: List<NewsModel> = emptyList()
-            data.forEach {
-                news = news + it.toNewsModel()
-            }
-            Result.Success(news)
+            val allNews = newsRepository.fetchAllNews(paginationParams, queryParams)
+            Result.Success(allNews)
         } catch (e: Exception) {
             Result.Error(mapKtorExceptionToAppError(e))
         }
