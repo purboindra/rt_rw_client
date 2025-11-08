@@ -4,14 +4,11 @@ import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
 import org.purboyndradev.rt_rw.core.data.datastore.AppAuthRepository
 import org.purboyndradev.rt_rw.core.data.datastore.AuthTokenStore
-import org.purboyndradev.rt_rw.core.data.dto.RefreshTokenDto
-import org.purboyndradev.rt_rw.core.data.dto.ResponseDto
-import org.purboyndradev.rt_rw.core.data.dto.SignInDto
-import org.purboyndradev.rt_rw.core.data.dto.VerifyOtpDto
 import org.purboyndradev.rt_rw.core.data.remote.api.AuthApi
-import org.purboyndradev.rt_rw.core.domain.AppError
-import org.purboyndradev.rt_rw.core.domain.Result
-import org.purboyndradev.rt_rw.core.domain.mapBoth
+import org.purboyndradev.rt_rw.core.domain.model.RefreshTokenModel
+import org.purboyndradev.rt_rw.core.domain.model.SignInModel
+import org.purboyndradev.rt_rw.core.domain.model.VerifyOtpModel
+import org.purboyndradev.rt_rw.core.network.DataNotFoundException
 import org.purboyndradev.rt_rw.domain.repository.AuthRepository
 import org.purboyndradev.rt_rw.helper.JWTObject
 
@@ -20,22 +17,33 @@ class AuthRepositoryImpl(
     private val appAuthRepository: AppAuthRepository,
     private val tokenStore: AuthTokenStore,
 ) : AuthRepository {
-    override suspend fun signIn(phoneNumber: String): ResponseDto<SignInDto> {
+    override suspend fun signIn(phoneNumber: String): SignInModel {
 
         val responseDto = api.signIn(phoneNumber)
 
-        val data = responseDto.data ?: return responseDto
+        val data = responseDto.data
+
+        if (data == null) {
+            throw DataNotFoundException(responseDto.message)
+        }
+
+        val signInModel = SignInModel(
+            accessToken = data.accessToken,
+            refreshToken = data.refreshToken,
+            redirectUrl = data.redirectUrl,
+            code = data.code,
+        )
 
         val isNotVerified = responseDto.code === "USER_NOT_VERIFIED"
         if (isNotVerified) {
-            return responseDto
+            return signInModel
         }
 
         val accessToken = data.accessToken
         val refreshToken = data.refreshToken
 
         val payload = JWTObject.decodeJwtPayload(accessToken)
-            ?: return responseDto
+            ?: return signInModel
 
 
         val username = payload["name"]?.jsonPrimitive?.contentOrNull ?: ""
@@ -44,20 +52,25 @@ class AuthRepositoryImpl(
         appAuthRepository.saveUsername(username)
         appAuthRepository.saveUserId(userId)
         tokenStore.setTokens(accessToken, refreshToken)
-        return responseDto
+        return signInModel
     }
 
     override suspend fun verifyOtp(
         phoneNumber: String,
         otp: String
-    ): ResponseDto<VerifyOtpDto> {
+    ): VerifyOtpModel {
 
         val responseDto = api.verifyOtp(phoneNumber, otp)
 
-        val data = responseDto.data ?: return responseDto
+        val data = responseDto.data ?: throw DataNotFoundException(responseDto.message)
+
+        val verifyOtpModel = VerifyOtpModel(
+            accessToken = data.accessToken,
+            refreshToken = data.refreshToken
+        )
 
         val payload = JWTObject.decodeJwtPayload(data.accessToken)
-            ?: return responseDto
+            ?: throw DataNotFoundException("Invalid token")
 
         val username =
             payload["name"]?.jsonPrimitive?.contentOrNull ?: ""
@@ -79,15 +92,21 @@ class AuthRepositoryImpl(
         appAuthRepository.saveUserId(
             userId ?: ""
         )
-        return responseDto
+        return verifyOtpModel
     }
 
     override suspend fun refreshToken(
         refreshToken: String,
-    ): ResponseDto<RefreshTokenDto> {
+    ): RefreshTokenModel {
 
         val responseDto = api.refreshToken(refreshToken)
-        val data = responseDto.data ?: return responseDto
+        val data = responseDto.data ?: throw DataNotFoundException(responseDto.message)
+
+        val refreshTokenModel = RefreshTokenModel(
+            accessToken = data.accessToken,
+            refreshToken = data.refreshToken
+        )
+
         val accessToken = data.accessToken
         val newRefreshToken = data.refreshToken
 
@@ -97,6 +116,6 @@ class AuthRepositoryImpl(
         )
 
         tokenStore.setTokens(accessToken, newRefreshToken)
-        return responseDto
+        return refreshTokenModel
     }
 }
