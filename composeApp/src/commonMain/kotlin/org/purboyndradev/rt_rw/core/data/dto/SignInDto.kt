@@ -1,7 +1,7 @@
 package org.purboyndradev.rt_rw.core.data.dto
 
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 @Serializable
 data class SignInDto(
@@ -12,4 +12,6 @@ data class SignInDto(
     val accessToken: String = "",
     @SerialName("refresh_token")
     val refreshToken: String = "",
+    @SerialName("code")
+    val code: String? = null
 )
