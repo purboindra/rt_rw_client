@@ -11,9 +11,8 @@ class CreateActivityUseCase(private val activityRepository: ActivityRepository) 
         params: CreateActivityParams
     ): Result<Unit, AppError> {
         return try {
-            val response = activityRepository.createActivity(params)
-            val data = response.data ?: return Result.Error(AppError.Remote.NotFound)
-            Result.Success(data)
+            activityRepository.createActivity(params)
+            Result.Success(Unit)
         } catch (e: Exception) {
             Result.Error(mapKtorExceptionToAppError(e))
         }
