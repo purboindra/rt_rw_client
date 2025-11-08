@@ -1,6 +1,5 @@
 package org.purboyndradev.rt_rw.domain.repository
 
-import org.purboyndradev.rt_rw.core.data.dto.ResponseDto
 import org.purboyndradev.rt_rw.core.data.remote.params.CreateActivityParams
 import org.purboyndradev.rt_rw.core.data.remote.params.JoinActivityParams
 import org.purboyndradev.rt_rw.core.data.remote.params.PaginationParams
@@ -10,7 +9,7 @@ import org.purboyndradev.rt_rw.core.domain.model.ActivityModel
 import org.purboyndradev.rt_rw.core.domain.model.UsersActivityModel
 
 interface ActivityRepository {
-    suspend fun createActivity(params: CreateActivityParams): ResponseDto<Unit>
+    suspend fun createActivity(params: CreateActivityParams)
     suspend fun fetchAllActivities(
         paginationParams: PaginationParams? = null,
         queryParams: QueryParams? = null
