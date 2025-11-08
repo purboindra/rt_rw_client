@@ -20,12 +20,23 @@ import co.touchlab.kermit.Logger as KermitLogger
 
 private val errJson = Json { ignoreUnknownKeys = true; isLenient = true }
 
+class DataNotFoundException(message: String) : Exception(message)
+
 suspend fun mapKtorExceptionToAppError(e: Exception): AppError.Remote {
     return when (e) {
+
+        is DataNotFoundException -> {
+            AppError.Remote.NotFound
+        }
+
         is ClientRequestException -> {
             val statusCode = e.response.status.value
             val errorBody = e.response.bodyAsText()
             mapHttpError(statusCode, errorBody)
+        }
+
+        is NullPointerException -> {
+            AppError.Remote.Serialization
         }
 
         is ServerResponseException -> {
