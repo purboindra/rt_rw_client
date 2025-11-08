@@ -14,12 +14,7 @@ class RefreshTokenUseCase(
     ): Result<RefreshTokenInfo, AppError> {
         return try {
             val result = authRepository.refreshToken(refreshToken)
-            val data = result.data ?: return Result.Error(
-                AppError.Remote.Http(
-                    401,
-                    result.message
-                )
-            )
+            val data = result
             val refreshTokenInfo = RefreshTokenInfo(
                 refreshToken = data.refreshToken,
                 accessToken = data.accessToken,
