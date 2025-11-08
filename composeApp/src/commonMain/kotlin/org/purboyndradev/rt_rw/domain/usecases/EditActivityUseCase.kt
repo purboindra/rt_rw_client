@@ -12,9 +12,8 @@ class EditActivityUseCase(private val activityRepository: ActivityRepository) {
         params: CreateActivityParams
     ): Result<Unit, AppError> {
         return try {
-            val result = activityRepository.editActivity(id, params)
-            val data = result.data ?: return Result.Error(AppError.Remote.NotFound)
-            Result.Success(data)
+            activityRepository.editActivity(id, params)
+            Result.Success(Unit)
         } catch (e: Exception) {
             Result.Error(mapKtorExceptionToAppError(e))
         }
