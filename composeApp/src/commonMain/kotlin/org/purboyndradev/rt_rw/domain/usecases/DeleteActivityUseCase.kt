@@ -8,9 +8,8 @@ import org.purboyndradev.rt_rw.domain.repository.ActivityRepository
 class DeleteActivityUseCase(private val activityRepository: ActivityRepository) {
     suspend operator fun invoke(id: String): Result<Unit, AppError> {
         return try {
-            val result = activityRepository.deleteActivity(id)
-            val data = result.data ?: return Result.Error(AppError.Remote.NotFound)
-            Result.Success(data)
+            activityRepository.deleteActivity(id)
+            Result.Success(Unit)
         } catch (e: Exception) {
             Result.Error(mapKtorExceptionToAppError(e))
         }
