@@ -1,20 +1,17 @@
 package org.purboyndradev.rt_rw.domain.repository
 
-import org.purboyndradev.rt_rw.core.data.dto.RefreshTokenDto
-import org.purboyndradev.rt_rw.core.data.dto.ResponseDto
-import org.purboyndradev.rt_rw.core.data.dto.SignInDto
-import org.purboyndradev.rt_rw.core.data.dto.VerifyOtpDto
-import org.purboyndradev.rt_rw.core.domain.AppError
-import org.purboyndradev.rt_rw.core.domain.Result
+import org.purboyndradev.rt_rw.core.domain.model.RefreshTokenModel
+import org.purboyndradev.rt_rw.core.domain.model.SignInModel
+import org.purboyndradev.rt_rw.core.domain.model.VerifyOtpModel
 
 interface AuthRepository {
-    suspend fun signIn(phoneNumber: String):ResponseDto<SignInDto>
+    suspend fun signIn(phoneNumber: String): SignInModel
     suspend fun verifyOtp(
         phoneNumber: String,
         otp: String
-    ): ResponseDto<VerifyOtpDto>
+    ): VerifyOtpModel
     
     suspend fun refreshToken(
         refreshToken: String
-    ): ResponseDto<RefreshTokenDto>
+    ): RefreshTokenModel
 }
