@@ -11,4 +11,6 @@ data class SignInModel(
     val accessToken: String = "",
     @SerialName("refresh_token")
     val refreshToken: String = "",
+    @SerialName("code")
+    val code: String? = null,
 )
