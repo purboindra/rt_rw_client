@@ -15,12 +15,7 @@ class SignInUseCase(private val authRepository: AuthRepository) {
         return try {
 
             val result = authRepository.signIn(phoneNumber)
-            val user = result.data ?: return Result.Error(
-                AppError.Remote.Http(
-                    401,
-                    result.message
-                )
-            )
+            val user = result
 
             val code = result.code
             val isNotVerified = code == "USER_NOT_VERIFIED"
