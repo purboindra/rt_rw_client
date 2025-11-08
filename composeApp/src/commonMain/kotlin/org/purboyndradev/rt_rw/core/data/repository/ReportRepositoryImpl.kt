@@ -6,6 +6,7 @@ import org.purboyndradev.rt_rw.core.data.remote.params.CreateReportParams
 import org.purboyndradev.rt_rw.core.data.remote.params.PaginationParams
 import org.purboyndradev.rt_rw.core.data.remote.params.QueryParams
 import org.purboyndradev.rt_rw.core.domain.model.ReportModel
+import org.purboyndradev.rt_rw.core.network.DataNotFoundException
 import org.purboyndradev.rt_rw.domain.repository.ReportRepository
 
 class ReportRepositoryImpl(private val reportApi: ReportApi) : ReportRepository {
@@ -25,6 +26,6 @@ class ReportRepositoryImpl(private val reportApi: ReportApi) : ReportRepository 
 
     override suspend fun fetchReportById(id: String): ReportModel {
         val response = reportApi.fetchReportById(id)
-        return response.data?.toReportModel() ?: throw NullPointerException("Report not found")
+        return response.data?.toReportModel() ?: throw DataNotFoundException("Report not found")
     }
 }
