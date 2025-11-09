@@ -3,13 +3,11 @@ package org.purboyndradev.rt_rw.core.data.remote.api
 import org.purboyndradev.rt_rw.core.data.dto.ActivityDetailDto
 import org.purboyndradev.rt_rw.core.data.dto.ActivityDto
 import org.purboyndradev.rt_rw.core.data.dto.ResponseDto
-import org.purboyndradev.rt_rw.core.data.dto.UsersActivityDto
+import org.purboyndradev.rt_rw.core.data.dto.UsersActivityWrapperDto
 import org.purboyndradev.rt_rw.core.data.remote.params.CreateActivityParams
 import org.purboyndradev.rt_rw.core.data.remote.params.JoinActivityParams
 import org.purboyndradev.rt_rw.core.data.remote.params.PaginationParams
 import org.purboyndradev.rt_rw.core.data.remote.params.QueryParams
-import org.purboyndradev.rt_rw.core.domain.AppError
-import org.purboyndradev.rt_rw.core.domain.Result
 
 interface ActivityApi {
     suspend fun createActivity(params: CreateActivityParams): ResponseDto<Unit>
@@ -26,5 +24,5 @@ interface ActivityApi {
     ): ResponseDto<Unit>
 
     suspend fun joinActivity(params: JoinActivityParams): ResponseDto<Unit>
-    suspend fun fetchUsersActivity(id: String): ResponseDto<List<UsersActivityDto>>
+    suspend fun fetchUsersActivity(id: String): ResponseDto<UsersActivityWrapperDto>
 }
