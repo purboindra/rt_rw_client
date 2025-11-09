@@ -47,9 +47,11 @@ class AuthRepositoryImpl(
 
 
         val username = payload["name"]?.jsonPrimitive?.contentOrNull ?: ""
+        val email = payload["email"]?.jsonPrimitive?.contentOrNull ?: ""
         val userId = payload["user_id"]?.jsonPrimitive?.contentOrNull ?: ""
         appAuthRepository.saveTokens(accessToken, refreshToken)
         appAuthRepository.saveUsername(username)
+        appAuthRepository.saveEmail(email)
         appAuthRepository.saveUserId(userId)
         tokenStore.setTokens(accessToken, refreshToken)
         return signInModel
@@ -76,6 +78,7 @@ class AuthRepositoryImpl(
             payload["name"]?.jsonPrimitive?.contentOrNull ?: ""
 
         val userId = payload["user_id"]?.jsonPrimitive?.contentOrNull
+        val email = payload["email"]?.jsonPrimitive?.contentOrNull ?: ""
 
         val accessToken = data.accessToken
         val refreshToken = data.refreshToken
@@ -87,6 +90,10 @@ class AuthRepositoryImpl(
 
         appAuthRepository.saveUsername(
             username
+        )
+
+        appAuthRepository.saveEmail(
+            email
         )
 
         appAuthRepository.saveUserId(
