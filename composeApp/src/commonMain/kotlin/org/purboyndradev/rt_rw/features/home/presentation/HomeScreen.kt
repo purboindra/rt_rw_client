@@ -47,7 +47,7 @@ fun HomeScreen(
                 banners = bannerState.banners,
                 error = bannerState.error,
             )
-            Spacer(modifier = Modifier.height(22.dp))
+            if (isEmailEmpty) Spacer(modifier = Modifier.height(22.dp))
             /// Banner Unregistered Email
             if (isEmailEmpty) UnRegisterEmailCompose(
                 modifier
