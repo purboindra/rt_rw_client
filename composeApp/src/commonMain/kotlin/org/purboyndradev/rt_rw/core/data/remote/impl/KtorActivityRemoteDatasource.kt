@@ -8,19 +8,15 @@ import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.appendPathSegments
-import io.ktor.http.cio.Response
 import org.purboyndradev.rt_rw.core.data.dto.ActivityDetailDto
 import org.purboyndradev.rt_rw.core.data.dto.ActivityDto
 import org.purboyndradev.rt_rw.core.data.dto.ResponseDto
-import org.purboyndradev.rt_rw.core.data.dto.UsersActivityDto
+import org.purboyndradev.rt_rw.core.data.dto.UsersActivityWrapperDto
 import org.purboyndradev.rt_rw.core.data.remote.api.ActivityApi
 import org.purboyndradev.rt_rw.core.data.remote.params.CreateActivityParams
 import org.purboyndradev.rt_rw.core.data.remote.params.JoinActivityParams
 import org.purboyndradev.rt_rw.core.data.remote.params.PaginationParams
 import org.purboyndradev.rt_rw.core.data.remote.params.QueryParams
-import org.purboyndradev.rt_rw.core.domain.AppError
-import org.purboyndradev.rt_rw.core.domain.Result
-import org.purboyndradev.rt_rw.core.network.safeCallWrapped
 
 class KtorActivityRemoteDatasource(private val httpClient: HttpClient) :
     ActivityApi {
@@ -92,11 +88,11 @@ class KtorActivityRemoteDatasource(private val httpClient: HttpClient) :
         }.body<ResponseDto<Unit>>()
     }
 
-    override suspend fun fetchUsersActivity(id: String): ResponseDto<List<UsersActivityDto>> {
+    override suspend fun fetchUsersActivity(id: String): ResponseDto<UsersActivityWrapperDto> {
         return httpClient.get {
             url {
                 appendPathSegments("api/v1/activities/${id}/users")
             }
-        }.body<ResponseDto<List<UsersActivityDto>>>()
+        }.body<ResponseDto<UsersActivityWrapperDto>>()
     }
 }
