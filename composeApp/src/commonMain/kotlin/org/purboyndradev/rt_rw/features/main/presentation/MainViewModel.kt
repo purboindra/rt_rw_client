@@ -46,6 +46,12 @@ class MainViewModel(
         null
     )
 
+    val emailFlow: StateFlow<String?> = appAuthRepository.emailFlow.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        null
+    )
+
 
     init {
         viewModelScope.launch {
