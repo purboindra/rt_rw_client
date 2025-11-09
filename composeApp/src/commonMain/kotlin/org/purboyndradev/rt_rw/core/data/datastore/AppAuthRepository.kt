@@ -1,6 +1,7 @@
 package org.purboyndradev.rt_rw.core.data.datastore
 
 import androidx.datastore.core.DataStore
+import androidx.datastore.core.IOException
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
@@ -9,9 +10,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import okio.IOException
 import org.purboyndradev.rt_rw.di.AuthKeys
-import kotlin.collections.get
 import co.touchlab.kermit.Logger as KermitLogger
 
 
@@ -35,6 +34,12 @@ class AppAuthRepository(private val dataStore: DataStore<Preferences>) {
         }
     }
 
+    suspend fun saveEmail(email: String) {
+        dataStore.edit {
+            it[AuthKeys.EMAIL] = email
+        }
+    }
+
     suspend fun saveUserId(userId: String) {
         dataStore.edit {
             it[AuthKeys.USER_ID] = userId
@@ -52,6 +57,16 @@ class AppAuthRepository(private val dataStore: DataStore<Preferences>) {
             it.remove(AuthKeys.ACCESS_TOKEN)
             it.remove(AuthKeys.REFRESH_TOKEN)
         }
+    }
+
+    val emailFlow: Flow<String?> = dataStore.data.catch { exception ->
+        if (exception is IOException) {
+            emit(emptyPreferences())
+        } else {
+            throw exception
+        }
+    }.map { preferences ->
+        preferences[AuthKeys.EMAIL]
     }
 
     val userIdFlow: Flow<String?> = dataStore.data.catch { exception ->
