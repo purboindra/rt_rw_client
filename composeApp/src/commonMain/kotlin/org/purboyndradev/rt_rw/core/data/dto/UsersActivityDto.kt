@@ -15,3 +15,8 @@ data class UsersActivityDto(
     val emailVerified: Boolean,
     val image: String?,
 )
+
+@Serializable
+data class UsersActivityWrapperDto(
+    val users: List<UsersActivityDto>
+)
