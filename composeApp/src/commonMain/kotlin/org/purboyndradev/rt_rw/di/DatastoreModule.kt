@@ -10,6 +10,7 @@ object AuthKeys {
     val USER_ID = stringPreferencesKey("user_id")
     val USERNAME = stringPreferencesKey("username")
     val FCM_TOKEN = stringPreferencesKey("fcm_token")
+    val EMAIL = stringPreferencesKey("email")
 }
 
 object NotificationKeys{
