@@ -43,6 +43,7 @@ fun MainScreen(navHostController: NavHostController) {
     val bannerState by mainViewModel.bannersState.collectAsStateWithLifecycle()
     val newsState by mainViewModel.newsState.collectAsStateWithLifecycle()
     val userName by mainViewModel.userNameFlow.collectAsStateWithLifecycle()
+    val email by mainViewModel.emailFlow.collectAsStateWithLifecycle()
 
     val pullToRefreshState = rememberPullToRefreshState()
 
@@ -110,7 +111,8 @@ fun MainScreen(navHostController: NavHostController) {
                         activityState = activityState,
                         bannerState = bannerState,
                         newsState = newsState,
-                        userName = userName ?: ""
+                        userName = userName ?: "",
+                        isEmailEmpty = email.isNullOrBlank()
                     )
                 }
                 composable(route = Activity.ROUTE) {

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -31,6 +30,7 @@ fun HomeScreen(
     bannerState: BannerState,
     newsState: NewsState,
     userName: String,
+    isEmailEmpty: Boolean
 ) {
     LazyColumn(
         modifier = modifier.padding(horizontal = 18.dp)
@@ -49,7 +49,7 @@ fun HomeScreen(
             )
             Spacer(modifier = Modifier.height(22.dp))
             /// Banner Unregistered Email
-            UnRegisterEmailCompose(
+            if (isEmailEmpty) UnRegisterEmailCompose(
                 modifier
             )
             Spacer(modifier = Modifier.height(22.dp))
