@@ -63,7 +63,7 @@ class ActivityRepositoryImpl(
 
     override suspend fun fetchUsersActivity(id: String): List<UsersActivityModel> {
         val result = activityApi.fetchUsersActivity(id)
-        return result.data?.map {
+        return result.data?.users?.map {
             it.toUsersActivityModel()
         } ?: emptyList()
     }
