@@ -20,6 +20,7 @@ import org.purboyndradev.rt_rw.features.components.UnRegisterEmailCompose
 import org.purboyndradev.rt_rw.features.main.presentation.BannerState
 import org.purboyndradev.rt_rw.features.main.presentation.NewsState
 import org.purboyndradev.rt_rw.features.navigation.ActivityDetail
+import org.purboyndradev.rt_rw.features.navigation.NewsDetail
 
 @Preview
 @Composable
@@ -71,6 +72,11 @@ fun HomeScreen(
                 news = newsState.news,
                 error = newsState.error,
                 isLoading = newsState.loading,
+                onNewsTapped = {
+                    navHostController.navigate(
+                        NewsDetail(id = it)
+                    )
+                }
             )
         }
     }
