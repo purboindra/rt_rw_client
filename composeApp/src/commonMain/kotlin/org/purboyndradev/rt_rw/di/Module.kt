@@ -47,6 +47,7 @@ import org.purboyndradev.rt_rw.domain.usecases.FetchActivitiesUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchActivityByIdUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchAllBannersUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchAllNewsUseCase
+import org.purboyndradev.rt_rw.domain.usecases.FetchNewsByIdUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchUsersActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.JoinActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.RefreshTokenUseCase
@@ -55,6 +56,7 @@ import org.purboyndradev.rt_rw.domain.usecases.VerifyOtpUseCase
 import org.purboyndradev.rt_rw.features.activity.presentation.ActivityViewModel
 import org.purboyndradev.rt_rw.features.auth.presentation.AuthViewModel
 import org.purboyndradev.rt_rw.features.main.presentation.MainViewModel
+import org.purboyndradev.rt_rw.features.news.presentation.NewsViewModel
 import org.purboyndradev.rt_rw.features.notification.NotificationViewModel
 import org.purboyndradev.rt_rw.features.splash.SplashViewModel
 import co.touchlab.kermit.Logger as KermitLogger
@@ -217,6 +219,9 @@ val sharedModule: Module = module {
     single {
         FetchAllNewsUseCase(get())
     }
+    single {
+        FetchNewsByIdUseCase(get())
+    }
 
     /// PROVIDE VIEW MODEL
     viewModel { AuthViewModel(get(), get(), get()) }
@@ -225,5 +230,10 @@ val sharedModule: Module = module {
     viewModel { NotificationViewModel(get()) }
     viewModel { params ->
         ActivityViewModel(get(), get(), get(), get(), get(), get(), get(), get())
+    }
+    viewModel {
+        NewsViewModel(
+            get(), get()
+        )
     }
 }
