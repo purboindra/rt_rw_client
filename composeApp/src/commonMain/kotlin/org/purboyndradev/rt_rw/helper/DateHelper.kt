@@ -7,6 +7,7 @@ import kotlinx.datetime.format.MonthNames
 import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -35,6 +36,29 @@ class DateHelper {
             val localDateTime = instant.toLocalDateTime(tz)
             val formatted = localDateTime.format(customDateTimeFormatAmPm)
             return formatted
+        }
+
+        @OptIn(ExperimentalTime::class)
+        fun formatIsoToTimeAgo(iso: String): String {
+            try {
+                val pastInstant = Instant.parse(iso)
+                val now = Clock.System.now()
+                val duration = now - pastInstant
+
+                return when {
+                    duration.inWholeSeconds < 60 -> "just now"
+                    duration.inWholeMinutes < 60 -> "${duration.inWholeMinutes} minutes ago"
+                    duration.inWholeHours < 24 -> "${duration.inWholeHours} hours ago"
+                    duration.inWholeDays < 7 -> "${duration.inWholeDays} days ago"
+                    duration.inWholeDays < 365 -> "${duration.inWholeDays / 7} weeks ago"
+                    duration.inWholeDays < 365 * 2 -> "${duration.inWholeDays / 30} months ago"
+                    else -> "${duration.inWholeDays / 365} years ago"
+                }
+
+            } catch (e: Exception) {
+                println("Error formatIsoToTimeAgo: $e")
+                return "-"
+            }
         }
 
         @OptIn(ExperimentalTime::class)
