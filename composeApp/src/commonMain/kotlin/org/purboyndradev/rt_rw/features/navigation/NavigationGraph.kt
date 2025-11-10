@@ -17,7 +17,7 @@ import org.purboyndradev.rt_rw.features.activity.presentation.ActivityDetailScre
 import org.purboyndradev.rt_rw.features.auth.presentation.LoginScreen
 import org.purboyndradev.rt_rw.features.auth.presentation.OTPScreen
 import org.purboyndradev.rt_rw.features.main.presentation.MainScreen
-import org.purboyndradev.rt_rw.features.news.presentation.NewsScreen
+import org.purboyndradev.rt_rw.features.news.presentation.NewsDetailScreen
 import org.purboyndradev.rt_rw.features.notification.NotificationOnboardingScreen
 import org.purboyndradev.rt_rw.features.splash.SplashScreen
 
@@ -32,7 +32,7 @@ fun NavigationGraph(
     startDestination: StartDestinationData? = null
 ) {
     val navController = rememberNavController()
-    
+
     NavHost(
         navController = navController, startDestination = Splash,
         modifier = modifier
@@ -43,7 +43,7 @@ fun NavigationGraph(
         composable<NewsDetail> { backStackEntry ->
             val activityDetail = backStackEntry.toRoute<ActivityDetail>()
             val id = activityDetail.id
-            NewsScreen(navHostController = navController, itemId = id.toInt())
+            NewsDetailScreen(navHostController = navController, id = id)
         }
         composable<OTP> { backStackEntry ->
             val otpScreen = backStackEntry.toRoute<OTP>()
@@ -109,7 +109,7 @@ fun NavigationGraph(
             ActivityDetailScreen(id, navHostController = navController)
         }
         composable<NotificationPermissions> {
-            NotificationOnboardingScreen(navHostController = navController,)
+            NotificationOnboardingScreen(navHostController = navController)
         }
     }
 }

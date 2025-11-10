@@ -1,5 +1,6 @@
 package org.purboyndradev.rt_rw.features.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,11 +18,16 @@ import org.purboyndradev.rt_rw.core.domain.model.NewsModel
 import org.purboyndradev.rt_rw.helper.DateHelper
 
 @Composable
-fun NewsContent(news: NewsModel, modifier: Modifier = Modifier) {
+fun NewsContent(
+    news: NewsModel, modifier: Modifier = Modifier,
+    onNewsTapped: (id: String) -> Unit
+) {
     Column(
         modifier = Modifier.padding(
             vertical = 8.dp
-        )
+        ).clickable {
+            onNewsTapped(news.id)
+        }
     ) {
         Text(
             text = news.title,
