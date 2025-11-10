@@ -45,14 +45,17 @@ class DateHelper {
                 val now = Clock.System.now()
                 val duration = now - pastInstant
 
+                val date = formatIsoToDate(iso)
+
                 return when {
                     duration.inWholeSeconds < 60 -> "just now"
                     duration.inWholeMinutes < 60 -> "${duration.inWholeMinutes} minutes ago"
                     duration.inWholeHours < 24 -> "${duration.inWholeHours} hours ago"
                     duration.inWholeDays < 7 -> "${duration.inWholeDays} days ago"
-                    duration.inWholeDays < 365 -> "${duration.inWholeDays / 7} weeks ago"
-                    duration.inWholeDays < 365 * 2 -> "${duration.inWholeDays / 30} months ago"
-                    else -> "${duration.inWholeDays / 365} years ago"
+                    else -> date
+//                    duration.inWholeDays < 365 -> "${duration.inWholeDays / 7} weeks ago"
+//                    duration.inWholeDays < 365 * 2 -> "${duration.inWholeDays / 30} months ago"
+//                    else -> "${duration.inWholeDays / 365} years ago"
                 }
 
             } catch (e: Exception) {
