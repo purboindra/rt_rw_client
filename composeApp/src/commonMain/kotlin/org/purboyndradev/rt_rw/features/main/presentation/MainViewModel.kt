@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import org.purboyndradev.rt_rw.core.data.datastore.AppAuthRepository
 import org.purboyndradev.rt_rw.core.data.remote.mapper.toRes
 import org.purboyndradev.rt_rw.core.domain.Result
@@ -51,13 +50,6 @@ class MainViewModel(
         SharingStarted.WhileSubscribed(5000),
         null
     )
-
-
-    init {
-        viewModelScope.launch {
-            onInit()
-        }
-    }
 
     suspend fun fetchAllNews() {
         _newsState.value = _newsState.value.copy(
