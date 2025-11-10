@@ -1,7 +1,6 @@
 package org.purboyndradev.rt_rw.features.activity.presentation
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CircularProgressIndicator
@@ -29,6 +28,7 @@ import org.koin.core.parameter.parametersOf
 import org.purboyndradev.rt_rw.features.components.ActivityDetailContent
 import org.purboyndradev.rt_rw.features.components.CommentInputActivity
 import org.purboyndradev.rt_rw.features.components.CustomSnackbar
+import org.purboyndradev.rt_rw.features.components.ErrorCompose
 import org.purboyndradev.rt_rw.features.components.UserActivityDialog
 import org.purboyndradev.rt_rw.helper.MessageSnackbarType
 
@@ -83,8 +83,8 @@ fun ActivityDetailScreen(id: String, navHostController: NavHostController) {
         }
     }
 
-    LaunchedEffect(openUsersDialog.value){
-        if(openUsersDialog.value) {
+    LaunchedEffect(openUsersDialog.value) {
+        if (openUsersDialog.value) {
             activityViewModel.fetchUsersActivity(id)
         }
     }
@@ -123,22 +123,26 @@ fun ActivityDetailScreen(id: String, navHostController: NavHostController) {
             modifier = Modifier.padding(horizontal = 18.dp)
         ) {
             item {
-                when (activityState.loading) {
-                    true -> Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
+                when {
+                    activityState.loading -> {
+                        Box(
+                            modifier = Modifier.fillParentMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
                     }
 
-                    false -> if (activityState.error != null || activityState.activity == null) Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(activityState.error ?: "Unknown Error")
-                    } else {
+                    activityState.error != null -> {
+                        ErrorCompose(
+                            modifier = Modifier.fillParentMaxSize(),
+                            message = activityState.error ?: "Unknown Error",
+                        )
+                    }
+
+                    activityState.activity != null -> {
                         ActivityDetailContent(
-                            activityState.activity!!,
+                            activity = activityState.activity!!,
                             hasJoinActivity = hasJoinActivity,
                             isLoadingJoinActivity = isLoadingJoinActivity,
                             onJoinActivity = {
@@ -148,6 +152,15 @@ fun ActivityDetailScreen(id: String, navHostController: NavHostController) {
                                 openUsersDialog.value = true
                             }
                         )
+                    }
+
+                    else -> {
+                        Box(
+                            modifier = Modifier.fillParentMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("No activity details available.")
+                        }
                     }
                 }
             }
