@@ -110,6 +110,9 @@ kotlin {
             
             /// KERMIT
             implementation(libs.kermit)
+
+            /// IMAGE PICKER KMP
+            implementation(libs.imagepickerkmp)
         }
         
         if (HostManager.hostIsMac) {
@@ -142,8 +145,8 @@ buildkonfig {
         buildConfigField(
             STRING,
             "BASE_URL",
-//            "https://rtrwbackend-production.up.railway.app"
-            "http://192.168.1.4:3000"
+            "https://rtrwbackend-production.up.railway.app"
+//            "http://192.168.1.4:3000"
             )
         
         buildConfigField(
@@ -158,8 +161,8 @@ buildkonfig {
             buildConfigField(
                 STRING,
                 "BASE_URL",
-                "http://192.168.1.4:3000"
-//                "https://rtrwbackend-production.up.railway.app"
+//                "http://192.168.1.4:3000"
+                "https://rtrwbackend-production.up.railway.app"
             )
             buildConfigField(STRING, "ENVIRONMENT", "DEBUG")
         }
