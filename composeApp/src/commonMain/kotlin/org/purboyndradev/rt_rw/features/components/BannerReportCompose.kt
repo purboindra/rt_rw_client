@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -24,7 +23,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun BannerReportCompose(modifier: Modifier = Modifier) {
+fun BannerReportCompose(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -38,9 +40,9 @@ fun BannerReportCompose(modifier: Modifier = Modifier) {
                     )
                 ).background(Color.LightGray)
         )
-        
+
         Spacer(modifier = modifier.width(12.dp))
-        
+
         Column(
             modifier = Modifier.weight(1f)
         ) {
@@ -59,7 +61,7 @@ fun BannerReportCompose(modifier: Modifier = Modifier) {
             )
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedButton(
-                onClick = {},
+                onClick = onClick,
                 modifier = Modifier.width(124.dp),
                 shape = RoundedCornerShape(
                     size = 8.dp
