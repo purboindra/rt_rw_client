@@ -19,6 +19,7 @@ import org.purboyndradev.rt_rw.features.auth.presentation.OTPScreen
 import org.purboyndradev.rt_rw.features.main.presentation.MainScreen
 import org.purboyndradev.rt_rw.features.news.presentation.NewsDetailScreen
 import org.purboyndradev.rt_rw.features.notification.NotificationOnboardingScreen
+import org.purboyndradev.rt_rw.features.report.CreateReportScreen
 import org.purboyndradev.rt_rw.features.splash.SplashScreen
 
 data class StartDestinationData(
@@ -110,6 +111,9 @@ fun NavigationGraph(
         }
         composable<NotificationPermissions> {
             NotificationOnboardingScreen(navHostController = navController)
+        }
+        composable<CreateReport> {
+            CreateReportScreen(navHostController = navController)
         }
     }
 }

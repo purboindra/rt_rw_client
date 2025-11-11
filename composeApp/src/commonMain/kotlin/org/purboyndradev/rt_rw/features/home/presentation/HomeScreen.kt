@@ -20,6 +20,7 @@ import org.purboyndradev.rt_rw.features.components.UnRegisterEmailCompose
 import org.purboyndradev.rt_rw.features.main.presentation.BannerState
 import org.purboyndradev.rt_rw.features.main.presentation.NewsState
 import org.purboyndradev.rt_rw.features.navigation.ActivityDetail
+import org.purboyndradev.rt_rw.features.navigation.CreateReport
 import org.purboyndradev.rt_rw.features.navigation.NewsDetail
 
 @Preview
@@ -66,7 +67,11 @@ fun HomeScreen(
             )
             Spacer(modifier = Modifier.height(22.dp))
             /// Banner Report Kejadian
-            BannerReportCompose()
+            BannerReportCompose(
+                onClick = {
+                    navHostController.navigate(CreateReport)
+                }
+            )
             Spacer(modifier = Modifier.height(22.dp))
             NewsCompose(
                 news = newsState.news,

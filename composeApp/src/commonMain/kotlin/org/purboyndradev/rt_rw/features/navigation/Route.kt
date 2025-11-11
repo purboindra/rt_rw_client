@@ -42,3 +42,8 @@ data class NewsDetail(val id: String)
 
 @Serializable
 object NotificationPermissions
+
+@Serializable
+object CreateReport {
+    const val ROUTE = "create_report"
+}
