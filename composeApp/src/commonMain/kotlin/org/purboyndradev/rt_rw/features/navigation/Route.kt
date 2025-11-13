@@ -47,3 +47,6 @@ object NotificationPermissions
 object CreateReport {
     const val ROUTE = "create_report"
 }
+
+@Serializable
+object CameraPreviewScreen
