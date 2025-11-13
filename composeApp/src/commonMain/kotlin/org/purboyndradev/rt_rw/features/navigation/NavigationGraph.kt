@@ -16,6 +16,7 @@ import androidx.navigation.toRoute
 import org.purboyndradev.rt_rw.features.activity.presentation.ActivityDetailScreen
 import org.purboyndradev.rt_rw.features.auth.presentation.LoginScreen
 import org.purboyndradev.rt_rw.features.auth.presentation.OTPScreen
+import org.purboyndradev.rt_rw.features.components.CameraPreviewScreen
 import org.purboyndradev.rt_rw.features.main.presentation.MainScreen
 import org.purboyndradev.rt_rw.features.news.presentation.NewsDetailScreen
 import org.purboyndradev.rt_rw.features.notification.NotificationOnboardingScreen
@@ -114,6 +115,9 @@ fun NavigationGraph(
         }
         composable<CreateReport> {
             CreateReportScreen(navHostController = navController)
+        }
+        composable<CameraPreviewScreen> {
+            CameraPreviewScreen(navHostController = navController)
         }
     }
 }
