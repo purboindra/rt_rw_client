@@ -171,12 +171,12 @@ buildkonfig {
 
 android {
     namespace = "org.purboyndradev.rt_rw"
-    compileSdk = 35
+    compileSdk = 36
     buildFeatures { buildConfig = true }
     defaultConfig {
         applicationId = "org.purboyndradev.rt_rw"
         minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
     }
