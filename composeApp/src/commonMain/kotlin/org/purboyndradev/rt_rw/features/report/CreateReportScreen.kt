@@ -18,10 +18,14 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -42,7 +46,24 @@ fun CreateReportScreen(navHostController: NavHostController) {
     val resultImagePickerLauncher by reportViewModel.resultImagePickerLauncher.collectAsStateWithLifecycle()
     val uiState by reportViewModel.uiState.collectAsStateWithLifecycle()
 
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(uiState) {
+        if (uiState.error != null) {
+            snackbarHostState.showSnackbar(
+                "${uiState.error}"
+            )
+        } else if (uiState.success != null) {
+            snackbarHostState.showSnackbar(
+                "${uiState.success}"
+            )
+        }
+    }
+
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(snackbarHostState)
+        },
         topBar = {
             TopAppBar(
                 title = {
@@ -84,7 +105,10 @@ fun CreateReportScreen(navHostController: NavHostController) {
                         ),
                         enabled = uiState.canSubmit,
                     ) {
-                        Text("Kirim")
+                        Text(
+                            if (uiState.isSubmitting) "Mengirim..." else
+                                "Kirim"
+                        )
                     }
                 }
             }
