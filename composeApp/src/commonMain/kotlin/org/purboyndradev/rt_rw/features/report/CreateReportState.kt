@@ -8,7 +8,10 @@ data class CreateReportState(
     val titleError: String? = null,
     val descriptionError: String? = null,
 
-    val isSubmitting: Boolean = false
+    val isSubmitting: Boolean = false,
+
+    val error: String? = null,
+    val success: String? = null
 ) {
 
     val canSubmit: Boolean
