@@ -7,9 +7,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.purboyndradev.rt_rw.core.data.remote.mapper.toRes
+import org.purboyndradev.rt_rw.core.data.remote.params.CreateReportParams
+import org.purboyndradev.rt_rw.core.domain.Result
+import org.purboyndradev.rt_rw.domain.usecases.CreateReportUseCase
 
 
 class ReportViewModel(
+    private val createReportUseCase: CreateReportUseCase
 ) : ViewModel() {
 
     private val _resultImagePickerLauncher = MutableStateFlow<PhotoResult?>(null)
@@ -45,6 +50,7 @@ class ReportViewModel(
     fun submitReport() {
         val title = _uiState.value.title
         val description = _uiState.value.description
+        val image = _uiState.value.capturedImageBytes
 
         val hasError = title.isBlank() || description.isBlank()
 
@@ -61,7 +67,34 @@ class ReportViewModel(
 
         viewModelScope.launch {
             _uiState.update { it.copy(isSubmitting = true) }
+            val params = CreateReportParams(
+                title,
+                description,
+                image!!,
+                fileName = "image.jpg"
+            )
+            val result = createReportUseCase.invoke(
+                params
+            )
 
+            when (result) {
+                is Result.Success -> {
+                    _uiState.update {
+                        it.copy(
+                            success = "Laporan berhasil dikirim"
+                        )
+                    }
+                }
+
+                is Result.Error -> {
+                    val error = result.error.toRes()
+                    _uiState.update {
+                        it.copy(
+                            error = error
+                        )
+                    }
+                }
+            }
 
             _uiState.update { it.copy(isSubmitting = false) }
         }
