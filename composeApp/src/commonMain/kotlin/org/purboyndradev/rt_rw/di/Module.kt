@@ -26,21 +26,26 @@ import org.purboyndradev.rt_rw.core.data.remote.api.ActivityApi
 import org.purboyndradev.rt_rw.core.data.remote.api.AuthApi
 import org.purboyndradev.rt_rw.core.data.remote.api.BannerApi
 import org.purboyndradev.rt_rw.core.data.remote.api.NewsApi
+import org.purboyndradev.rt_rw.core.data.remote.api.ReportApi
 import org.purboyndradev.rt_rw.core.data.remote.impl.KtorActivityRemoteDatasource
 import org.purboyndradev.rt_rw.core.data.remote.impl.KtorAuthRemoteDatasource
 import org.purboyndradev.rt_rw.core.data.remote.impl.KtorBannerRemoteDatasource
 import org.purboyndradev.rt_rw.core.data.remote.impl.KtorNewsRemoteDatasource
+import org.purboyndradev.rt_rw.core.data.remote.impl.KtorReportRemoteDatasource
 import org.purboyndradev.rt_rw.core.data.repository.ActivityRepositoryImpl
 import org.purboyndradev.rt_rw.core.data.repository.AuthRepositoryImpl
 import org.purboyndradev.rt_rw.core.data.repository.BannerRepositoryImpl
 import org.purboyndradev.rt_rw.core.data.repository.NewsRepositoryImpl
+import org.purboyndradev.rt_rw.core.data.repository.ReportRepositoryImpl
 import org.purboyndradev.rt_rw.core.network.HttpClientFactory
 import org.purboyndradev.rt_rw.core.network.TokenRefresher
 import org.purboyndradev.rt_rw.domain.repository.ActivityRepository
 import org.purboyndradev.rt_rw.domain.repository.AuthRepository
 import org.purboyndradev.rt_rw.domain.repository.BannerRepository
 import org.purboyndradev.rt_rw.domain.repository.NewsRepository
+import org.purboyndradev.rt_rw.domain.repository.ReportRepository
 import org.purboyndradev.rt_rw.domain.usecases.CreateActivityUseCase
+import org.purboyndradev.rt_rw.domain.usecases.CreateReportUseCase
 import org.purboyndradev.rt_rw.domain.usecases.DeleteActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.EditActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchActivitiesUseCase
@@ -157,6 +162,9 @@ val sharedModule: Module = module {
     single<NewsApi> {
         KtorNewsRemoteDatasource(get(qualifier = defaultHttpClient))
     }
+    single<ReportApi> {
+        KtorReportRemoteDatasource(get(qualifier = defaultHttpClient))
+    }
 
     /// PROVIDE REPOSITORY
     single<AuthRepository> {
@@ -170,6 +178,9 @@ val sharedModule: Module = module {
     }
     single<NewsRepository> {
         NewsRepositoryImpl(get())
+    }
+    single<ReportRepository> {
+        ReportRepositoryImpl(get())
     }
 
     /// PROVIDE USE CASE
@@ -224,6 +235,11 @@ val sharedModule: Module = module {
         FetchNewsByIdUseCase(get())
     }
 
+    /// REPORT USE CASE
+    single {
+        CreateReportUseCase(get())
+    }
+
     /// PROVIDE VIEW MODEL
     viewModel { AuthViewModel(get(), get(), get()) }
     viewModel { SplashViewModel(get(), get(), get()) }
@@ -238,6 +254,8 @@ val sharedModule: Module = module {
         )
     }
     viewModel {
-        ReportViewModel()
+        ReportViewModel(
+            get()
+        )
     }
 }
