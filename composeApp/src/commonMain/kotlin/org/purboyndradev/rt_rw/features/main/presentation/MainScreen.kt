@@ -7,11 +7,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,6 +50,7 @@ fun MainScreen(navHostController: NavHostController) {
     val email by mainViewModel.emailFlow.collectAsStateWithLifecycle()
 
     val pullToRefreshState = rememberPullToRefreshState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val scope = rememberCoroutineScope()
 
@@ -54,12 +58,25 @@ fun MainScreen(navHostController: NavHostController) {
     val currentDestination =
         bottomNavigationController.currentBackStackEntryAsState().value?.destination?.route
             ?: Home.ROUTE
+    val backStackEntry = navHostController.currentBackStackEntry
 
-    LaunchedEffect(Unit){
+    LaunchedEffect(Unit) {
         mainViewModel.onInit()
     }
 
+    LaunchedEffect(backStackEntry) {
+        backStackEntry?.savedStateHandle?.get<String>("snackbar_message")?.let { message ->
+            snackbarHostState.showSnackbar(
+                message
+            )
+            backStackEntry.savedStateHandle.remove<String>("snackbar_message")
+        }
+    }
+
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(snackbarHostState)
+        },
         bottomBar = {
             NavigationBar(
                 containerColor = Color.Transparent,

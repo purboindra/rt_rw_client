@@ -48,15 +48,16 @@ fun CreateReportScreen(navHostController: NavHostController) {
 
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(uiState) {
+    LaunchedEffect(uiState.error, uiState.success) {
         if (uiState.error != null) {
             snackbarHostState.showSnackbar(
                 "${uiState.error}"
             )
         } else if (uiState.success != null) {
-            snackbarHostState.showSnackbar(
-                "${uiState.success}"
+            navHostController.previousBackStackEntry?.savedStateHandle?.set(
+                "snackbar_message", uiState.success
             )
+            reportViewModel.onClearSuccessState()
             navHostController.popBackStack()
         }
     }
