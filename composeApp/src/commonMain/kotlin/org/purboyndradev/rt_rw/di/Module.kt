@@ -63,6 +63,7 @@ import org.purboyndradev.rt_rw.features.auth.presentation.AuthViewModel
 import org.purboyndradev.rt_rw.features.main.presentation.MainViewModel
 import org.purboyndradev.rt_rw.features.news.presentation.NewsViewModel
 import org.purboyndradev.rt_rw.features.notification.NotificationViewModel
+import org.purboyndradev.rt_rw.features.profile.presentation.ProfileViewModel
 import org.purboyndradev.rt_rw.features.report.ReportViewModel
 import org.purboyndradev.rt_rw.features.splash.SplashViewModel
 import co.touchlab.kermit.Logger as KermitLogger
@@ -255,6 +256,11 @@ val sharedModule: Module = module {
     }
     viewModel {
         ReportViewModel(
+            get()
+        )
+    }
+    viewModel {
+        ProfileViewModel(
             get()
         )
     }
