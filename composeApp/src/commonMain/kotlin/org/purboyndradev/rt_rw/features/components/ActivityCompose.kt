@@ -9,12 +9,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +26,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.Info
 import org.purboyndradev.rt_rw.core.domain.model.ActivityModel
 
 @Composable
@@ -43,62 +45,64 @@ fun ActivityCompose(
             )
         )
         Spacer(modifier = modifier.height(8.dp))
-        when (isLoading) {
-            true -> {
-                Box(
-                    modifier = modifier.height(82.dp).width(82.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
+        when {
+            isLoading -> Box(
+                modifier = modifier.height(82.dp).width(82.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
             }
-            
-            false -> {
-                if (error != null) {
-                    Box(
-                        modifier = modifier.height(82.dp).wrapContentWidth(),
-                    ) {
-                        Text(error)
-                    }
-                } else {
-                    Box(
-                        modifier = Modifier.wrapContentHeight()
-                    ) {
-                        if (activities.isEmpty()) {
-                            Text("No Activity")
-                        } else {
-                            LazyRow(
-                            ) {
-                                items(activities) { activity ->
-                                    Box(
-                                        modifier = Modifier.height(102.dp)
-                                            .width(184.dp)
-                                            .padding(horizontal = 5.dp).clip(
-                                                RoundedCornerShape(size = 16.dp)
-                                            ).background(
-                                                Color.LightGray.copy(
-                                                    alpha = 0.35f
-                                                )
-                                            ).clickable {
-                                                onActivityTapped(activity.id)
-                                            },
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        AsyncImage(
-                                            model = activity.bannerImageUrl,
-                                            contentScale = ContentScale.Crop,
-                                            contentDescription = activity.title,
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+
+            error != null -> Box(
+                modifier = modifier.height(82.dp).wrapContentWidth(),
+            ) {
+                Text(error)
+            }
+
+            activities.isEmpty() -> Box(
+                modifier = modifier.height(82.dp).wrapContentWidth(),
+            ) {
+                Text("No Activity")
+            }
+
+            else -> ActivityLazyRow(
+                activities,
+                onActivityTapped
+            )
+        }
+    }
+}
+
+
+@Composable
+private fun ActivityLazyRow(
+    activities: List<ActivityModel>,
+    onActivityTapped: (id: String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyRow(modifier = modifier.fillMaxWidth()) {
+        items(activities, key = { it.id }) { activity ->
+            Box(
+                modifier = Modifier
+                    .height(102.dp)
+                    .width(184.dp)
+                    .padding(horizontal = 5.dp)
+                    .clip(RoundedCornerShape(size = 16.dp))
+                    .background(Color.LightGray.copy(alpha = 0.35f))
+                    .clickable { onActivityTapped(activity.id) },
+                contentAlignment = Alignment.Center
+            ) {
+                if (activity.bannerImageUrl == null) Icon(
+                    imageVector = FeatherIcons.Info,
+                    contentDescription = activity.title,
+                    modifier = Modifier.fillMaxWidth(),
+                ) else AsyncImage(
+                    model = activity.bannerImageUrl,
+                    contentScale = ContentScale.Crop,
+                    contentDescription = activity.title,
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
         }
-        
     }
 }
