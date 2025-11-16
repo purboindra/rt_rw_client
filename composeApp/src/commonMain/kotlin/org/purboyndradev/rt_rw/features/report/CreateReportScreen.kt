@@ -57,6 +57,7 @@ fun CreateReportScreen(navHostController: NavHostController) {
             snackbarHostState.showSnackbar(
                 "${uiState.success}"
             )
+            navHostController.popBackStack()
         }
     }
 
