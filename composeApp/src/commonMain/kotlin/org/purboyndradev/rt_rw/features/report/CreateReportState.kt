@@ -26,8 +26,11 @@ data class CreateReportState(
         if (title != other.title) return false
         if (description != other.description) return false
         if (!capturedImageBytes.contentEquals(other.capturedImageBytes)) return false
-        if (title != other.title) return false
-
+        if (titleError != other.titleError) return false
+        if (descriptionError != other.descriptionError) return false
+        if (isSubmitting != other.isSubmitting) return false
+        if (error != other.error) return false
+        if (success != other.success) return false
         return true
     }
 
