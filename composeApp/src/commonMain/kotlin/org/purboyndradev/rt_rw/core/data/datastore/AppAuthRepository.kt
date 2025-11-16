@@ -132,7 +132,7 @@ class AppAuthRepository(private val dataStore: DataStore<Preferences>) {
             settings.remove(AuthKeys.REFRESH_TOKEN)
             settings.remove(AuthKeys.USER_ID)
             settings.remove(AuthKeys.USERNAME)
-
+            settings.remove(AuthKeys.EMAIL)
         }
     }
 }
