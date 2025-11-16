@@ -32,6 +32,14 @@ class ReportViewModel(
         }
     }
 
+    fun onClearSuccessState() {
+        _uiState.update {
+            it.copy(
+                success = null
+            )
+        }
+    }
+
     fun onDescriptionChange(newDescription: String) {
         _uiState.update {
             it.copy(
