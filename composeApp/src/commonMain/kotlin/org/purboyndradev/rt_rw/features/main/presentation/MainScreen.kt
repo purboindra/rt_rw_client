@@ -151,6 +151,7 @@ fun MainScreen(navHostController: NavHostController) {
                 composable(route = Profile.ROUTE) {
                     ProfileScreen(
                         navHostController = navHostController,
+                        userName = userName ?: "",
                     )
                 }
             }
