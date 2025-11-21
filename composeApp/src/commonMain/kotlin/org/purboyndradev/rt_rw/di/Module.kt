@@ -27,16 +27,19 @@ import org.purboyndradev.rt_rw.core.data.remote.api.AuthApi
 import org.purboyndradev.rt_rw.core.data.remote.api.BannerApi
 import org.purboyndradev.rt_rw.core.data.remote.api.NewsApi
 import org.purboyndradev.rt_rw.core.data.remote.api.ReportApi
+import org.purboyndradev.rt_rw.core.data.remote.api.UserApi
 import org.purboyndradev.rt_rw.core.data.remote.impl.KtorActivityRemoteDatasource
 import org.purboyndradev.rt_rw.core.data.remote.impl.KtorAuthRemoteDatasource
 import org.purboyndradev.rt_rw.core.data.remote.impl.KtorBannerRemoteDatasource
 import org.purboyndradev.rt_rw.core.data.remote.impl.KtorNewsRemoteDatasource
 import org.purboyndradev.rt_rw.core.data.remote.impl.KtorReportRemoteDatasource
+import org.purboyndradev.rt_rw.core.data.remote.impl.KtorUserRemoteDatasource
 import org.purboyndradev.rt_rw.core.data.repository.ActivityRepositoryImpl
 import org.purboyndradev.rt_rw.core.data.repository.AuthRepositoryImpl
 import org.purboyndradev.rt_rw.core.data.repository.BannerRepositoryImpl
 import org.purboyndradev.rt_rw.core.data.repository.NewsRepositoryImpl
 import org.purboyndradev.rt_rw.core.data.repository.ReportRepositoryImpl
+import org.purboyndradev.rt_rw.core.data.repository.UserRepositoryImpl
 import org.purboyndradev.rt_rw.core.network.HttpClientFactory
 import org.purboyndradev.rt_rw.core.network.TokenRefresher
 import org.purboyndradev.rt_rw.domain.repository.ActivityRepository
@@ -44,6 +47,7 @@ import org.purboyndradev.rt_rw.domain.repository.AuthRepository
 import org.purboyndradev.rt_rw.domain.repository.BannerRepository
 import org.purboyndradev.rt_rw.domain.repository.NewsRepository
 import org.purboyndradev.rt_rw.domain.repository.ReportRepository
+import org.purboyndradev.rt_rw.domain.repository.UserRepository
 import org.purboyndradev.rt_rw.domain.usecases.CreateActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.CreateReportUseCase
 import org.purboyndradev.rt_rw.domain.usecases.DeleteActivityUseCase
@@ -56,7 +60,9 @@ import org.purboyndradev.rt_rw.domain.usecases.FetchNewsByIdUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchUsersActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.JoinActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.RefreshTokenUseCase
+import org.purboyndradev.rt_rw.domain.usecases.RequestEmailVerificationUseCase
 import org.purboyndradev.rt_rw.domain.usecases.SignInUseCase
+import org.purboyndradev.rt_rw.domain.usecases.VerifyEmailUseCase
 import org.purboyndradev.rt_rw.domain.usecases.VerifyOtpUseCase
 import org.purboyndradev.rt_rw.features.activity.presentation.ActivityViewModel
 import org.purboyndradev.rt_rw.features.auth.presentation.AuthViewModel
@@ -166,6 +172,9 @@ val sharedModule: Module = module {
     single<ReportApi> {
         KtorReportRemoteDatasource(get(qualifier = defaultHttpClient))
     }
+    single<UserApi> {
+        KtorUserRemoteDatasource(get(qualifier = defaultHttpClient))
+    }
 
     /// PROVIDE REPOSITORY
     single<AuthRepository> {
@@ -183,6 +192,10 @@ val sharedModule: Module = module {
     single<ReportRepository> {
         ReportRepositoryImpl(get())
     }
+    single<UserRepository> {
+        UserRepositoryImpl(get())
+    }
+
 
     /// PROVIDE USE CASE
     single {
@@ -239,6 +252,14 @@ val sharedModule: Module = module {
     /// REPORT USE CASE
     single {
         CreateReportUseCase(get())
+    }
+
+    /// USER USE CASE
+    single {
+        RequestEmailVerificationUseCase(get())
+    }
+    single {
+        VerifyEmailUseCase(get())
     }
 
     /// PROVIDE VIEW MODEL
