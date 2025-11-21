@@ -155,8 +155,7 @@ class AuthViewModel(
         }
 
         viewModelScope.launch {
-            val result = signInUseCase(_phoneNumberState.value.value)
-            when (result) {
+            when (val result = signInUseCase(_phoneNumberState.value.value)) {
                 is Result.Success -> {
 
                     val data = result.data
