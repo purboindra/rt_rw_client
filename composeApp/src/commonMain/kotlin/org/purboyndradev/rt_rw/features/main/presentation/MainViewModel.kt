@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import org.purboyndradev.rt_rw.core.data.datastore.AppAuthRepository
 import org.purboyndradev.rt_rw.core.data.remote.mapper.toRes
 import org.purboyndradev.rt_rw.core.domain.Result
@@ -130,7 +131,9 @@ class MainViewModel(
     }
 
     suspend fun onInit() {
-        _loadingState.value = true
+        _loadingState.update {
+            true
+        }
         coroutineScope {
             val activitiesJob = async { fetchActivities() }
             val bannersJob = async { fetchAllBanners() }
@@ -139,6 +142,8 @@ class MainViewModel(
             bannersJob.await()
             newsJob.await()
         }
-        _loadingState.value = false
+        _loadingState.update {
+            false
+        }
     }
 }
