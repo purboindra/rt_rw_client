@@ -56,13 +56,12 @@ class MainViewModel(
             loading = true
         )
 
-        val result = fetchAllNewsUseCase.invoke()
 
-        when (result) {
+        when (val result = fetchAllNewsUseCase.invoke()) {
             is Result.Success -> {
                 val news = result.data
                 _newsState.value = _newsState.value.copy(
-                    news
+                    news = news
                 )
             }
 
@@ -83,12 +82,11 @@ class MainViewModel(
         _bannersState.value = _bannersState.value.copy(
             loading = true
         )
-        val result = fetchAllBannersUseCase.invoke()
-        when (result) {
+        when (val result = fetchAllBannersUseCase.invoke()) {
             is Result.Success -> {
                 val banners = result.data
                 _bannersState.value = _bannersState.value.copy(
-                    banners
+                    banners = banners
                 )
             }
 
@@ -109,13 +107,12 @@ class MainViewModel(
             loading = true
         )
 
-        val result = fetchActivitiesUseCase.invoke()
 
-        when (result) {
+        when (val result = fetchActivitiesUseCase.invoke()) {
             is Result.Success -> {
                 val activities = result.data
                 _activitiesState.value = _activitiesState.value.copy(
-                    activities
+                    activities = activities
                 )
             }
 
