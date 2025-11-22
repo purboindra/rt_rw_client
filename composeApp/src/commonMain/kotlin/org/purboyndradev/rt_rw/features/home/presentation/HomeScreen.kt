@@ -32,7 +32,8 @@ fun HomeScreen(
     bannerState: BannerState,
     newsState: NewsState,
     userName: String,
-    isEmailEmpty: Boolean
+    isEmailEmpty: Boolean,
+    isEmailVerified: Boolean,
 ) {
     LazyColumn(
         modifier = modifier.padding(horizontal = 18.dp)
@@ -49,9 +50,9 @@ fun HomeScreen(
                 banners = bannerState.banners,
                 error = bannerState.error,
             )
-            if (isEmailEmpty) Spacer(modifier = Modifier.height(22.dp))
+            if (isEmailEmpty || !isEmailVerified) Spacer(modifier = Modifier.height(22.dp))
             /// Banner Unregistered Email
-            if (isEmailEmpty) UnRegisterEmailCompose(
+            if (isEmailEmpty || !isEmailVerified) UnRegisterEmailCompose(
                 modifier
             )
             Spacer(modifier = Modifier.height(22.dp))

@@ -48,6 +48,7 @@ fun MainScreen(navHostController: NavHostController) {
     val newsState by mainViewModel.newsState.collectAsStateWithLifecycle()
     val userName by mainViewModel.userNameFlow.collectAsStateWithLifecycle()
     val email by mainViewModel.emailFlow.collectAsStateWithLifecycle()
+    val isEmailVerified by mainViewModel.isEmailVerifiedFlow.collectAsStateWithLifecycle()
 
     val pullToRefreshState = rememberPullToRefreshState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -134,7 +135,8 @@ fun MainScreen(navHostController: NavHostController) {
                         bannerState = bannerState,
                         newsState = newsState,
                         userName = userName ?: "",
-                        isEmailEmpty = email.isNullOrBlank()
+                        isEmailEmpty = email.isNullOrBlank(),
+                        isEmailVerified = isEmailVerified
                     )
                 }
                 composable(route = Activity.ROUTE) {
