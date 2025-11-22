@@ -1,5 +1,6 @@
 package org.purboyndradev.rt_rw.core.data.repository
 
+import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
 import org.purboyndradev.rt_rw.core.data.datastore.AppAuthRepository
@@ -41,10 +42,13 @@ class AuthRepositoryImpl(
         val payload = JWTObject.decodeJwtPayload(accessToken)
             ?: return signInModel
 
-
         val username = payload["name"]?.jsonPrimitive?.contentOrNull ?: ""
         val email = payload["email"]?.jsonPrimitive?.contentOrNull ?: ""
         val userId = payload["user_id"]?.jsonPrimitive?.contentOrNull ?: ""
+        val isEmailVerified = payload["is_email_verified"]?.jsonPrimitive?.booleanOrNull ?: false
+
+        appAuthRepository.saveIsEmailVerified(isEmailVerified)
+
         appAuthRepository.saveTokens(accessToken, refreshToken)
         appAuthRepository.saveUsername(username)
         appAuthRepository.saveEmail(email)
