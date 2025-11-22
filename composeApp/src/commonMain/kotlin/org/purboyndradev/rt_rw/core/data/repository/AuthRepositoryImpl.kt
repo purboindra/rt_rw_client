@@ -21,11 +21,7 @@ class AuthRepositoryImpl(
 
         val responseDto = api.signIn(phoneNumber)
 
-        val data = responseDto.data
-
-        if (data == null) {
-            throw DataNotFoundException(responseDto.message)
-        }
+        val data = responseDto.data ?: throw DataNotFoundException(responseDto.message)
 
         val signInModel = SignInModel(
             accessToken = data.accessToken,
