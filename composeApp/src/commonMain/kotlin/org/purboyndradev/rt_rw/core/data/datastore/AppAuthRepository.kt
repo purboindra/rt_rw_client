@@ -52,6 +52,12 @@ class AppAuthRepository(private val dataStore: DataStore<Preferences>) {
         }
     }
 
+    suspend fun saveIsEmailVerified(isEmailVerified: Boolean) {
+        dataStore.edit {
+            it[AuthKeys.IS_EMAIL_VERIFIED] = isEmailVerified
+        }
+    }
+
     suspend fun clearTokens() {
         dataStore.edit {
             it.remove(AuthKeys.ACCESS_TOKEN)
@@ -67,6 +73,16 @@ class AppAuthRepository(private val dataStore: DataStore<Preferences>) {
         }
     }.map { preferences ->
         preferences[AuthKeys.EMAIL]
+    }
+
+    val isEmailVerifiedFlow: Flow<Boolean> = dataStore.data.catch { exception ->
+        if (exception is IOException) {
+            emit(emptyPreferences())
+        } else {
+            throw exception
+        }
+    }.map { preferences ->
+        preferences[AuthKeys.IS_EMAIL_VERIFIED] ?: false
     }
 
     val userIdFlow: Flow<String?> = dataStore.data.catch { exception ->
