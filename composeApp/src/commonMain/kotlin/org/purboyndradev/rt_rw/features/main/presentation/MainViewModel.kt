@@ -52,6 +52,12 @@ class MainViewModel(
         null
     )
 
+    val isEmailVerifiedFlow: StateFlow<Boolean> = appAuthRepository.isEmailVerifiedFlow.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        false
+    )
+
     suspend fun fetchAllNews() {
         _newsState.value = _newsState.value.copy(
             loading = true
