@@ -22,6 +22,7 @@ import org.purboyndradev.rt_rw.features.main.presentation.NewsState
 import org.purboyndradev.rt_rw.features.navigation.ActivityDetail
 import org.purboyndradev.rt_rw.features.navigation.CreateReport
 import org.purboyndradev.rt_rw.features.navigation.NewsDetail
+import org.purboyndradev.rt_rw.features.navigation.VerifyEmailOnBoardingScreen
 
 @Preview
 @Composable
@@ -53,7 +54,10 @@ fun HomeScreen(
             if (isEmailEmpty || !isEmailVerified) Spacer(modifier = Modifier.height(22.dp))
             /// Banner Unregistered Email
             if (isEmailEmpty || !isEmailVerified) UnRegisterEmailCompose(
-                modifier
+                modifier,
+                onRegisterTaped = {
+                    navHostController.navigate(VerifyEmailOnBoardingScreen)
+                }
             )
             Spacer(modifier = Modifier.height(22.dp))
             /// Activity

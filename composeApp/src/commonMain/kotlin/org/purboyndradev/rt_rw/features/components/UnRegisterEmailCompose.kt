@@ -23,7 +23,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun UnRegisterEmailCompose(modifier: Modifier = Modifier) {
+fun UnRegisterEmailCompose(
+    modifier: Modifier = Modifier,
+    onRegisterTaped: () -> Unit
+) {
     Box(
         modifier = modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp)
     ) {
@@ -50,7 +53,7 @@ fun UnRegisterEmailCompose(modifier: Modifier = Modifier) {
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedButton(
-                    onClick = {},
+                    onClick = onRegisterTaped,
                     modifier = Modifier.width(124.dp),
                     shape = RoundedCornerShape(
                         size = 8.dp

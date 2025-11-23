@@ -50,3 +50,6 @@ object CreateReport {
 
 @Serializable
 object CameraPreviewScreen
+
+@Serializable
+object VerifyEmailOnBoardingScreen
