@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -129,11 +129,12 @@ fun LoginScreen(navHostController: NavHostController) {
                     },
             )
             Spacer(modifier = Modifier.height(10.dp))
-            ElevatedButton(
+            FilledIconButton(
                 onClick = {
                     authViewModel.signIn()
                 },
-                enabled = !isLoadingState
+                enabled = !isLoadingState,
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
                     if (isLoadingState) "Loading..." else if (hasAuthenticatedBefore) "Login" else "Send OTP",
