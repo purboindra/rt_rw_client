@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 object Login
 
 @Serializable
-data class OTP(val phoneNumber: String)
+data class OTP(val phoneNumber: String? = null)
 
 @Serializable
 object Splash
