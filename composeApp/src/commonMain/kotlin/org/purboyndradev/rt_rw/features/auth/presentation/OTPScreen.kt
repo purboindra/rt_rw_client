@@ -26,18 +26,20 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.purboyndradev.rt_rw.features.navigation.Main
 
 @Composable
-fun OTPScreen(navHostController: NavHostController, phoneNumber: String) {
-    
+fun OTPScreen(navHostController: NavHostController, phoneNumber: String? = null) {
+
     val authViewModel = koinViewModel<AuthViewModel>()
     val otpUiState = authViewModel.otpUiState.collectAsStateWithLifecycle()
     val isLoading = authViewModel.isLoadingState.collectAsStateWithLifecycle()
     val verifyOtpState by authViewModel.verifyOtpState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
-    
+
     LaunchedEffect(Unit) {
-        authViewModel.onUpdatePhoneNumber(phoneNumber)
+        phoneNumber?.let {
+            authViewModel.onUpdatePhoneNumber(it)
+        }
     }
-    
+
     LaunchedEffect(verifyOtpState) {
         if (verifyOtpState.success) {
             navHostController.navigate(
@@ -53,7 +55,7 @@ fun OTPScreen(navHostController: NavHostController, phoneNumber: String) {
             )
         }
     }
-    
+
     Scaffold(
         snackbarHost = {
             SnackbarHost(snackbarHostState)
@@ -93,5 +95,5 @@ fun OTPScreen(navHostController: NavHostController, phoneNumber: String) {
             }
         }
     }
-    
+
 }
