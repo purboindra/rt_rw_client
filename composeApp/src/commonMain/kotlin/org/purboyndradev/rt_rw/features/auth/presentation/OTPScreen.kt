@@ -4,9 +4,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -82,10 +83,11 @@ fun OTPScreen(navHostController: NavHostController, phoneNumber: String? = null)
                 onOtpInputComplete = {}
             )
             Spacer(modifier = Modifier.height(10.dp))
-            ElevatedButton(
+            FilledIconButton(
                 onClick = {
                     authViewModel.verifyOtp()
                 },
+                modifier = Modifier.fillMaxWidth().height(42.dp),
                 enabled = otpUiState.value.otpValues.all { it.isNotEmpty() } || !isLoading.value
             ) {
                 Text(
