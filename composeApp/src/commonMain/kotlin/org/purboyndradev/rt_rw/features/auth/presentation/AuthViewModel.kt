@@ -14,8 +14,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.purboyndradev.rt_rw.core.data.datastore.AppAuthRepository
 import org.purboyndradev.rt_rw.core.data.remote.mapper.toRes
+import org.purboyndradev.rt_rw.core.data.remote.params.RequestEmailVerificationParams
+import org.purboyndradev.rt_rw.core.data.remote.params.VerifyEmailParams
 import org.purboyndradev.rt_rw.core.domain.Result
+import org.purboyndradev.rt_rw.domain.usecases.RequestEmailVerificationUseCase
 import org.purboyndradev.rt_rw.domain.usecases.SignInUseCase
+import org.purboyndradev.rt_rw.domain.usecases.VerifyEmailUseCase
 import org.purboyndradev.rt_rw.domain.usecases.VerifyOtpUseCase
 import org.purboyndradev.rt_rw.helper.FieldState
 import org.purboyndradev.rt_rw.helper.JWTObject
@@ -27,15 +31,34 @@ data class OTPUiState(
     val otpValues: List<String> = List(otpLength) { "" },
 )
 
+data class VerifyEmailState(
+    val success: Boolean = false,
+    val error: String? = null,
+    val isLoading: Boolean = false,
+)
+
 class AuthViewModel(
     private val signInUseCase: SignInUseCase,
     private val verifyOtpUseCase: VerifyOtpUseCase,
-    private val appAuthRepository: AppAuthRepository
+    private val verifyEmailUseCase: VerifyEmailUseCase,
+    private val requestEmailVerificationUseCase: RequestEmailVerificationUseCase,
+    private val appAuthRepository: AppAuthRepository,
 ) : ViewModel() {
 
     private val _loginState: MutableStateFlow<AuthState> =
         MutableStateFlow(AuthState())
     val loginState = _loginState.asStateFlow()
+
+    private val _verifyEmailState: MutableStateFlow<VerifyEmailState> = MutableStateFlow(
+        VerifyEmailState()
+    )
+    val verifyEmailState = _verifyEmailState.asStateFlow()
+
+    private val _requestEmailVerificationState: MutableStateFlow<VerifyEmailState> =
+        MutableStateFlow(
+            VerifyEmailState()
+        )
+    val requestEmailVerificationState = _requestEmailVerificationState.asStateFlow()
 
     private val _verifyOtpState: MutableStateFlow<AuthState> =
         MutableStateFlow(AuthState())
@@ -57,6 +80,12 @@ class AuthViewModel(
         MutableStateFlow(FieldState())
     val phoneNumberState = _phoneNumberState.asStateFlow()
 
+    private val _emailState: MutableStateFlow<FieldState> = MutableStateFlow(FieldState())
+    val emailState = _emailState.asStateFlow()
+
+    private val _openAddEmailDialog = MutableStateFlow(false)
+    val openAddEmailDialog = _openAddEmailDialog.asStateFlow()
+
     val accessToken: Flow<String?> = appAuthRepository.accessTokenFlow.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
@@ -69,9 +98,24 @@ class AuthViewModel(
         false
     )
 
+    fun onOpenAddEmailDialogChange(open: Boolean) {
+        _openAddEmailDialog.update {
+            open
+        }
+    }
+
     fun onOpenAlertDialogChange(open: Boolean) {
         _openAlertDialog.update {
             open
+        }
+    }
+
+    fun updateEmailValue(value: String) {
+        _emailState.update {
+            it.copy(
+                value = value,
+                error = if (it.touched) Validators.email(value) else null
+            )
         }
     }
 
@@ -105,6 +149,98 @@ class AuthViewModel(
                     "Phone Number"
                 ) else null
             )
+        }
+    }
+
+    fun requestEmailVerification() {
+
+        if(_emailState.value.value.isBlank()){
+            _emailState.update {
+                it.copy(
+                    error = "Email is required"
+                )
+            }
+            return;
+        }
+
+        viewModelScope.launch {
+            _requestEmailVerificationState.update {
+                it.copy(
+                    isLoading = true
+                )
+            }
+
+            val params = RequestEmailVerificationParams(
+                email = _emailState.value.value
+            )
+
+            when (val result = requestEmailVerificationUseCase.invoke(
+                params
+            )) {
+                is Result.Success -> {
+                    _requestEmailVerificationState.update {
+                        it.copy(
+                            success = true
+                        )
+                    }
+                }
+
+                is Result.Error -> {
+                    val error = result.error.toRes()
+                    _requestEmailVerificationState.update {
+                        it.copy(
+                            error = error
+                        )
+                    }
+                }
+            }
+
+            _requestEmailVerificationState.update {
+                it.copy(
+                    isLoading = false
+                )
+            }
+        }
+    }
+
+    fun onResetRequestEmailVerificationState() {
+        _requestEmailVerificationState.value = VerifyEmailState()
+    }
+
+    fun verifyEmail() {
+        viewModelScope.launch {
+            _verifyEmailState.update {
+                it.copy(
+                    isLoading = true
+                )
+            }
+
+            val otp = _otpUiState.value.otpValues.joinToString("")
+
+            val params = VerifyEmailParams(
+                code = otp,
+                email = _emailState.value.value
+            )
+
+            when (val result = verifyEmailUseCase.invoke(
+                params
+            )) {
+                is Result.Success -> {}
+                is Result.Error -> {
+                    val error = result.error.toRes()
+                    _requestEmailVerificationState.update {
+                        it.copy(
+                            error = error
+                        )
+                    }
+                }
+            }
+
+            _verifyEmailState.update {
+                it.copy(
+                    isLoading = false
+                )
+            }
         }
     }
 
