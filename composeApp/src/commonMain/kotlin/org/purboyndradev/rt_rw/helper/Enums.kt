@@ -5,3 +5,8 @@ enum class MessageSnackbarType {
     ERROR,
     INFO
 }
+
+enum class OTPType{
+    TELEGRAM,
+    EMAIL
+}
