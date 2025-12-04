@@ -7,5 +7,6 @@ data class AuthState(
     val error: String? = null,
     val success: Boolean = false,
     val code: String? = null,
-    val redirectUrl: String? = null
+    val redirectUrl: String? = null,
+    val isLoading: Boolean = false
 )
