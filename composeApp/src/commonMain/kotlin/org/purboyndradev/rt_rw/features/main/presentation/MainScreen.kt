@@ -31,10 +31,10 @@ import org.purboyndradev.rt_rw.features.components.BottomNavItem
 import org.purboyndradev.rt_rw.features.home.presentation.HomeScreen
 import org.purboyndradev.rt_rw.features.navigation.Activity
 import org.purboyndradev.rt_rw.features.navigation.Home
-import org.purboyndradev.rt_rw.features.navigation.News
 import org.purboyndradev.rt_rw.features.navigation.Profile
-import org.purboyndradev.rt_rw.features.news.presentation.NewsScreen
+import org.purboyndradev.rt_rw.features.navigation.Reports
 import org.purboyndradev.rt_rw.features.profile.presentation.ProfileScreen
+import org.purboyndradev.rt_rw.features.report.ReportsScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -139,15 +139,14 @@ fun MainScreen(navHostController: NavHostController) {
                         isEmailVerified = isEmailVerified
                     )
                 }
-                composable(route = Activity.ROUTE) {
-                    ActivityScreen(
-                        navHostController = navHostController
+                composable(route = Reports.ROUTE) {
+                    ReportsScreen(
+                        navHostController
                     )
                 }
-                composable(route = News.ROUTE) {
-                    NewsScreen(
+                composable(route = Activity.ROUTE) {
+                    ActivityScreen(
                         navHostController = navHostController,
-                        itemId = 1
                     )
                 }
                 composable(route = Profile.ROUTE) {
