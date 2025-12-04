@@ -1,4 +1,4 @@
-package org.purboyndradev.rt_rw.features.report
+package org.purboyndradev.rt_rw.features.report.presentation
 
 import org.purboyndradev.rt_rw.core.domain.model.ReportModel
 

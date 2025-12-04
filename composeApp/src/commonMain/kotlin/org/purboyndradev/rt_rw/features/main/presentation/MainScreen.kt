@@ -34,7 +34,7 @@ import org.purboyndradev.rt_rw.features.navigation.Home
 import org.purboyndradev.rt_rw.features.navigation.Profile
 import org.purboyndradev.rt_rw.features.navigation.Reports
 import org.purboyndradev.rt_rw.features.profile.presentation.ProfileScreen
-import org.purboyndradev.rt_rw.features.report.ReportsScreen
+import org.purboyndradev.rt_rw.features.report.presentation.ReportsScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

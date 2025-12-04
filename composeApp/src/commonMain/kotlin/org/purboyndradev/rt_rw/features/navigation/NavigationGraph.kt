@@ -21,8 +21,8 @@ import org.purboyndradev.rt_rw.features.components.CameraPreviewScreen
 import org.purboyndradev.rt_rw.features.main.presentation.MainScreen
 import org.purboyndradev.rt_rw.features.news.presentation.NewsDetailScreen
 import org.purboyndradev.rt_rw.features.notification.NotificationOnboardingScreen
-import org.purboyndradev.rt_rw.features.report.CreateReportScreen
-import org.purboyndradev.rt_rw.features.report.ReportsScreen
+import org.purboyndradev.rt_rw.features.report.presentation.CreateReportScreen
+import org.purboyndradev.rt_rw.features.report.presentation.ReportsScreen
 import org.purboyndradev.rt_rw.features.splash.SplashScreen
 
 data class StartDestinationData(

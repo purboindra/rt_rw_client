@@ -1,4 +1,4 @@
-package org.purboyndradev.rt_rw.features.report
+package org.purboyndradev.rt_rw.features.report.presentation
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

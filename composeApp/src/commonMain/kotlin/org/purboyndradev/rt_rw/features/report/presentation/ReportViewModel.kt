@@ -1,4 +1,4 @@
-package org.purboyndradev.rt_rw.features.report
+package org.purboyndradev.rt_rw.features.report.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
