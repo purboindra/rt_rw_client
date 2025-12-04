@@ -18,7 +18,7 @@ class ReportViewModel(
     private val fetchAllReportsUseCase: FetchAllReportsUseCase
 ) : ViewModel() {
 
-    private val _reportsState = MutableStateFlow(ReportsState())
+    private val _reportsState = MutableStateFlow(ReportState())
     val reportsState = _reportsState.asStateFlow()
 
     private val _resultImagePickerLauncher = MutableStateFlow<PhotoResult?>(null)
