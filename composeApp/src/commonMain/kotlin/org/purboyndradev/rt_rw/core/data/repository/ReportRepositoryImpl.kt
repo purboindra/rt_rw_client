@@ -5,8 +5,11 @@ import org.purboyndradev.rt_rw.core.data.remote.mapper.toReportModel
 import org.purboyndradev.rt_rw.core.data.remote.params.CreateReportParams
 import org.purboyndradev.rt_rw.core.data.remote.params.PaginationParams
 import org.purboyndradev.rt_rw.core.data.remote.params.QueryParams
+import org.purboyndradev.rt_rw.core.domain.AppError
+import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.core.domain.model.ReportModel
 import org.purboyndradev.rt_rw.core.network.DataNotFoundException
+import org.purboyndradev.rt_rw.core.network.mapKtorExceptionToAppError
 import org.purboyndradev.rt_rw.domain.repository.ReportRepository
 
 class ReportRepositoryImpl(private val reportApi: ReportApi) : ReportRepository {
@@ -17,15 +20,30 @@ class ReportRepositoryImpl(private val reportApi: ReportApi) : ReportRepository 
     override suspend fun fetchAllReports(
         paginationParams: PaginationParams?,
         queryParams: QueryParams?
-    ): List<ReportModel> {
-        val response = reportApi.fetchAllReports(paginationParams, queryParams)
-        return response.data?.map {
-            it.toReportModel()
-        } ?: emptyList()
+    ): Result<List<ReportModel>, AppError> {
+        return try {
+            val response = reportApi.fetchAllReports(paginationParams, queryParams)
+            if (response.data != null) {
+                Result.Success(response.data.map { it.toReportModel() })
+            } else {
+                throw DataNotFoundException("Tidak ada data laporan")
+            }
+        } catch (e: Exception) {
+            Result.Error(mapKtorExceptionToAppError(e))
+        }
     }
 
-    override suspend fun fetchReportById(id: String): ReportModel {
-        val response = reportApi.fetchReportById(id)
-        return response.data?.toReportModel() ?: throw DataNotFoundException("Report not found")
+    override suspend fun fetchReportById(id: String): Result<ReportModel?, AppError> {
+
+        return try {
+            val response = reportApi.fetchReportById(id)
+            if (response.data != null) {
+                Result.Success(response.data.toReportModel())
+            } else {
+                throw DataNotFoundException("Laporan tidak ditemukan")
+            }
+        } catch (e: Exception) {
+            Result.Error(mapKtorExceptionToAppError(e))
+        }
     }
 }
