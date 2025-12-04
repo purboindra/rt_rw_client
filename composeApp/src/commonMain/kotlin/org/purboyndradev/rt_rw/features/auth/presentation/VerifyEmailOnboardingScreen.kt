@@ -15,28 +15,82 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.CheckCircle
 import compose.icons.feathericons.Key
 import compose.icons.feathericons.Mail
 import compose.icons.feathericons.Shield
+import org.koin.compose.viewmodel.koinViewModel
+import org.purboyndradev.rt_rw.features.components.AddVerifyEmailDialog
 import org.purboyndradev.rt_rw.features.navigation.Main
+import org.purboyndradev.rt_rw.features.navigation.OTP
+import org.purboyndradev.rt_rw.helper.OTPType
 
 @Composable
 fun VerifyEmailOnboardingScreen(
     navHostController: NavHostController,
 ) {
-    Scaffold { paddingValues ->
+
+    val authViewModel = koinViewModel<AuthViewModel>()
+    val requestEmailVerificationState by authViewModel.requestEmailVerificationState.collectAsStateWithLifecycle()
+    val openAddEmailDialog by authViewModel.openAddEmailDialog.collectAsStateWithLifecycle()
+    val emailState by authViewModel.emailState.collectAsStateWithLifecycle()
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val isLoadingRequestEmail = requestEmailVerificationState.isLoading
+
+    LaunchedEffect(requestEmailVerificationState.error, requestEmailVerificationState.success) {
+
+        if (!requestEmailVerificationState.error.isNullOrBlank()) {
+            snackbarHostState.showSnackbar(
+                message = requestEmailVerificationState.error!!,
+            )
+        } else if (requestEmailVerificationState.success) {
+            navHostController.navigate(OTP(otpType = OTPType.EMAIL, email = emailState.value))
+            authViewModel.onResetRequestEmailVerificationState()
+        }
+    }
+
+    when {
+        openAddEmailDialog -> {
+            AddVerifyEmailDialog(
+                onAddEmail = {
+                    authViewModel.onOpenAddEmailDialogChange(!openAddEmailDialog)
+                    authViewModel.requestEmailVerification()
+                },
+                onValueChange = {
+                    authViewModel.updateEmailValue(it)
+                },
+                email = emailState.value,
+                onDismissRequest = {
+                    authViewModel.onOpenAddEmailDialogChange(!openAddEmailDialog)
+                }
+            )
+        }
+    }
+
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(snackbarHostState)
+        }
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -98,9 +152,9 @@ fun VerifyEmailOnboardingScreen(
 
             Button(
                 onClick = {
-                    // TODO: Navigate to the actual email verification input screen
-                    // navHostController.navigate("verify_email_input_screen")
+                    authViewModel.onOpenAddEmailDialogChange(!openAddEmailDialog)
                 },
+                enabled = !isLoadingRequestEmail,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -119,7 +173,7 @@ fun VerifyEmailOnboardingScreen(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Add/Verify Your Email",
+                        text = if (isLoadingRequestEmail) "Loading..." else "Add/Verify Your Email",
                         style = MaterialTheme.typography.titleMedium
                     )
                 }
@@ -127,10 +181,9 @@ fun VerifyEmailOnboardingScreen(
 
             TextButton(
                 onClick = {
-                    // Navigate to main screen if user skips
-                     navHostController.navigate(Main) {
-                         popUpTo(0) { inclusive = true }
-                     }
+                    navHostController.navigate(Main) {
+                        popUpTo(0) { inclusive = true }
+                    }
                 },
                 modifier = Modifier.padding(top = 16.dp)
             ) {
