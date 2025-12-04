@@ -11,20 +11,24 @@ import org.purboyndradev.rt_rw.core.data.remote.mapper.toRes
 import org.purboyndradev.rt_rw.core.data.remote.params.CreateReportParams
 import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.domain.usecases.CreateReportUseCase
-
+import org.purboyndradev.rt_rw.domain.usecases.FetchAllReportsUseCase
 
 class ReportViewModel(
-    private val createReportUseCase: CreateReportUseCase
+    private val createReportUseCase: CreateReportUseCase,
+    private val fetchAllReportsUseCase: FetchAllReportsUseCase
 ) : ViewModel() {
+
+    private val _reportsState = MutableStateFlow(ReportsState())
+    val reportsState = _reportsState.asStateFlow()
 
     private val _resultImagePickerLauncher = MutableStateFlow<PhotoResult?>(null)
     val resultImagePickerLauncher = _resultImagePickerLauncher.asStateFlow()
 
-    private val _uiState = MutableStateFlow(CreateReportState())
-    val uiState = _uiState.asStateFlow()
+    private val _createReportState = MutableStateFlow(CreateReportState())
+    val createReportState = _createReportState.asStateFlow()
 
     fun onTitleChange(newTitle: String) {
-        _uiState.update {
+        _createReportState.update {
             it.copy(
                 title = newTitle,
                 titleError = if (newTitle.isNotBlank()) null else it.titleError
@@ -33,7 +37,7 @@ class ReportViewModel(
     }
 
     fun onClearSuccessState() {
-        _uiState.update {
+        _createReportState.update {
             it.copy(
                 success = null
             )
@@ -41,7 +45,7 @@ class ReportViewModel(
     }
 
     fun onDescriptionChange(newDescription: String) {
-        _uiState.update {
+        _createReportState.update {
             it.copy(
                 description = newDescription,
                 descriptionError = if (newDescription.isNotBlank()) null else it.descriptionError
@@ -50,19 +54,19 @@ class ReportViewModel(
     }
 
     fun onImageCaptured(bytes: ByteArray?) {
-        _uiState.update {
+        _createReportState.update {
             it.copy(capturedImageBytes = bytes)
         }
     }
 
     fun submitReport() {
-        val title = _uiState.value.title
-        val description = _uiState.value.description
-        val image = _uiState.value.capturedImageBytes
+        val title = _createReportState.value.title
+        val description = _createReportState.value.description
+        val image = _createReportState.value.capturedImageBytes
 
         val hasError = title.isBlank() || description.isBlank()
 
-        _uiState.update {
+        _createReportState.update {
             it.copy(
                 titleError = if (title.isBlank()) "Judul tidak boleh kosong" else null,
                 descriptionError = if (description.isBlank()) "Deskripsi tidak boleh kosong" else null
@@ -74,7 +78,7 @@ class ReportViewModel(
         }
 
         viewModelScope.launch {
-            _uiState.update { it.copy(isSubmitting = true) }
+            _createReportState.update { it.copy(isSubmitting = true) }
             val params = CreateReportParams(
                 title,
                 description,
@@ -87,7 +91,7 @@ class ReportViewModel(
 
             when (result) {
                 is Result.Success -> {
-                    _uiState.update {
+                    _createReportState.update {
                         it.copy(
                             success = "Laporan berhasil dikirim"
                         )
@@ -96,7 +100,38 @@ class ReportViewModel(
 
                 is Result.Error -> {
                     val error = result.error.toRes()
-                    _uiState.update {
+                    _createReportState.update {
+                        it.copy(
+                            error = error
+                        )
+                    }
+                }
+            }
+            _createReportState.update { it.copy(isSubmitting = false) }
+        }
+    }
+
+    fun fetchAllReports() {
+        viewModelScope.launch {
+            _reportsState.update {
+                it.copy(
+                    isLoading = true
+                )
+            }
+
+            when (val result = fetchAllReportsUseCase.invoke()) {
+                is Result.Success -> {
+                    val reports = result.data
+                    _reportsState.update {
+                        it.copy(
+                            reports = reports
+                        )
+                    }
+                }
+
+                is Result.Error -> {
+                    val error = result.error.toRes()
+                    _reportsState.update {
                         it.copy(
                             error = error
                         )
@@ -104,7 +139,11 @@ class ReportViewModel(
                 }
             }
 
-            _uiState.update { it.copy(isSubmitting = false) }
+            _reportsState.update {
+                it.copy(
+                    isLoading = false
+                )
+            }
         }
     }
 
