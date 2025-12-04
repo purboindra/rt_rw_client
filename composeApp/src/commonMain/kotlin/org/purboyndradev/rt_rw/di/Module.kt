@@ -56,6 +56,7 @@ import org.purboyndradev.rt_rw.domain.usecases.FetchActivitiesUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchActivityByIdUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchAllBannersUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchAllNewsUseCase
+import org.purboyndradev.rt_rw.domain.usecases.FetchAllReportsUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchNewsByIdUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchUsersActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.JoinActivityUseCase
@@ -193,7 +194,7 @@ val sharedModule: Module = module {
         ReportRepositoryImpl(get())
     }
     single<UserRepository> {
-        UserRepositoryImpl(get())
+        UserRepositoryImpl(get(), get())
     }
 
 
@@ -253,6 +254,9 @@ val sharedModule: Module = module {
     single {
         CreateReportUseCase(get())
     }
+    single {
+        FetchAllReportsUseCase(get())
+    }
 
     /// USER USE CASE
     single {
@@ -277,6 +281,7 @@ val sharedModule: Module = module {
     }
     viewModel {
         ReportViewModel(
+            get(),
             get()
         )
     }
