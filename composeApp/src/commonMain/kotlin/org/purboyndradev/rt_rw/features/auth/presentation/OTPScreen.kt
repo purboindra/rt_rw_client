@@ -25,13 +25,18 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import org.koin.compose.viewmodel.koinViewModel
 import org.purboyndradev.rt_rw.features.navigation.Main
+import org.purboyndradev.rt_rw.helper.OTPType
 
 @Composable
-fun OTPScreen(navHostController: NavHostController, phoneNumber: String? = null) {
+fun OTPScreen(
+    navHostController: NavHostController,
+    phoneNumber: String? = null,
+    otpType: OTPType = OTPType.TELEGRAM,
+    email: String? = null
+) {
 
     val authViewModel = koinViewModel<AuthViewModel>()
     val otpUiState = authViewModel.otpUiState.collectAsStateWithLifecycle()
-    val isLoading = authViewModel.isLoadingState.collectAsStateWithLifecycle()
     val verifyOtpState by authViewModel.verifyOtpState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -85,13 +90,17 @@ fun OTPScreen(navHostController: NavHostController, phoneNumber: String? = null)
             Spacer(modifier = Modifier.height(10.dp))
             FilledIconButton(
                 onClick = {
-                    authViewModel.verifyOtp()
+                    if (otpType == OTPType.TELEGRAM) {
+                        authViewModel.verifyOtp()
+                    } else if (otpType == OTPType.EMAIL) {
+                        authViewModel.verifyEmail(email ?: "")
+                    }
                 },
                 modifier = Modifier.fillMaxWidth().height(42.dp),
-                enabled = otpUiState.value.otpValues.all { it.isNotEmpty() } || !isLoading.value
+                enabled = otpUiState.value.otpValues.all { it.isNotEmpty() } || !verifyOtpState.isLoading
             ) {
                 Text(
-                    if (isLoading.value) "Loading..." else "Verify OTP",
+                    if (verifyOtpState.isLoading) "Loading..." else "Verify OTP",
                     style = MaterialTheme.typography.labelMedium
                 )
             }
