@@ -49,11 +49,6 @@ class AuthViewModel(
         MutableStateFlow(AuthState())
     val loginState = _loginState.asStateFlow()
 
-    private val _verifyEmailState: MutableStateFlow<VerifyEmailState> = MutableStateFlow(
-        VerifyEmailState()
-    )
-    val verifyEmailState = _verifyEmailState.asStateFlow()
-
     private val _requestEmailVerificationState: MutableStateFlow<VerifyEmailState> =
         MutableStateFlow(
             VerifyEmailState()
@@ -96,6 +91,12 @@ class AuthViewModel(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
         false
+    )
+
+    val emailFlow: StateFlow<String?> = appAuthRepository.emailFlow.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        null
     )
 
     fun onOpenAddEmailDialogChange(open: Boolean) {
@@ -154,7 +155,7 @@ class AuthViewModel(
 
     fun requestEmailVerification() {
 
-        if(_emailState.value.value.isBlank()){
+        if (_emailState.value.value.isBlank()) {
             _emailState.update {
                 it.copy(
                     error = "Email is required"
@@ -166,7 +167,9 @@ class AuthViewModel(
         viewModelScope.launch {
             _requestEmailVerificationState.update {
                 it.copy(
-                    isLoading = true
+                    isLoading = true,
+                    error = null,
+                    success = false
                 )
             }
 
@@ -207,9 +210,9 @@ class AuthViewModel(
         _requestEmailVerificationState.value = VerifyEmailState()
     }
 
-    fun verifyEmail() {
+    fun verifyEmail(email: String) {
         viewModelScope.launch {
-            _verifyEmailState.update {
+            _verifyOtpState.update {
                 it.copy(
                     isLoading = true
                 )
@@ -219,16 +222,23 @@ class AuthViewModel(
 
             val params = VerifyEmailParams(
                 code = otp,
-                email = _emailState.value.value
+                email = email
             )
 
             when (val result = verifyEmailUseCase.invoke(
                 params
             )) {
-                is Result.Success -> {}
+                is Result.Success -> {
+                    _verifyOtpState.update {
+                        it.copy(
+                            success = true
+                        )
+                    }
+                }
+
                 is Result.Error -> {
                     val error = result.error.toRes()
-                    _requestEmailVerificationState.update {
+                    _verifyOtpState.update {
                         it.copy(
                             error = error
                         )
@@ -236,7 +246,7 @@ class AuthViewModel(
                 }
             }
 
-            _verifyEmailState.update {
+            _verifyOtpState.update {
                 it.copy(
                     isLoading = false
                 )
@@ -333,8 +343,10 @@ class AuthViewModel(
     }
 
     fun verifyOtp() {
-        _isLoadingState.update {
-            true
+        _verifyOtpState.update {
+            it.copy(
+                isLoading = true
+            )
         }
 
         val otp = _otpUiState.value.otpValues.joinToString("")
@@ -366,7 +378,11 @@ class AuthViewModel(
                     }
                 }
             }
-            _isLoadingState.value = false
+            _verifyOtpState.update {
+                it.copy(
+                    isLoading = false
+                )
+            }
         }
     }
 }
