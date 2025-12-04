@@ -1,12 +1,17 @@
 package org.purboyndradev.rt_rw.features.navigation
 
 import kotlinx.serialization.Serializable
+import org.purboyndradev.rt_rw.helper.OTPType
 
 @Serializable
 object Login
 
 @Serializable
-data class OTP(val phoneNumber: String? = null)
+data class OTP(
+    val phoneNumber: String? = null,
+    val otpType: OTPType = OTPType.TELEGRAM,
+    val email: String? = null
+)
 
 @Serializable
 object Splash
@@ -53,3 +58,8 @@ object CameraPreviewScreen
 
 @Serializable
 object VerifyEmailOnBoardingScreen
+
+@Serializable
+object Reports {
+    const val ROUTE = "reports"
+}
