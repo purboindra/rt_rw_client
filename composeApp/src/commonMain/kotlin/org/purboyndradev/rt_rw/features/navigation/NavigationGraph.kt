@@ -22,6 +22,7 @@ import org.purboyndradev.rt_rw.features.main.presentation.MainScreen
 import org.purboyndradev.rt_rw.features.news.presentation.NewsDetailScreen
 import org.purboyndradev.rt_rw.features.notification.NotificationOnboardingScreen
 import org.purboyndradev.rt_rw.features.report.CreateReportScreen
+import org.purboyndradev.rt_rw.features.report.ReportsScreen
 import org.purboyndradev.rt_rw.features.splash.SplashScreen
 
 data class StartDestinationData(
@@ -51,9 +52,14 @@ fun NavigationGraph(
         composable<OTP> { backStackEntry ->
             val otpScreen = backStackEntry.toRoute<OTP>()
             val phoneNumber = otpScreen.phoneNumber
+            val otpType = otpScreen.otpType
+            val email = otpScreen.email
+
             OTPScreen(
                 navHostController = navController,
-                phoneNumber = phoneNumber
+                phoneNumber = phoneNumber,
+                otpType = otpType,
+                email = email
             )
         }
         composable<Splash> {
@@ -122,6 +128,9 @@ fun NavigationGraph(
         }
         composable<VerifyEmailOnBoardingScreen> {
             VerifyEmailOnboardingScreen(navController)
+        }
+        composable<Reports> {
+            ReportsScreen(navController)
         }
     }
 }
