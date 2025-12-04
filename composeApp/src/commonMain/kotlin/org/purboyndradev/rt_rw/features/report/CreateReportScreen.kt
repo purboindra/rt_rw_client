@@ -44,18 +44,18 @@ fun CreateReportScreen(navHostController: NavHostController) {
     val reportViewModel = koinViewModel<ReportViewModel>()
 
     val resultImagePickerLauncher by reportViewModel.resultImagePickerLauncher.collectAsStateWithLifecycle()
-    val uiState by reportViewModel.uiState.collectAsStateWithLifecycle()
+    val createReportState by reportViewModel.createReportState.collectAsStateWithLifecycle()
 
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(uiState.error, uiState.success) {
-        if (uiState.error != null) {
+    LaunchedEffect(createReportState.error, createReportState.success) {
+        if (createReportState.error != null) {
             snackbarHostState.showSnackbar(
-                "${uiState.error}"
+                "${createReportState.error}"
             )
-        } else if (uiState.success != null) {
+        } else if (createReportState.success != null) {
             navHostController.previousBackStackEntry?.savedStateHandle?.set(
-                "snackbar_message", uiState.success
+                "snackbar_message", createReportState.success
             )
             reportViewModel.onClearSuccessState()
             navHostController.popBackStack()
@@ -105,10 +105,10 @@ fun CreateReportScreen(navHostController: NavHostController) {
                             containerColor = MaterialTheme.colorScheme.primary,
                             contentColor = MaterialTheme.colorScheme.onPrimary,
                         ),
-                        enabled = uiState.canSubmit,
+                        enabled = createReportState.canSubmit,
                     ) {
                         Text(
-                            if (uiState.isSubmitting) "Mengirim..." else
+                            if (createReportState.isSubmitting) "Mengirim..." else
                                 "Kirim"
                         )
                     }
@@ -130,15 +130,15 @@ fun CreateReportScreen(navHostController: NavHostController) {
                 Spacer(modifier = Modifier.height(24.dp))
                 Column(modifier = Modifier.fillMaxWidth()) {
                     OutlinedTextField(
-                        value = uiState.title,
+                        value = createReportState.title,
                         onValueChange = reportViewModel::onTitleChange,
                         modifier = Modifier.fillMaxWidth(),
                         label = {
                             Text("Judul Kejadian")
                         },
-                        isError = uiState.titleError != null,
+                        isError = createReportState.titleError != null,
                         supportingText = {
-                            uiState.titleError?.let {
+                            createReportState.titleError?.let {
                                 Text(it)
                             }
                         },
@@ -146,7 +146,7 @@ fun CreateReportScreen(navHostController: NavHostController) {
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
-                        value = uiState.description,
+                        value = createReportState.description,
                         onValueChange = reportViewModel::onDescriptionChange,
                         modifier = Modifier.fillMaxWidth(),
                         label = {
@@ -154,9 +154,9 @@ fun CreateReportScreen(navHostController: NavHostController) {
                         },
                         maxLines = 4,
                         minLines = 4,
-                        isError = uiState.descriptionError != null,
+                        isError = createReportState.descriptionError != null,
                         supportingText = {
-                            uiState.descriptionError?.let {
+                            createReportState.descriptionError?.let {
                                 Text(it)
                             }
                         },
@@ -170,7 +170,7 @@ fun CreateReportScreen(navHostController: NavHostController) {
                             navHostController.navigate(CameraPreviewScreen)
                         },
                         navHostController = navHostController,
-                        capturedImageBytes = uiState.capturedImageBytes,
+                        capturedImageBytes = createReportState.capturedImageBytes,
                         onSetCapturedImageBytes = reportViewModel::onImageCaptured
                     )
                 }
