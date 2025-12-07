@@ -12,6 +12,10 @@ fun ReportDto.toReportModel(): ReportModel {
         rtId = rtId,
         imageUrl = imageUrl,
         status = status,
-        user = user
+        user = user,
+        reportId = reportId,
+        resolvedAt = resolvedAt,
+        resolvedById = resolvedById,
+
     )
 }
