@@ -29,6 +29,7 @@ import compose.icons.FeatherIcons
 import compose.icons.feathericons.Plus
 import org.koin.compose.viewmodel.koinViewModel
 import org.purboyndradev.rt_rw.features.components.ReportContent
+import org.purboyndradev.rt_rw.features.navigation.CreateReport
 import org.purboyndradev.rt_rw.features.navigation.ReportDetail
 
 @Composable
@@ -54,7 +55,9 @@ fun ReportsScreen(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text("Reports", style = MaterialTheme.typography.titleMedium)
-            IconButton(onClick = {}) {
+            IconButton(onClick = {
+                navHostController.navigate(CreateReport)
+            }) {
                 Icon(
                     FeatherIcons.Plus, contentDescription = "Add",
                     tint = Color.Black
