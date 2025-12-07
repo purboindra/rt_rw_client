@@ -27,13 +27,13 @@ import org.purboyndradev.rt_rw.features.report.presentation.SectionCard
 
 
 @Composable
- fun PicAndRtSection(
+fun PicAndRtSection(
     picName: String,
     picRole: String,
     rtName: String,
     rtAddress: String,
     createdByName: String,
-    onPicClick: () -> Unit
+    onPicClick: (() -> Unit)? = null,
 ) {
     SectionCard(title = "Penanggung Jawab") {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -62,7 +62,7 @@ import org.purboyndradev.rt_rw.features.report.presentation.SectionCard
                 )
             }
 
-            TextButton(onClick = onPicClick) {
+            if (onPicClick != null) TextButton(onClick = onPicClick) {
                 Text("Detail")
             }
         }
