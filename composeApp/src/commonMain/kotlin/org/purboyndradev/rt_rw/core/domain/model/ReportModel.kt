@@ -7,19 +7,25 @@ import org.purboyndradev.rt_rw.core.data.dto.ReportStatus
 @Serializable
 data class ReportModel(
     @SerialName("id")
-    val id:String,
+    val id: String,
     @SerialName("title")
-    val title:String,
+    val title: String,
     @SerialName("description")
-    val description:String,
+    val description: String,
     @SerialName("createdAt")
-    val createdAt:String,
+    val createdAt: String,
     @SerialName("rtId")
-    val rtId:String,
+    val rtId: String,
     @SerialName("imageUrl")
-    val imageUrl:String,
+    val imageUrl: String,
     @SerialName("status")
     val status: ReportStatus,
+    @SerialName("reportId")
+    val reportId: String,
+    @SerialName("resolvedAt")
+    val resolvedAt: String? = null,
+    @SerialName("resolvedById")
+    val resolvedById: String? = null,
     @SerialName("user")
-    val user:UserModel
+    val user: UserModel
 )
