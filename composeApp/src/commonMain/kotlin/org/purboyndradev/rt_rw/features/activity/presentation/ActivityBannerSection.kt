@@ -15,20 +15,15 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 
 @Composable
- fun ActivityBannerSection(
-    bannerUrl: String?,
-    onClick: (String) -> Unit
+fun ActivityBannerSection(
+    bannerUrl: String?, onClick: ((String) -> Unit)? = null,
 ) {
     Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        tonalElevation = 1.dp
+        modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp), tonalElevation = 1.dp
     ) {
         if (bannerUrl.isNullOrBlank()) {
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(160.dp)
+                modifier = Modifier.fillMaxWidth().height(160.dp)
                     .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
@@ -42,9 +37,7 @@ import coil3.compose.AsyncImage
             AsyncImage(
                 model = bannerUrl,
                 contentDescription = "Banner",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(180.dp),
+                modifier = Modifier.fillMaxWidth().height(180.dp),
                 contentScale = androidx.compose.ui.layout.ContentScale.Crop
             )
         }
