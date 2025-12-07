@@ -29,6 +29,7 @@ import compose.icons.FeatherIcons
 import compose.icons.feathericons.Plus
 import org.koin.compose.viewmodel.koinViewModel
 import org.purboyndradev.rt_rw.features.components.ReportContent
+import org.purboyndradev.rt_rw.features.navigation.ReportDetail
 
 @Composable
 fun ReportsScreen(
@@ -92,7 +93,7 @@ fun ReportsScreen(
                         ReportContent(
                             report,
                             onReportTapped = { id ->
-                                navHostController.navigate("report/$id")
+                                navHostController.navigate(ReportDetail(id))
                             }
                         )
                     }
