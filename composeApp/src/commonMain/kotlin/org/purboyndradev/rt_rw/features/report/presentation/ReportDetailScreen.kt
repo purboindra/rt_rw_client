@@ -113,9 +113,9 @@ fun ReportDetailScreen(
 
                     // Reporter info
                     ReporterSection(
-                        name = report.user.name,
-                        address = report.user.address,
-                        phone = report.user.phoneNumber,
+                        name = report.user?.name ?: "",
+                        address = report.user?.address,
+                        phone = report.user?.phoneNumber,
                         onCallClick = { phone ->
 //                            if (phone != null) onCallReporterClick(phone)
                         }
