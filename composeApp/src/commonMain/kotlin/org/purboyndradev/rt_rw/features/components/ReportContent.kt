@@ -48,7 +48,7 @@ fun ReportContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "by ${report.user.name}",
+                text = "by ${report.user?.name}",
                 style = MaterialTheme.typography.labelSmall,
                 color = Color.Gray,
                 modifier = Modifier.weight(1f)
