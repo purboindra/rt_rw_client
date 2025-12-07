@@ -38,7 +38,7 @@ fun ActivityCompose(
 ) {
     Column {
         Text(
-            "Activity", style = MaterialTheme.typography.titleMedium.copy(
+            "Aktifitas", style = MaterialTheme.typography.titleMedium.copy(
                 fontWeight = FontWeight.SemiBold
             )
         )
