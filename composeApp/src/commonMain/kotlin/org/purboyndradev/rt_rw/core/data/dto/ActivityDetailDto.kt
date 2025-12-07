@@ -2,6 +2,7 @@ package org.purboyndradev.rt_rw.core.data.dto
 
 
 import kotlinx.serialization.Serializable
+import org.purboyndradev.rt_rw.core.domain.model.RTModel
 import org.purboyndradev.rt_rw.core.domain.model.UserModel
 
 @Serializable
@@ -12,10 +13,11 @@ data class ActivityDetailDto(
     val type: String,
     val picId: String,
     val description: String,
-    val rtId: String,
+    val rt: RTModel,
     val bannerImageUrl: String? = null,
     val imageUrl: String? = null,
     val createdBy: CreatedByDto,
     val pic: UserModel,
-    val users: List<UserModel>
+    val users: List<UserModel>,
+    val activityId: String? = null
 )
