@@ -7,5 +7,5 @@ data class RTDto(
     val id: String,
     val name: String,
     val address: String,
-    val totalFunds: Int,
+    val totalFunds: Int? = null,
 )
