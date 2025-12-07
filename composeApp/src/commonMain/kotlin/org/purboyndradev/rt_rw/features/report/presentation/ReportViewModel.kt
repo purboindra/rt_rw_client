@@ -12,14 +12,19 @@ import org.purboyndradev.rt_rw.core.data.remote.params.CreateReportParams
 import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.domain.usecases.CreateReportUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchAllReportsUseCase
+import org.purboyndradev.rt_rw.domain.usecases.FetchReportByIdUseCase
 
 class ReportViewModel(
     private val createReportUseCase: CreateReportUseCase,
-    private val fetchAllReportsUseCase: FetchAllReportsUseCase
+    private val fetchAllReportsUseCase: FetchAllReportsUseCase,
+    private val fetchReportByIdUseCase: FetchReportByIdUseCase,
 ) : ViewModel() {
 
     private val _reportsState = MutableStateFlow(ReportState())
     val reportsState = _reportsState.asStateFlow()
+
+    private val _reportDetailState = MutableStateFlow(ReportDetailState())
+    val reportDetailState = _reportDetailState.asStateFlow()
 
     private val _resultImagePickerLauncher = MutableStateFlow<PhotoResult?>(null)
     val resultImagePickerLauncher = _resultImagePickerLauncher.asStateFlow()
@@ -140,6 +145,43 @@ class ReportViewModel(
             }
 
             _reportsState.update {
+                it.copy(
+                    isLoading = false
+                )
+            }
+        }
+    }
+
+
+    fun fetchReportById(id: String) {
+        viewModelScope.launch {
+            _reportDetailState.update {
+                it.copy(
+                    isLoading = true
+                )
+            }
+
+            when (val result = fetchReportByIdUseCase(id)) {
+                is Result.Success -> {
+                    val report = result.data
+                    _reportDetailState.update {
+                        it.copy(
+                            report = report
+                        )
+                    }
+                }
+
+                is Result.Error -> {
+                    val error = result.error.toRes()
+                    _reportDetailState.update {
+                        it.copy(
+                            error = error
+                        )
+                    }
+                }
+            }
+
+            _reportDetailState.update {
                 it.copy(
                     isLoading = false
                 )
