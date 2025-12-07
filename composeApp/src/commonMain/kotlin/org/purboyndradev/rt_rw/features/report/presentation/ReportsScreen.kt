@@ -26,6 +26,8 @@ import androidx.navigation.NavHostController
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Plus
 import org.koin.compose.viewmodel.koinViewModel
+import org.purboyndradev.rt_rw.features.components.EmptyStateView
+import org.purboyndradev.rt_rw.features.components.ErrorViewCompose
 import org.purboyndradev.rt_rw.features.components.ReportContent
 import org.purboyndradev.rt_rw.features.navigation.CreateReport
 import org.purboyndradev.rt_rw.features.navigation.ReportDetail
@@ -74,12 +76,10 @@ fun ReportsScreen(
             }
 
             reportsState.error != null -> {
-                Box(
-                    modifier = modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(reportsState.error!!)
-                }
+                ErrorViewCompose(
+                    modifier,
+                    reportsState.error ?: "Unknown Error"
+                )
             }
 
             reportsState.reports.isNotEmpty() -> {
@@ -100,12 +100,7 @@ fun ReportsScreen(
             }
 
             else -> {
-                Box(
-                    modifier = modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("Tidak ada laporan")
-                }
+                EmptyStateView(modifier, "Tidak ada laporan")
             }
         }
     }
