@@ -58,6 +58,7 @@ import org.purboyndradev.rt_rw.domain.usecases.FetchAllBannersUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchAllNewsUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchAllReportsUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchNewsByIdUseCase
+import org.purboyndradev.rt_rw.domain.usecases.FetchReportByIdUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchUsersActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.JoinActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.RefreshTokenUseCase
@@ -257,6 +258,9 @@ val sharedModule: Module = module {
     single {
         FetchAllReportsUseCase(get())
     }
+    single {
+        FetchReportByIdUseCase(get())
+    }
 
     /// USER USE CASE
     single {
@@ -282,7 +286,7 @@ val sharedModule: Module = module {
     viewModel {
         ReportViewModel(
             get(),
-            get()
+            get(), get()
         )
     }
     viewModel {
