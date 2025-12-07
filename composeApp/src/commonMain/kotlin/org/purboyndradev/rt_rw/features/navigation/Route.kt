@@ -63,3 +63,6 @@ object VerifyEmailOnBoardingScreen
 object Reports {
     const val ROUTE = "reports"
 }
+
+@Serializable
+data class ReportDetail(val id: String)
