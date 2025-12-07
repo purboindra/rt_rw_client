@@ -19,8 +19,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
+import rtrwapps.composeapp.generated.resources.Res
+
 
 @Composable
 fun BannerReportCompose(
@@ -39,7 +43,14 @@ fun BannerReportCompose(
                         size = 14.dp
                     )
                 ).background(Color.LightGray)
-        )
+        ) {
+            AsyncImage(
+                model = Res.getUri("drawable/report_banner.jpg"),
+                contentDescription = "Banner",
+                modifier = Modifier.fillMaxWidth(),
+                contentScale = ContentScale.Crop
+            )
+        }
 
         Spacer(modifier = modifier.width(12.dp))
 
