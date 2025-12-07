@@ -27,5 +27,5 @@ data class ReportModel(
     @SerialName("resolvedById")
     val resolvedById: String? = null,
     @SerialName("user")
-    val user: UserModel
+    val user: UserModel? = null
 )
