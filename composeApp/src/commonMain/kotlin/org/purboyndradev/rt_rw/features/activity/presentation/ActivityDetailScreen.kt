@@ -11,6 +11,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,7 +29,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import org.purboyndradev.rt_rw.features.components.CustomSnackbar
 import org.purboyndradev.rt_rw.features.components.SectionCard
+import org.purboyndradev.rt_rw.features.components.UserActivityDialog
 import org.purboyndradev.rt_rw.helper.MessageSnackbarType
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,11 +69,49 @@ fun ActivityDetailScreen(
         }
     }
 
+    LaunchedEffect(openUsersDialog.value) {
+        if (openUsersDialog.value) {
+            activityViewModel.fetchUsersActivity(id)
+        }
+    }
+
     LaunchedEffect(Unit) {
         activityViewModel.fetchActivityDetail(id)
     }
 
-    Scaffold(topBar = {
+    LaunchedEffect(joinActivityState.error) {
+        joinActivityState.error?.let {
+            val errorMessage = joinActivityState.error
+            showStyledSnackbar(
+                snackbarHostState,
+                scope,
+                message = errorMessage ?: "Unknown Error",
+                snackbarTypeState
+            )
+        }
+    }
+
+    when {
+        openUsersDialog.value -> {
+            UserActivityDialog(
+                onDismissRequest = {
+                    openUsersDialog.value = false
+                },
+                usersActivityState = usersActivityState
+            )
+        }
+    }
+
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(snackbarHostState) { data ->
+                CustomSnackbar(
+                    snackbarData = data,
+                    messageType = snackbarTypeState
+                )
+            }
+        },
+        topBar = {
 //            SmallTopAppBar(
 //                title = {
 //                    Text(
@@ -85,7 +126,7 @@ fun ActivityDetailScreen(
 //                    }
 //                }
 //            )
-    }, bottomBar = {
+        }, bottomBar = {
 //            if (onSendMessageClick != {} && onMessageTextChange != {}) {
 //                ActivityDiscussionBar(
 //                    text = messageText,
@@ -93,8 +134,8 @@ fun ActivityDetailScreen(
 //                    onSend = onSendMessageClick
 //                )
 //            }
-        ActivityDiscussionBar(text = "messageText", onTextChange = {}, onSend = {})
-    }) { innerPadding ->
+            ActivityDiscussionBar(text = "messageText", onTextChange = {}, onSend = {})
+        }) { innerPadding ->
 
         when {
             activityState.loading -> {
@@ -117,13 +158,20 @@ fun ActivityDetailScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     item {
-                        ActivityHeaderSection(activity!!)
+                        ActivityHeaderSection(
+                            activity!!,
+                            hasJoinActivity = hasJoinActivity,
+                            onJoinActivity = {
+                                activityViewModel.joinActivity(id)
+                            },
+                            isLoadingJoinActivity = isLoadingJoinActivity
+                        )
                     }
 
                     item {
                         ActivityBannerSection(
                             bannerUrl = activity!!.bannerImageUrl ?: activity.imageUrl,
-                            onClick = {})
+                        )
                     }
 
                     item {
@@ -141,12 +189,14 @@ fun ActivityDetailScreen(
                             rtName = activity.pic.rt?.name ?: "",
                             rtAddress = activity.rt?.address ?: "",
                             createdByName = activity.createdBy.name,
-                            onPicClick = { })
+                           )
                     }
 
                     item {
                         ParticipantsSection(
-                            participants = activity!!.users, onSeeAllClick = {})
+                            participants = activity!!.users, onSeeAllClick = {
+                                openUsersDialog.value = true
+                            })
                     }
 
 //            item {
