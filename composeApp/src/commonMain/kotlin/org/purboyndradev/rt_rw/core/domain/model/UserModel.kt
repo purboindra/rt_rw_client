@@ -10,5 +10,7 @@ data class UserModel(
     @SerialName("phone")
     val phoneNumber: String = "",
     val email: String? = null,
-    val address: String = ""
+    val address: String = "",
+    val role: String,
+    val rt: RTModel? = null
 )
