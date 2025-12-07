@@ -8,63 +8,95 @@ import org.purboyndradev.rt_rw.core.data.remote.params.CreateActivityParams
 import org.purboyndradev.rt_rw.core.data.remote.params.JoinActivityParams
 import org.purboyndradev.rt_rw.core.data.remote.params.PaginationParams
 import org.purboyndradev.rt_rw.core.data.remote.params.QueryParams
+import org.purboyndradev.rt_rw.core.domain.AppError
+import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.core.domain.model.ActivityDetailModel
 import org.purboyndradev.rt_rw.core.domain.model.ActivityModel
 import org.purboyndradev.rt_rw.core.domain.model.UsersActivityModel
 import org.purboyndradev.rt_rw.core.network.DataNotFoundException
+import org.purboyndradev.rt_rw.core.network.mapKtorExceptionToAppError
 import org.purboyndradev.rt_rw.domain.repository.ActivityRepository
 
 class ActivityRepositoryImpl(
     private val activityApi: ActivityApi
 ) : ActivityRepository {
-    override suspend fun createActivity(params: CreateActivityParams) {
-        activityApi.createActivity(
-            params
-        )
+    override suspend fun createActivity(params: CreateActivityParams): Result<Unit, AppError> {
+        return try {
+            activityApi.createActivity(
+                params
+            )
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error(mapKtorExceptionToAppError(e))
+        }
     }
 
     override suspend fun fetchAllActivities(
-        paginationParams: PaginationParams?,
-        queryParams: QueryParams?
-    ): List<ActivityModel> {
-        val result = activityApi.fetchAllActivities(
-            paginationParams, queryParams
-        )
-        return result.data?.map {
-            it.toActivityModel()
-        } ?: emptyList()
-    }
-
-    override suspend
-    fun fetchActivityById(id: String): ActivityDetailModel {
-        val result = activityApi.fetchActivityById(id)
-        if (result.data != null) {
-            return result.data.toActivityDetailModel()
+        paginationParams: PaginationParams?, queryParams: QueryParams?
+    ): Result<List<ActivityModel>, AppError> {
+        return try {
+            val result = activityApi.fetchAllActivities(
+                paginationParams, queryParams
+            )
+            val activities = result.data?.map {
+                it.toActivityModel()
+            } ?: emptyList()
+            Result.Success(activities)
+        } catch (e: Exception) {
+            Result.Error(mapKtorExceptionToAppError(e))
         }
-        throw DataNotFoundException("Activity not found")
     }
 
-    override suspend
-    fun deleteActivity(id: String) {
-        activityApi.deleteActivity(id)
+    override suspend fun fetchActivityById(id: String): Result<ActivityDetailModel, AppError> {
+        return try {
+            val result = activityApi.fetchActivityById(id)
+            if (result.data == null) {
+                throw DataNotFoundException("Activity not found")
+            }
+            Result.Success(result.data.toActivityDetailModel())
+        } catch (e: Exception) {
+            Result.Error(mapKtorExceptionToAppError(e))
+        }
     }
 
-    override suspend
-    fun editActivity(
-        id: String,
-        params: CreateActivityParams
-    ) {
-        activityApi.editActivity(id, params)
+    override suspend fun deleteActivity(id: String): Result<Unit, AppError> {
+        return try {
+            activityApi.deleteActivity(id)
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error(mapKtorExceptionToAppError(e))
+        }
     }
 
-    override suspend fun joinActivity(params: JoinActivityParams) {
-        activityApi.joinActivity(params)
+    override suspend fun editActivity(
+        id: String, params: CreateActivityParams
+    ): Result<Unit, AppError> {
+        return try {
+            activityApi.editActivity(id, params)
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error(mapKtorExceptionToAppError(e))
+        }
     }
 
-    override suspend fun fetchUsersActivity(id: String): List<UsersActivityModel> {
-        val result = activityApi.fetchUsersActivity(id)
-        return result.data?.users?.map {
-            it.toUsersActivityModel()
-        } ?: emptyList()
+    override suspend fun joinActivity(params: JoinActivityParams): Result<Unit, AppError> {
+        return try {
+            activityApi.joinActivity(params)
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error(mapKtorExceptionToAppError(e))
+        }
+    }
+
+    override suspend fun fetchUsersActivity(id: String): Result<List<UsersActivityModel>, AppError> {
+        return try {
+            val result = activityApi.fetchUsersActivity(id)
+            val userActivities = result.data?.users?.map {
+                it.toUsersActivityModel()
+            } ?: emptyList()
+            Result.Success(userActivities)
+        } catch (e: Exception) {
+            Result.Error(mapKtorExceptionToAppError(e))
+        }
     }
 }
