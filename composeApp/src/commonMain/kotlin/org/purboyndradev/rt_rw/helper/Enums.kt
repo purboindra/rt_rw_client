@@ -6,7 +6,14 @@ enum class MessageSnackbarType {
     INFO
 }
 
-enum class OTPType{
+enum class OTPType {
     TELEGRAM,
     EMAIL
+}
+
+enum class ActivityType {
+    RONDA,
+    KERJA_BAKTI,
+    RAPAT,
+    KEGIATAN_SOSIAL
 }
