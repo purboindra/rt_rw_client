@@ -2,6 +2,7 @@ package org.purboyndradev.rt_rw.core.domain.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import org.purboyndradev.rt_rw.helper.ActivityType
 
 
 @Serializable
@@ -14,19 +15,21 @@ data class ActivityDetailModel(
     val description: String,
     // TODO: add RT type
     @SerialName("rt")
-    val rt: String? = null,
+    val rt: RTModel? = null,
     @SerialName("date")
     val date: Int,
     @SerialName("pic")
     val pic: UserModel,
     @SerialName("users")
-    val users: List<UserModel> = emptyList<UserModel>(),
+    val users: List<UserModel> = emptyList(),
     @SerialName("bannerImageUrl")
     val bannerImageUrl: String? = null,
     @SerialName("imageUrl")
     val imageUrl: String? = null,
     @SerialName("type")
-    val type: String,
+    val type: ActivityType,
     @SerialName("createdBy")
-    val createdBy: CreatedByModel
+    val createdBy: CreatedByModel,
+    @SerialName("activityId")
+    val activityId: String? = null,
 )
