@@ -28,5 +28,9 @@ data class ReportDto(
     val imageUrl: String,
     val description: String,
     val status: ReportStatus,
-    val user: UserModel
+    val user: UserModel,
+    val reportId: String,
+    val resolvedAt: String? = null,
+    val resolvedById: String? = null,
+
 )
