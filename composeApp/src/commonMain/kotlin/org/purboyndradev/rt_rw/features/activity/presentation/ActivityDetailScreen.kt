@@ -1,13 +1,16 @@
 package org.purboyndradev.rt_rw.features.activity.presentation
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,21 +28,17 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
-import org.purboyndradev.rt_rw.features.components.ActivityDetailContent
-import org.purboyndradev.rt_rw.features.components.CommentInputActivity
-import org.purboyndradev.rt_rw.features.components.CustomSnackbar
-import org.purboyndradev.rt_rw.features.components.ErrorCompose
-import org.purboyndradev.rt_rw.features.components.UserActivityDialog
+import org.purboyndradev.rt_rw.features.components.SectionCard
 import org.purboyndradev.rt_rw.helper.MessageSnackbarType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ActivityDetailScreen(id: String, navHostController: NavHostController) {
+fun ActivityDetailScreen(
+    id: String, navHostController: NavHostController
+) {
 
-    val activityViewModel =
-        koinViewModel<ActivityViewModel>(parameters = { parametersOf(id) })
-    val activityState by
-    activityViewModel.activitiesState.collectAsStateWithLifecycle()
+    val activityViewModel = koinViewModel<ActivityViewModel>(parameters = { parametersOf(id) })
+    val activityState by activityViewModel.activitiesState.collectAsStateWithLifecycle()
     val joinActivityState by activityViewModel.joinActivityState.collectAsStateWithLifecycle()
     val snackbarTypeState by activityViewModel.snackbarType.collectAsStateWithLifecycle()
     val hasJoinActivity by activityViewModel.hasJoinedActivity.collectAsStateWithLifecycle()
@@ -71,97 +70,99 @@ fun ActivityDetailScreen(id: String, navHostController: NavHostController) {
         activityViewModel.fetchActivityDetail(id)
     }
 
-    LaunchedEffect(joinActivityState.error) {
-        joinActivityState.error?.let {
-            val errorMessage = joinActivityState.error
-            showStyledSnackbar(
-                snackbarHostState,
-                scope,
-                message = errorMessage ?: "Unknown Error",
-                snackbarTypeState
-            )
-        }
-    }
+    Scaffold(topBar = {
+//            SmallTopAppBar(
+//                title = {
+//                    Text(
+//                        "Activity Detail",
+//                        maxLines = 1,
+//                        overflow = TextOverflow.Ellipsis
+//                    )
+//                },
+//                navigationIcon = {
+//                    IconButton(onClick = onBackClick) {
+//                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+//                    }
+//                }
+//            )
+    }, bottomBar = {
+//            if (onSendMessageClick != {} && onMessageTextChange != {}) {
+//                ActivityDiscussionBar(
+//                    text = messageText,
+//                    onTextChange = onMessageTextChange,
+//                    onSend = onSendMessageClick
+//                )
+//            }
+        ActivityDiscussionBar(text = "messageText", onTextChange = {}, onSend = {})
+    }) { innerPadding ->
 
-    LaunchedEffect(openUsersDialog.value) {
-        if (openUsersDialog.value) {
-            activityViewModel.fetchUsersActivity(id)
-        }
-    }
-
-    when {
-        openUsersDialog.value -> {
-            UserActivityDialog(
-                usersActivityState = usersActivityState,
-                onDismissRequest = {
-                    openUsersDialog.value = false
+        when {
+            activityState.loading -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
                 }
-            )
-        }
-    }
-
-    Scaffold(
-        topBar = {
-            TopAppBarCompose(navHostController, title = "Activity Detail")
-        },
-        bottomBar = {
-            CommentInputActivity(
-                modifier = Modifier,
-            )
-        },
-        snackbarHost = {
-            SnackbarHost(snackbarHostState) { data ->
-                CustomSnackbar(
-                    snackbarData = data,
-                    messageType = snackbarTypeState
-                )
             }
-        },
-    ) { innerPadding ->
-        LazyColumn(
-            contentPadding = innerPadding,
-            modifier = Modifier.padding(horizontal = 18.dp)
-        ) {
-            item {
-                when {
-                    activityState.loading -> {
-                        Box(
-                            modifier = Modifier.fillParentMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator()
+
+            activityState.error != null -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(activityState.error!!)
+                }
+            }
+
+            activityState.activity != null -> {
+                val activity = activityState.activity
+                LazyColumn(
+                    modifier = Modifier.padding(innerPadding).fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    item {
+                        ActivityHeaderSection(activity!!)
+                    }
+
+                    item {
+                        ActivityBannerSection(
+                            bannerUrl = activity!!.bannerImageUrl ?: activity.imageUrl,
+                            onClick = {})
+                    }
+
+                    item {
+                        SectionCard(title = "Deskripsi") {
+                            Text(
+                                activity!!.description, style = MaterialTheme.typography.bodyMedium
+                            )
                         }
                     }
 
-                    activityState.error != null -> {
-                        ErrorCompose(
-                            modifier = Modifier.fillParentMaxSize(),
-                            message = activityState.error ?: "Unknown Error",
-                        )
+                    item {
+                        PicAndRtSection(
+                            picName = activity!!.pic.name,
+                            picRole = activity.pic.role,
+                            rtName = activity.pic.rt?.name ?: "",
+                            rtAddress = activity.rt?.address ?: "",
+                            createdByName = activity.createdBy.name,
+                            onPicClick = { })
                     }
 
-                    activityState.activity != null -> {
-                        ActivityDetailContent(
-                            activity = activityState.activity!!,
-                            hasJoinActivity = hasJoinActivity,
-                            isLoadingJoinActivity = isLoadingJoinActivity,
-                            onJoinActivity = {
-                                activityViewModel.joinActivity(id)
-                            },
-                            onRequestUsersDialog = {
-                                openUsersDialog.value = true
-                            }
-                        )
+                    item {
+                        ParticipantsSection(
+                            participants = activity!!.users, onSeeAllClick = {})
                     }
 
-                    else -> {
-                        Box(
-                            modifier = Modifier.fillParentMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text("No activity details available.")
-                        }
-                    }
+//            item {
+//                DiscussionSection(
+//                    text = messageText,
+//                    onTextChange = onMessageTextChange,
+//                    onSend = onSendMessageClick
+//                )
+//            }
+//
+                }
+            }
+
+            else -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("Activity not found")
                 }
             }
         }
