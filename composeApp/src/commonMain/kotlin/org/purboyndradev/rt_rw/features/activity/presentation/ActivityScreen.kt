@@ -1,17 +1,13 @@
 package org.purboyndradev.rt_rw.features.activity.presentation
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -32,6 +28,7 @@ import org.purboyndradev.rt_rw.core.domain.model.ActivityModel
 import org.purboyndradev.rt_rw.features.components.EmptyStateView
 import org.purboyndradev.rt_rw.features.components.ErrorViewCompose
 import org.purboyndradev.rt_rw.features.components.LoadingIndicatorCompose
+import org.purboyndradev.rt_rw.features.navigation.ActivityDetail
 
 @Composable
 fun ActivityScreen(
@@ -42,11 +39,11 @@ fun ActivityScreen(
         parametersOf("1")
     })
     val activityState by activityViewModel.activitiesState.collectAsStateWithLifecycle()
-    
+
     LaunchedEffect(Unit) {
         activityViewModel.fetchActivities()
     }
-    
+
     Column(
         modifier = modifier.fillMaxSize()
     ) {
@@ -68,20 +65,26 @@ fun ActivityScreen(
             activityState.loading -> {
                 LoadingIndicatorCompose(modifier)
             }
-            
+
             activityState.error != null -> {
                 ErrorViewCompose(
                     modifier,
                     activityState.error ?: "Unknown Error"
                 )
             }
-            
-            activityState.activities.isEmpty() -> {
-                EmptyStateView(modifier, "No Activity Found")
+
+            activityState.activities.isNotEmpty() -> {
+                val activities = activityState.activities
+                ActivityList(
+                    modifier = modifier.fillMaxSize().padding(
+                        horizontal = 12.dp,
+                    ), activities, onActivityTapped = {
+                        navHostController.navigate(ActivityDetail(it))
+                    })
             }
-            
+
             else -> {
-                ActivityList(modifier, activityState.activities)
+                EmptyStateView(modifier, "Tidak ada aktifitas")
             }
         }
     }
@@ -90,14 +93,12 @@ fun ActivityScreen(
 @Composable
 private fun ActivityList(
     modifier: Modifier = Modifier,
-    activities: List<ActivityModel>
+    activities: List<ActivityModel>,
+    onActivityTapped: (id: String) -> Unit = {}
 ) {
     LazyColumn(modifier = modifier) {
         items(activities) { activity ->
-            Text(
-                "Activity: ${activity.title}",
-                modifier = Modifier.padding(16.dp)
-            )
+            ActivityContent(activity, onActivityTapped = onActivityTapped)
         }
     }
 }
