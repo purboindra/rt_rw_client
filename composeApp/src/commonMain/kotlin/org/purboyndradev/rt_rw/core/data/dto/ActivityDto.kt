@@ -15,5 +15,6 @@ data class ActivityDto(
     val bannerImageUrl: String? = null,
     val imageUrl: String? = null,
     val description: String,
-    val pic: UserModel
+    val pic: UserModel,
+    val activityId: String? = null
 )
