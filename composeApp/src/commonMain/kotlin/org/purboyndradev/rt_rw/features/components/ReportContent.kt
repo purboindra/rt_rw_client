@@ -1,6 +1,7 @@
 package org.purboyndradev.rt_rw.features.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.purboyndradev.rt_rw.core.domain.model.ReportModel
+import org.purboyndradev.rt_rw.features.report.presentation.StatusChip
 import org.purboyndradev.rt_rw.helper.DateHelper
 
 
@@ -31,14 +33,21 @@ fun ReportContent(
             onReportTapped(report.id)
         }
     ) {
-        Text(
-            text = report.title,
-            style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.SemiBold,
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = report.title,
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.SemiBold,
+                ),
+                modifier = modifier.weight(1f)
             )
-        )
+            Spacer(modifier = modifier.width(12.dp))
+            StatusChip(status = report.status)
+        }
         Text(
-            text = report.description,
+            text = report.reportId,
             style = MaterialTheme.typography.labelMedium.copy(
                 color = Color.Gray,
             ),
