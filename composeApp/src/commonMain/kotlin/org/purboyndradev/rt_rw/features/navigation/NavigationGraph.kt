@@ -9,10 +9,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import androidx.navigation.toRoute
+import androidx.savedstate.SavedState
+import androidx.savedstate.read
+import androidx.savedstate.write
+import kotlinx.serialization.json.Json
 import org.purboyndradev.rt_rw.features.activity.presentation.ActivityDetailScreen
 import org.purboyndradev.rt_rw.features.auth.presentation.LoginScreen
 import org.purboyndradev.rt_rw.features.auth.presentation.OTPScreen
@@ -25,11 +31,31 @@ import org.purboyndradev.rt_rw.features.report.presentation.CreateReportScreen
 import org.purboyndradev.rt_rw.features.report.presentation.ReportDetailScreen
 import org.purboyndradev.rt_rw.features.report.presentation.ReportsScreen
 import org.purboyndradev.rt_rw.features.splash.SplashScreen
+import org.purboyndradev.rt_rw.helper.OTPType
 
 data class StartDestinationData(
     val route: String,
     val data: Any? = null
 )
+
+inline fun <reified T : Any> serializableType(
+    isNullableAllowed: Boolean = false,
+    json: Json = Json,
+) = object : NavType<T>(isNullableAllowed = isNullableAllowed) {
+
+    override fun put(bundle: SavedState, key: String, value: T) {
+        bundle.write { putString(key, json.encodeToString(value)) }
+    }
+
+    override fun get(bundle: SavedState, key: String): T? {
+        return json.decodeFromString<T?>(bundle.read { getString(key) })
+    }
+
+    override fun parseValue(value: String): T = json.decodeFromString(value)
+
+    override fun serializeAsValue(value: T): String = json.encodeToString(value)
+}
+
 
 @Composable
 fun NavigationGraph(
@@ -50,7 +76,16 @@ fun NavigationGraph(
             val id = activityDetail.id
             NewsDetailScreen(navHostController = navController, id = id)
         }
-        composable<OTP> { backStackEntry ->
+        composable (
+            arguments = listOf(
+                navArgument("otpType") {
+                    type = serializableType<OTPType>()
+                    defaultValue = OTPType.TELEGRAM
+                }
+            ),
+
+            route = OTP.serializer().descriptor.serialName,
+        ) { backStackEntry ->
             val otpScreen = backStackEntry.toRoute<OTP>()
             val phoneNumber = otpScreen.phoneNumber
             val otpType = otpScreen.otpType
