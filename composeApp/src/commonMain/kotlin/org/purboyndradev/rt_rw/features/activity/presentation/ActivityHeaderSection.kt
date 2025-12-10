@@ -87,7 +87,7 @@ fun ActivityHeaderSection(
 }
 
 @Composable
-private fun TypeChip(type: ActivityType) {
+ fun TypeChip(type: ActivityType) {
     val label = when (type) {
         ActivityType.KEGIATAN_SOSIAL -> "Kegiatan Sosial"
         ActivityType.KERJA_BAKTI -> "Kerja Bakti"
