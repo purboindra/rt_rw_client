@@ -2,6 +2,7 @@ package org.purboyndradev.rt_rw.core.domain.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import org.purboyndradev.rt_rw.helper.ActivityType
 
 @Serializable
 data class ActivityModel(
@@ -23,7 +24,7 @@ data class ActivityModel(
     @SerialName("imageUrl")
     val imageUrl: String? = null,
     @SerialName("type")
-    val type: String,
+    val type: ActivityType,
     @SerialName("activityId")
     val activityId: String? = null
 )
