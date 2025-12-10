@@ -32,5 +32,4 @@ data class ReportDto(
     val reportId: String,
     val resolvedAt: String? = null,
     val resolvedById: String? = null,
-
-    )
+)
