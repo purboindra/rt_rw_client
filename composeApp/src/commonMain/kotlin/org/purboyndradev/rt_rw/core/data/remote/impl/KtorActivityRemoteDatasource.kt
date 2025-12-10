@@ -42,7 +42,7 @@ class KtorActivityRemoteDatasource(private val httpClient: HttpClient) :
                     parameters.append("limit", it.limit.toString())
                 }
                 queryParams?.let {
-                    parameters.append("query", it.query)
+                    parameters.append("q", it.query)
                 }
             }
         }.body<ResponseDto<List<ActivityDto>>>()
