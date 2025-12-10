@@ -8,10 +8,12 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.purboyndradev.rt_rw.core.data.datastore.AppAuthRepository
 import org.purboyndradev.rt_rw.core.data.remote.mapper.toRes
 import org.purboyndradev.rt_rw.core.data.remote.params.JoinActivityParams
+import org.purboyndradev.rt_rw.core.data.remote.params.QueryParams
 import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.domain.usecases.CreateActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.DeleteActivityUseCase
@@ -20,7 +22,6 @@ import org.purboyndradev.rt_rw.domain.usecases.FetchActivitiesUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchActivityByIdUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchUsersActivityUseCase
 import org.purboyndradev.rt_rw.domain.usecases.JoinActivityUseCase
-import org.purboyndradev.rt_rw.helper.JWTObject
 import org.purboyndradev.rt_rw.helper.MessageSnackbarType
 import co.touchlab.kermit.Logger as KermitLogger
 
@@ -74,6 +75,15 @@ class ActivityViewModel(
             false
         )
     val hasJoinedActivity = _hasJoinedActivity.asStateFlow()
+
+    private val _searchQuery: MutableStateFlow<String> = MutableStateFlow("")
+    val searchQuery = _searchQuery.asStateFlow()
+
+    fun onQueryChange(query: String) {
+        _searchQuery.update {
+            query
+        }
+    }
 
     fun onChangeHasJoinedActivity(hasJoined: Boolean) {
         _hasJoinedActivity.value = hasJoined
@@ -160,18 +170,17 @@ class ActivityViewModel(
         }
     }
 
-    fun fetchActivities() {
+    fun fetchActivities(queryParams: QueryParams? = null) {
         viewModelScope.launch {
             _activitiesState.value = _activitiesState.value.copy(
                 loading = true
             )
 
-            val result = fetchActivitiesUseCase.invoke()
-            when (result) {
+            when (val result = fetchActivitiesUseCase.invoke(queryParams = queryParams)) {
                 is Result.Success -> {
                     val activities = result.data
                     _activitiesState.value = _activitiesState.value.copy(
-                        activities
+                        activities = activities
                     )
                 }
 
