@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.purboyndradev.rt_rw.core.data.remote.mapper.toRes
 import org.purboyndradev.rt_rw.core.data.remote.params.CreateReportParams
+import org.purboyndradev.rt_rw.core.data.remote.params.QueryParams
 import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.domain.usecases.CreateReportUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchAllReportsUseCase
@@ -31,6 +32,15 @@ class ReportViewModel(
 
     private val _createReportState = MutableStateFlow(CreateReportState())
     val createReportState = _createReportState.asStateFlow()
+
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery = _searchQuery.asStateFlow()
+
+    fun onQueryChange(query: String) {
+        _searchQuery.update {
+            query
+        }
+    }
 
     fun onTitleChange(newTitle: String) {
         _createReportState.update {
@@ -116,7 +126,7 @@ class ReportViewModel(
         }
     }
 
-    fun fetchAllReports() {
+    fun fetchAllReports(queryParams: QueryParams? = null) {
         viewModelScope.launch {
             _reportsState.update {
                 it.copy(
@@ -124,7 +134,7 @@ class ReportViewModel(
                 )
             }
 
-            when (val result = fetchAllReportsUseCase.invoke()) {
+            when (val result = fetchAllReportsUseCase.invoke(queryParams = queryParams)) {
                 is Result.Success -> {
                     val reports = result.data
                     _reportsState.update {
