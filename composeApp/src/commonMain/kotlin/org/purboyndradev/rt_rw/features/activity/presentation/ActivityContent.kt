@@ -1,6 +1,7 @@
 package org.purboyndradev.rt_rw.features.activity.presentation
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,6 +25,8 @@ fun ActivityContent(
     activity: ActivityModel, modifier: Modifier = Modifier,
     onActivityTapped: (id: String) -> Unit
 ) {
+
+
     Column(
         modifier = modifier.padding(
             vertical = 8.dp
@@ -31,14 +34,19 @@ fun ActivityContent(
             onActivityTapped(activity.id)
         }
     ) {
-        Text(
-            text = activity.title,
-            style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.SemiBold,
+        Row(horizontalArrangement = Arrangement.SpaceBetween) {
+            Text(
+                text = activity.title,
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.SemiBold,
+                ),
+                modifier = modifier.weight(1f)
             )
-        )
+            Spacer(modifier = modifier.width(12.dp))
+            TypeChip(type = activity.type)
+        }
         Text(
-            text = activity.description,
+            text = activity.activityId ?: "-",
             style = MaterialTheme.typography.labelMedium.copy(
                 color = Color.Gray,
             ),
