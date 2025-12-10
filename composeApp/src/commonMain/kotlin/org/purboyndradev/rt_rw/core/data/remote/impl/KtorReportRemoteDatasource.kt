@@ -30,7 +30,7 @@ class KtorReportRemoteDatasource(private val httpClient: HttpClient) : ReportApi
                     parameters.append("limit", it.limit.toString())
                 }
                 queryParams?.let {
-                    parameters.append("query", it.query)
+                    parameters.append("q", it.query)
                 }
             }
         }.body<ResponseDto<List<ReportDto>>>()
