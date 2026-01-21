@@ -1,15 +1,9 @@
 package org.purboyndradev.rt_rw
 
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import kotlinx.cinterop.ExperimentalForeignApi
-import platform.Foundation.NSDocumentDirectory
-import platform.UIKit.UIDevice
+import org.koin.dsl.module
 import platform.Foundation.NSURL
-import platform.Foundation.NSLock
-import platform.Foundation.NSUserDomainMask
-import platform.Foundation.NSFileManager
 import platform.UIKit.UIApplication
+import platform.UIKit.UIDevice
 import platform.UIKit.UIPasteboard
 
 class IOSPlatform : Platform {
@@ -21,6 +15,12 @@ private const val USER_DATASTORE_FILE_NAME =
     "user_prefs.pb"
 
 actual fun getPlatform(): Platform = IOSPlatform()
+
+actual class PlatformContext
+
+actual fun createPlatformModule() = module {
+    single { PlatformContext() }
+}
 
 actual object TelegramLauncher {
     actual fun open(url: String) {

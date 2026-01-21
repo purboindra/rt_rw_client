@@ -100,13 +100,13 @@ suspend inline fun <reified T : Any> safeCallWrapped(
             KermitLogger.w("safeCallWrapped") { "Received 401 Unauthorized. This typically means token refresh also failed or was not attempted for this path." }
         }
         Result.Error(mapHttpError(statusCode, errorBody))
-    } catch (e: ServerResponseException) { // 5xx - Ktor specific
+    } catch (e: ServerResponseException) {
         KermitLogger.e("safeCallWrapped Error - Server") { "Status: ${e.response.status.value}, Message: ${e.message}, Body: ${e.response}" }
         Result.Error(mapHttpError(e.response.status.value, e.response.bodyAsText()))
-    } catch (e: NoTransformationFoundException) { // Ktor serialization error
+    } catch (e: NoTransformationFoundException) {
         KermitLogger.e("safeCallWrapped Error - Serialization (NoTransformation)") { e.message.orEmpty() }
         Result.Error(AppError.Remote.Serialization)
-    } catch (e: kotlinx.serialization.SerializationException) { // General Kotlinx Serialization error
+    } catch (e: kotlinx.serialization.SerializationException) {
         KermitLogger.e("safeCallWrapped Error - Serialization (Kotlinx)") { e.message.orEmpty() }
         Result.Error(AppError.Remote.Serialization)
     } catch (e: IOException) {

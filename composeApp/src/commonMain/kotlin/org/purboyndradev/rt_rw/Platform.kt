@@ -1,5 +1,7 @@
 package org.purboyndradev.rt_rw
 
+import org.koin.core.module.Module
+
 interface Platform {
     val name: String
 }
@@ -13,3 +15,7 @@ expect object TelegramLauncher {
 expect object ClipboardReader {
     fun getText(): String?
 }
+
+expect class PlatformContext
+
+expect fun createPlatformModule(): Module

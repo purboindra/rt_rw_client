@@ -11,11 +11,18 @@ import android.os.Build
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.core.net.toUri
+import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.module
 
 class AndroidPlatform : Platform {
     override val name: String = "Android ${Build.VERSION.SDK_INT}"
 }
 
+actual class PlatformContext(val context: Context)
+
+actual fun createPlatformModule() = module {
+    single { PlatformContext(androidContext()) }
+}
 actual fun getPlatform(): Platform = AndroidPlatform()
 
 actual object TelegramLauncher {

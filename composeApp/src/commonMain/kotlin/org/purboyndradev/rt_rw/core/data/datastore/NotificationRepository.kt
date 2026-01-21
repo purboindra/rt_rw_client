@@ -19,7 +19,6 @@ class NotificationRepository(private val dataStore: DataStore<Preferences>) {
     val deniedAtFlow: Flow<Long?> =
         dataStore.data.catch { exception
             ->
-            println("Exception deniedAtFlow: ${exception.message}")
             if (exception is IOException) {
                 emit(emptyPreferences())
             } else {

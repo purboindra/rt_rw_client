@@ -153,6 +153,7 @@ fun MainScreen(navHostController: NavHostController) {
                     ProfileScreen(
                         navHostController = navHostController,
                         userName = userName ?: "",
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
             }
