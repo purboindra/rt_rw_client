@@ -16,6 +16,7 @@ import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.domain.usecases.FetchActivitiesUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchAllBannersUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchAllNewsUseCase
+import org.purboyndradev.rt_rw.domain.usecases.FetchDuesInvoicesUseCase
 import org.purboyndradev.rt_rw.features.activity.presentation.ActivityState
 
 class MainViewModel(
@@ -23,6 +24,7 @@ class MainViewModel(
     private val fetchAllBannersUseCase: FetchAllBannersUseCase,
     private val fetchAllNewsUseCase: FetchAllNewsUseCase,
     private val appAuthRepository: AppAuthRepository,
+    private val fetchAllDuesInvoicesUseCase: FetchDuesInvoicesUseCase
 ) : ViewModel(
 ) {
 

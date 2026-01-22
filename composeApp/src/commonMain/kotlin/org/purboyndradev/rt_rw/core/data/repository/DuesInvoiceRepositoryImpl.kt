@@ -12,12 +12,12 @@ import org.purboyndradev.rt_rw.core.network.mapKtorExceptionToAppError
 import org.purboyndradev.rt_rw.domain.repository.DuesInvoiceRepository
 
 class DuesInvoiceRepositoryImpl(private val api: DuesInvoiceApi) : DuesInvoiceRepository {
-    override suspend fun fetchAllDuesInvoices(
+    override suspend fun fetchDuesInvoices(
         paginationParams: PaginationParams?,
         queryParams: QueryParams?,
     ): Result<List<DuesInvoiceModel>, AppError> {
         return try {
-            val result = api.fetchAllDuesInvoices(paginationParams, queryParams)
+            val result = api.fetchDuesInvoices(paginationParams, queryParams)
             val duesInvoices = result.data?.map {
                 it.toDuesInvoiceModel()
             } ?: emptyList()

@@ -7,7 +7,7 @@ import org.purboyndradev.rt_rw.core.domain.Result
 import org.purboyndradev.rt_rw.core.domain.model.DuesInvoiceModel
 
 interface DuesInvoiceRepository {
-    suspend fun fetchAllDuesInvoices(
+    suspend fun fetchDuesInvoices(
         paginationParams: PaginationParams? = null,
         queryParams: QueryParams? = null
     ): Result<List<DuesInvoiceModel>, AppError>

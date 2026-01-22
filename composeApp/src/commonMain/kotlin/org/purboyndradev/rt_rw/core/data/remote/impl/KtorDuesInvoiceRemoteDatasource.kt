@@ -11,7 +11,7 @@ import org.purboyndradev.rt_rw.core.data.remote.params.PaginationParams
 import org.purboyndradev.rt_rw.core.data.remote.params.QueryParams
 
 class KtorDuesInvoiceRemoteDatasource(private val httpClient: HttpClient) : DuesInvoiceApi {
-    override suspend fun fetchAllDuesInvoices(
+    override suspend fun fetchDuesInvoices(
         paginationParams: PaginationParams?,
         queryParams: QueryParams?
     ): ResponseDto<List<DuesInvoiceDto>> {

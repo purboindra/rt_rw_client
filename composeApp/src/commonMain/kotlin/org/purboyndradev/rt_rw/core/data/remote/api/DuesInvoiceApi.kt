@@ -7,7 +7,7 @@ import org.purboyndradev.rt_rw.core.data.remote.params.QueryParams
 
 interface DuesInvoiceApi {
 
-    suspend fun fetchAllDuesInvoices(
+    suspend fun fetchDuesInvoices(
         paginationParams: PaginationParams? = null,
         queryParams: QueryParams? = null
     ): ResponseDto<List<DuesInvoiceDto>>

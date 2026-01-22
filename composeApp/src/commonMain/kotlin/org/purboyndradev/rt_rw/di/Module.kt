@@ -25,18 +25,21 @@ import org.purboyndradev.rt_rw.core.data.datastore.NotificationRepository
 import org.purboyndradev.rt_rw.core.data.remote.api.ActivityApi
 import org.purboyndradev.rt_rw.core.data.remote.api.AuthApi
 import org.purboyndradev.rt_rw.core.data.remote.api.BannerApi
+import org.purboyndradev.rt_rw.core.data.remote.api.DuesInvoiceApi
 import org.purboyndradev.rt_rw.core.data.remote.api.NewsApi
 import org.purboyndradev.rt_rw.core.data.remote.api.ReportApi
 import org.purboyndradev.rt_rw.core.data.remote.api.UserApi
 import org.purboyndradev.rt_rw.core.data.remote.impl.KtorActivityRemoteDatasource
 import org.purboyndradev.rt_rw.core.data.remote.impl.KtorAuthRemoteDatasource
 import org.purboyndradev.rt_rw.core.data.remote.impl.KtorBannerRemoteDatasource
+import org.purboyndradev.rt_rw.core.data.remote.impl.KtorDuesInvoiceRemoteDatasource
 import org.purboyndradev.rt_rw.core.data.remote.impl.KtorNewsRemoteDatasource
 import org.purboyndradev.rt_rw.core.data.remote.impl.KtorReportRemoteDatasource
 import org.purboyndradev.rt_rw.core.data.remote.impl.KtorUserRemoteDatasource
 import org.purboyndradev.rt_rw.core.data.repository.ActivityRepositoryImpl
 import org.purboyndradev.rt_rw.core.data.repository.AuthRepositoryImpl
 import org.purboyndradev.rt_rw.core.data.repository.BannerRepositoryImpl
+import org.purboyndradev.rt_rw.core.data.repository.DuesInvoiceRepositoryImpl
 import org.purboyndradev.rt_rw.core.data.repository.NewsRepositoryImpl
 import org.purboyndradev.rt_rw.core.data.repository.ReportRepositoryImpl
 import org.purboyndradev.rt_rw.core.data.repository.UserRepositoryImpl
@@ -45,6 +48,7 @@ import org.purboyndradev.rt_rw.core.network.TokenRefresher
 import org.purboyndradev.rt_rw.domain.repository.ActivityRepository
 import org.purboyndradev.rt_rw.domain.repository.AuthRepository
 import org.purboyndradev.rt_rw.domain.repository.BannerRepository
+import org.purboyndradev.rt_rw.domain.repository.DuesInvoiceRepository
 import org.purboyndradev.rt_rw.domain.repository.NewsRepository
 import org.purboyndradev.rt_rw.domain.repository.ReportRepository
 import org.purboyndradev.rt_rw.domain.repository.UserRepository
@@ -57,6 +61,7 @@ import org.purboyndradev.rt_rw.domain.usecases.FetchActivityByIdUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchAllBannersUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchAllNewsUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchAllReportsUseCase
+import org.purboyndradev.rt_rw.domain.usecases.FetchDuesInvoicesUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchNewsByIdUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchReportByIdUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchUsersActivityUseCase
@@ -177,6 +182,9 @@ val sharedModule: Module = module {
     single<UserApi> {
         KtorUserRemoteDatasource(get(qualifier = defaultHttpClient))
     }
+    single<DuesInvoiceApi> {
+        KtorDuesInvoiceRemoteDatasource(get(qualifier = defaultHttpClient))
+    }
 
     /// PROVIDE REPOSITORY
     single<AuthRepository> {
@@ -196,6 +204,9 @@ val sharedModule: Module = module {
     }
     single<UserRepository> {
         UserRepositoryImpl(get(), get())
+    }
+    single<DuesInvoiceRepository> {
+        DuesInvoiceRepositoryImpl(get())
     }
 
 
@@ -270,10 +281,16 @@ val sharedModule: Module = module {
         VerifyEmailUseCase(get())
     }
 
+    /// DUES INVOICE USE CASE
+    single {
+        FetchDuesInvoicesUseCase(get())
+    }
+
+
     /// PROVIDE VIEW MODEL
     viewModel { AuthViewModel(get(), get(), get(), get(), get()) }
     viewModel { SplashViewModel(get(), get(), get()) }
-    viewModel { MainViewModel(get(), get(), get(), get()) }
+    viewModel { MainViewModel(get(), get(), get(), get(), get()) }
     viewModel { NotificationViewModel(get()) }
     viewModel { params ->
         ActivityViewModel(get(), get(), get(), get(), get(), get(), get(), get())
