@@ -22,6 +22,8 @@ fun ProfileContent(
     modifier: Modifier = Modifier,
     userName: String? = null,
     email: String? = null,
+    phoneNumber: String? = null,
+    address: String,
 ) {
     LazyColumn(
         modifier = modifier.padding(horizontal = 16.dp),
@@ -37,7 +39,7 @@ fun ProfileContent(
                     modifier = Modifier,
                     userName = userName ?: "",
                     email = email,
-                    phoneNumber = ""
+                    phoneNumber = phoneNumber ?: ""
                 )
             }
 

@@ -52,7 +52,9 @@ fun ProfileScreen(
             ProfileContent(
                 modifier = modifier.fillMaxSize(),
                 userName = user.name,
-                email = user.email
+                email = user.email,
+                phoneNumber = user.phoneNumber,
+                address = user.address
             )
         }
 
