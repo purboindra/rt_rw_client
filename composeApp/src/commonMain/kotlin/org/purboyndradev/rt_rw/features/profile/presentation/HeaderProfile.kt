@@ -20,7 +20,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun HeaderProfile(modifier: Modifier = Modifier) {
+fun HeaderProfile(
+    modifier: Modifier = Modifier,
+    userName: String,
+    email: String? = null,
+    phoneNumber: String,
+) {
     Row(modifier = modifier.padding(8.dp)) {
         Box(
             modifier = modifier.size(64.dp).clip(
@@ -32,20 +37,20 @@ fun HeaderProfile(modifier: Modifier = Modifier) {
         Spacer(modifier = modifier.width(8.dp))
         Column {
             Text(
-                "Jane Doe", style = MaterialTheme.typography.bodyMedium.copy(
+                userName, style = MaterialTheme.typography.bodyMedium.copy(
                     color = Color.Black,
                     fontWeight = FontWeight.SemiBold,
                 )
             )
             Spacer(modifier = modifier.height(2.dp))
-            Text(
-                "janedoe@gmail.com", style = MaterialTheme.typography.bodySmall.copy(
+            if (email != null) Text(
+                email, style = MaterialTheme.typography.bodySmall.copy(
                     color = Color.Gray,
                 )
             )
             Spacer(modifier = modifier.height(2.dp))
             Text(
-                "08888888123", style = MaterialTheme.typography.bodySmall.copy(
+                phoneNumber, style = MaterialTheme.typography.bodySmall.copy(
                     color = Color.Gray,
                 )
             )

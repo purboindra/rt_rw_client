@@ -3,7 +3,6 @@ package org.purboyndradev.rt_rw.core.network
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.HttpClientEngine
-import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.plugins.HttpTimeout
@@ -12,9 +11,7 @@ import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
-import io.ktor.client.plugins.logging.DEFAULT
 import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -22,10 +19,8 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import io.ktor.http.encodedPath
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
@@ -35,9 +30,8 @@ import org.purboyndradev.rt_rw.core.data.datastore.AuthTokenStore
 import org.purboyndradev.rt_rw.core.data.dto.RefreshTokenDto
 import org.purboyndradev.rt_rw.core.data.dto.ResponseDto
 import org.purboyndradev.rt_rw.core.data.remote.params.RefreshTokenParams
-import org.purboyndradev.rt_rw.core.domain.Result
-import org.purboyndradev.rt_rw.domain.usecases.RefreshTokenUseCase
 import co.touchlab.kermit.Logger as KermitLogger
+import io.ktor.client.plugins.logging.Logger as KtorLogger
 
 object HttpClientFactory {
     suspend fun create(
@@ -81,8 +75,12 @@ object HttpClientFactory {
                 requestTimeoutMillis = 20_000L
             }
             install(Logging) {
-                logger = Logger.DEFAULT
                 level = LogLevel.ALL
+                logger = object : KtorLogger {
+                    override fun log(message: String) {
+                        KermitLogger.i("HttpClient") { message }
+                    }
+                }
             }
 
             HttpResponseValidator {

@@ -152,7 +152,7 @@ buildkonfig {
             STRING,
             "BASE_URL",
 //            "https://rtrwbackend-production.up.railway.app"
-            "http://192.168.1.5:3000"
+            "http://192.168.1.7:3000"
         )
 
         buildConfigField(
@@ -167,7 +167,7 @@ buildkonfig {
             buildConfigField(
                 STRING,
                 "BASE_URL",
-                "http://192.168.1.5:3000"
+                "http://192.168.1.7:3000"
 //                "https://rtrwbackend-production.up.railway.app"
             )
             buildConfigField(STRING, "ENVIRONMENT", "DEBUG")

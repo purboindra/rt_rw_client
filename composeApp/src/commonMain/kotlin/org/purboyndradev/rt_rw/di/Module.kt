@@ -61,6 +61,7 @@ import org.purboyndradev.rt_rw.domain.usecases.FetchActivityByIdUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchAllBannersUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchAllNewsUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchAllReportsUseCase
+import org.purboyndradev.rt_rw.domain.usecases.FetchCurrentUserUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchDuesInvoicesUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchNewsByIdUseCase
 import org.purboyndradev.rt_rw.domain.usecases.FetchReportByIdUseCase
@@ -280,6 +281,9 @@ val sharedModule: Module = module {
     single {
         VerifyEmailUseCase(get())
     }
+    single {
+        FetchCurrentUserUseCase(get())
+    }
 
     /// DUES INVOICE USE CASE
     single {
@@ -308,6 +312,7 @@ val sharedModule: Module = module {
     }
     viewModel {
         ProfileViewModel(
+            get(),
             get()
         )
     }

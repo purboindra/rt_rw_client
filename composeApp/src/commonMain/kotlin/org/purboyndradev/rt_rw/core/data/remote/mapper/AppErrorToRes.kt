@@ -28,12 +28,12 @@ suspend fun AppError.toRes(): String = when (this) {
             is AppError.Remote.RequestTimeout -> getString(Res.string.err_request_timeout)
             is AppError.Remote.Serialization -> getString(Res.string.err_serialization)
             is AppError.Remote.Timeout -> getString(Res.string.err_timeout)
-            
+
             is AppError.Remote.InvalidJwt -> getString(Res.string.err_invalid_jwt)
             is AppError.Remote.InvalidOtp -> getString(Res.string.err_invalid_otp)
             is AppError.Remote.InvalidResponse -> getString(Res.string.err_invalid_response)
             is AppError.Remote.Network -> getString(Res.string.err_no_internet)
-            
+
             is AppError.Remote.Http ->
                 if (body.isNullOrBlank() && message.isNullOrBlank())
                     getString(Res.string.err_http_code)
@@ -42,18 +42,19 @@ suspend fun AppError.toRes(): String = when (this) {
                         Res.string.err_http_code_message,
                         listOf(code, body)
                     )
-            
+
             is AppError.Remote.Unknown ->
                 if (message.isNullOrBlank())
                     getString(Res.string.err_remote_unknown)
                 else
-                    getString(
-                        Res.string.err_remote_unknown_with_message,
-                        listOf(message)
-                    )
+                    message
+//                    getString(
+//                        Res.string.err_remote_unknown_with_message,
+//                        listOf(message)
+//                    )
         }
     }
-    
+
     is AppError.Local -> {
         when (this) {
             AppError.Local.DiskFull -> getString(Res.string.err_no_internet)

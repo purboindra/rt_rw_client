@@ -2,10 +2,12 @@ package org.purboyndradev.rt_rw.core.data.remote.impl
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.appendPathSegments
 import org.purboyndradev.rt_rw.core.data.dto.ResponseDto
+import org.purboyndradev.rt_rw.core.data.dto.UserDto
 import org.purboyndradev.rt_rw.core.data.remote.api.UserApi
 import org.purboyndradev.rt_rw.core.data.remote.params.RequestEmailVerificationParams
 import org.purboyndradev.rt_rw.core.data.remote.params.VerifyEmailParams
@@ -32,4 +34,14 @@ class KtorUserRemoteDatasource(
             setBody(params)
         }.body<ResponseDto<Unit>>()
     }
+
+    override suspend fun fetchCurrentUser(id: String): ResponseDto<UserDto> {
+        return httpClient.get {
+            url {
+                appendPathSegments("api/v1/users/${id}")
+            }
+        }.body<ResponseDto<UserDto>>()
+    }
+
+
 }

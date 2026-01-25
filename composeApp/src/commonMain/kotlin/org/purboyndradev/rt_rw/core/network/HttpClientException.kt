@@ -5,18 +5,24 @@ import io.ktor.client.call.NoTransformationFoundException
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.RedirectResponseException
+import io.ktor.client.plugins.ResponseException
 import io.ktor.client.plugins.ServerResponseException
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.client.statement.request
 import io.ktor.http.HttpStatusCode
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import org.purboyndradev.rt_rw.core.data.remote.mapper.toRes
 import org.purboyndradev.rt_rw.core.domain.AppError
 import org.purboyndradev.rt_rw.core.domain.Result
 import co.touchlab.kermit.Logger as KermitLogger
+
+@Serializable
+data class MessageResponse(val message: String)
 
 private val errJson = Json { ignoreUnknownKeys = true; isLenient = true }
 
@@ -27,6 +33,12 @@ suspend fun mapKtorExceptionToAppError(e: Exception): AppError.Remote {
 
         is DataNotFoundException -> {
             AppError.Remote.NotFound
+        }
+
+        is ResponseException -> {
+            val statusCode = e.response.status.value
+            val errorBody = e.response.bodyAsText()
+            mapHttpError(statusCode, errorBody)
         }
 
         is ClientRequestException -> {
@@ -54,7 +66,15 @@ suspend fun mapKtorExceptionToAppError(e: Exception): AppError.Remote {
         }
 
         else -> {
-            AppError.Remote.Unknown(e.cause)
+            val message = e.message
+
+            val decodeMessage: MessageResponse? =
+                errJson.decodeFromString<MessageResponse?>(message ?: "")
+
+            AppError.Remote.Unknown(
+                message = decodeMessage?.message ?: AppError.Remote.RequestTimeout.toRes(),
+                cause = e.cause
+            )
         }
     }
 }
