@@ -6,6 +6,7 @@ import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.ResponseException
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
@@ -17,7 +18,6 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.flow.firstOrNull
@@ -69,7 +69,6 @@ object HttpClientFactory {
                 }..."
             }
 
-            expectSuccess = true
             install(HttpTimeout) {
                 socketTimeoutMillis = 20_000L
                 requestTimeoutMillis = 20_000L
@@ -84,15 +83,16 @@ object HttpClientFactory {
             }
 
             HttpResponseValidator {
-                handleResponseExceptionWithRequest { exception, request ->
+                handleResponseExceptionWithRequest { exception, _ ->
                     val clientException = exception as? ClientRequestException
                         ?: return@handleResponseExceptionWithRequest
                     val exceptionResponse = clientException.response
-
-                    if (exceptionResponse.status == HttpStatusCode.NotFound) {
-                        val exceptionResponseText = exceptionResponse.bodyAsText()
-                        throw Exception(exceptionResponseText)
+                    val exceptionResponseText = exceptionResponse.bodyAsText()
+                    KermitLogger.e("HttpClient") {
+                        "Request failed with status: ${exceptionResponse.status}. " +
+                                "Response: $exceptionResponseText"
                     }
+                    throw ResponseException(exceptionResponse, exceptionResponseText)
                 }
             }
 
