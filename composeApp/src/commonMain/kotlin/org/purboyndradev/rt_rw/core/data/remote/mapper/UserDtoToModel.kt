@@ -10,6 +10,7 @@ fun UserDto.toUserModel(): UserModel {
         phoneNumber = phone,
         email = email,
         role = role,
-        rt = rt?.toRTModel()
+        rt = rt?.toRTModel(),
+        image = image
     )
 }

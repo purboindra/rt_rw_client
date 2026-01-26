@@ -12,5 +12,6 @@ data class UserModel(
     val email: String? = null,
     val address: String = "",
     val role: String,
-    val rt: RTModel? = null
+    val rt: RTModel? = null,
+    val image: String? = null,
 )

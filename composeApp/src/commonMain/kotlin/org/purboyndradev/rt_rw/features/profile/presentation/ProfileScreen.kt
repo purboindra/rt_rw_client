@@ -54,7 +54,8 @@ fun ProfileScreen(
                 userName = user.name,
                 email = user.email,
                 phoneNumber = user.phoneNumber,
-                address = user.address
+                address = user.address,
+                imageUrl = user.image
             )
         }
 

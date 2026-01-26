@@ -25,6 +25,7 @@ fun HeaderProfile(
     userName: String,
     email: String? = null,
     phoneNumber: String,
+    imageUrl: String? = null,
 ) {
     Row(modifier = modifier.padding(8.dp)) {
         Box(
