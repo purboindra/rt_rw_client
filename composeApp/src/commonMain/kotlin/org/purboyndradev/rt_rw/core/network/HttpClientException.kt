@@ -27,9 +27,14 @@ data class MessageResponse(val message: String)
 private val errJson = Json { ignoreUnknownKeys = true; isLenient = true }
 
 class DataNotFoundException(message: String) : Exception(message)
+class ApiException(message: String) : Exception(message)
 
 suspend fun mapKtorExceptionToAppError(e: Exception): AppError.Remote {
     return when (e) {
+
+        is ApiException -> {
+            AppError.Remote.Unknown(message = e.message)
+        }
 
         is DataNotFoundException -> {
             AppError.Remote.NotFound

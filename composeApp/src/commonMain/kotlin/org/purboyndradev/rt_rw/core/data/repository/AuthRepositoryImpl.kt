@@ -9,6 +9,7 @@ import org.purboyndradev.rt_rw.core.data.remote.api.AuthApi
 import org.purboyndradev.rt_rw.core.domain.model.RefreshTokenModel
 import org.purboyndradev.rt_rw.core.domain.model.SignInModel
 import org.purboyndradev.rt_rw.core.domain.model.VerifyOtpModel
+import org.purboyndradev.rt_rw.core.network.ApiException
 import org.purboyndradev.rt_rw.core.network.DataNotFoundException
 import org.purboyndradev.rt_rw.domain.repository.AuthRepository
 import org.purboyndradev.rt_rw.helper.JWTObject
@@ -21,8 +22,7 @@ class AuthRepositoryImpl(
     override suspend fun signIn(phoneNumber: String): SignInModel {
 
         val responseDto = api.signIn(phoneNumber)
-
-        val data = responseDto.data ?: throw DataNotFoundException(responseDto.message)
+        val data = responseDto.data ?: throw ApiException(responseDto.message)
 
         val signInModel = SignInModel(
             accessToken = data.accessToken,
@@ -64,7 +64,7 @@ class AuthRepositoryImpl(
 
         val responseDto = api.verifyOtp(phoneNumber, otp)
 
-        val data = responseDto.data ?: throw DataNotFoundException(responseDto.message)
+        val data = responseDto.data ?: throw ApiException(responseDto.message)
 
         val verifyOtpModel = VerifyOtpModel(
             accessToken = data.accessToken,
